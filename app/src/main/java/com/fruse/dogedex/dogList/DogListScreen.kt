@@ -1,6 +1,7 @@
 package com.fruse.dogedex.dogList
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,10 +13,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.smallTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,11 +39,14 @@ import com.fruse.dogedex.core.composables.BackNavigationIcon
 import com.fruse.dogedex.core.composables.ErrorDialog
 import com.fruse.dogedex.core.composables.LoadingWheel
 import com.fruse.dogedex.core.model.Dog
+import com.fruse.dogedex.core.ui.theme.DogedexTheme
+import kotlinx.coroutines.flow.Flow
 
 
 private const val GRID_SPAN_COUNT = 3
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DogListScreen(
     onNavigationIconClick: () -> Unit,
@@ -49,9 +57,10 @@ fun DogListScreen(
     val status = viewModel.status.value
 
     Scaffold(
-        topBar = { DogListScreenTopBar { onNavigationIconClick() } }
+        topBar = { DogListScreenTopBar { onNavigationIconClick() } },
     ) {
         LazyVerticalGrid(
+            modifier = Modifier.padding(top = it.calculateTopPadding()),
             columns = GridCells.Fixed(GRID_SPAN_COUNT),
             content = {
                 items(dogList) {
@@ -69,17 +78,20 @@ fun DogListScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DogListScreenTopBar(onClick: () -> Unit) {
     TopAppBar(
         title = { Text(text = stringResource(R.string.my_dog_collection)) },
-        backgroundColor = Color.White,
-        contentColor = Color.Black,
+        colors = smallTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary
+        ),
         navigationIcon = { BackNavigationIcon(onClick) }
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
     if (dog.inCollection) {
@@ -96,7 +108,7 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
                 contentDescription = null,
                 modifier = Modifier
                     .background(Color.White)
-                    .semantics { testTag = "dog-${dog.name}"}
+                    .semantics { testTag = "dog-${dog.name}" }
             )
         }
     } else {
@@ -119,5 +131,42 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
                 fontWeight = FontWeight.Black
             )
         }
+    }
+}
+
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "DefaultPreviewDark"
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "DefaultPreviewLight"
+)
+@Composable
+fun DogListScreenPreview() {
+    DogedexTheme {
+        DogListScreen(
+            onNavigationIconClick = { /*TODO*/ },
+            onDogClicked = { _ -> },
+            viewModel = DogListViewModel(
+                dogRepository = object : DogTasks {
+                    override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
+                        TODO("Not yet implemented")
+                    }
+
+                    override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> {
+                        TODO("Not yet implemented")
+                    }
+
+                    override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> {
+                        TODO("Not yet implemented")
+                    }
+
+                    override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> {
+                        TODO("Not yet implemented")
+                    }
+
+                }
+            ))
     }
 }

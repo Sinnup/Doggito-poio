@@ -1,16 +1,18 @@
 package com.fruse.dogedex.auth.auth
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.fruse.dogedex.core.R
-import com.fruse.dogedex.core.composables.AuthField
 import com.fruse.dogedex.core.api.DogsApi
+import com.fruse.dogedex.core.composables.AuthField
 import com.fruse.dogedex.core.ui.theme.DogedexTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -42,12 +44,14 @@ fun LoginScreen(
     Scaffold(
         topBar = { LoginScreenToolbar() }
     ) {
-        Content(
-            it.calculateTopPadding(),
-            onRegisterButtonClick,
-            onLoginButtonClick,
-            authViewModel
-        )
+        Surface {
+            Content(
+                it.calculateTopPadding(),
+                onRegisterButtonClick,
+                onLoginButtonClick,
+                authViewModel
+            )
+        }
     }
 }
 
@@ -117,7 +121,7 @@ private fun Content(
                 .semantics { testTag = "login-button" },
             onClick = {
                 onLoginButtonClick(email.value, password.value)
-            }
+            },
         ) {
             Text(
                 text = stringResource(id = R.string.login),
@@ -131,8 +135,7 @@ private fun Content(
                 .fillMaxWidth()
                 .padding(16.dp),
             textAlign = TextAlign.Center,
-            text = stringResource(id = R.string.do_not_have_an_account),
-            color = MaterialTheme.colors.onPrimary
+            text = stringResource(id = R.string.do_not_have_an_account)
         )
 
         Text(
@@ -143,23 +146,43 @@ private fun Content(
                 .semantics { testTag = "login-screen-register-button" },
             textAlign = TextAlign.Center,
             text = stringResource(id = R.string.register),
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
     }
 }
 
-@Preview
+@Preview(
+    uiMode = UI_MODE_NIGHT_YES,
+    name = "DefaultPreviewDark"
+)
+@Preview(
+    uiMode = UI_MODE_NIGHT_NO,
+    name = "DefaultPreviewLight"
+)
 @Composable
 fun LoginScreenPreview() {
     DogedexTheme {
-        LoginScreen(
-            onRegisterButtonClick = {},
-            onLoginButtonClick = { _, _ -> },
-            authViewModel = AuthViewModel(
-                authRepository = AuthRepository(
-                    apiService = DogsApi.retrofitService
+//        LoginScreen(
+//            onRegisterButtonClick = {},
+//            onLoginButtonClick = { _, _ -> },
+//            authViewModel = AuthViewModel(
+//                authRepository = AuthRepository(
+//                    apiService = DogsApi.retrofitService
+//                )
+//            )
+//        )
+        Surface {
+            Content(
+                topPadding = 0.dp,
+                onRegisterButtonClick = { },
+                onLoginButtonClick = { _, _ -> },
+                authViewModel = AuthViewModel(
+                    authRepository = AuthRepository(
+                        apiService = DogsApi.retrofitService
+                    )
                 )
             )
-        )
+        }
+
     }
 }

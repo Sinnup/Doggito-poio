@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.material.Surface
 import com.fruse.dogedex.core.R
 import com.fruse.dogedex.core.model.User
 import com.fruse.dogedex.core.ui.theme.DogedexTheme
@@ -20,9 +21,11 @@ class LoginActivity : ComponentActivity() {
         setContent {
 
             DogedexTheme {
-                AuthScreen(
-                    onUserLoggedIn = ::startMainActivity
-                )
+                Surface {
+                    AuthScreen(
+                        onUserLoggedIn = ::startMainActivity
+                    )
+                }
             }
         }
 //        val binding = ActivityLoginBinding.inflate(layoutInflater)
