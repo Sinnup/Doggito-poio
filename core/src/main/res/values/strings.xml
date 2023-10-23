@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dogedex</string>
+
+    <string name="unknown_host_error">There is no internet connection</string>
+    <string name="unknown_error">There was an error</string>
+
+    <string name="error_sign_up">Error signing up</string>
+    <string name="error_sign_in">Error signing in</string>
+
+    <string name="there_was_an_error">There was an error</string>
+
+    <string name="error_adding_dog">There was an error adding dog to collection</string>
+
+    <string name="user_already_exists">User already exists</string>
+
+    <string name="wrong_user_or_password">Wrong user or password.</string>
+
+    <string name="passwords_do_not_match">Passwords do not match</string>
+
+    <string name="oops_something_happened">Oops, something happened</string>
+    <string name="try_again">Try again</string>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="do_not_have_an_account">Do not have an account?</string>
+    <string name="register">Register</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="email_is_not_valid">Email is not valid</string>
+    <string name="password_must_not_be_emtpy">Password must not be empty</string>
+
+</resources>
