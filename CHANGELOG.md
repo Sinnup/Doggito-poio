@@ -9,15 +9,68 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       0 — Planning
-Status:      Complete
-Next phase:  1 — Version Catalog (libs.versions.toml)
-Branch:      chore/phase-1-version-catalog  ← create this branch next
+Phase:       1 — Version Catalog (libs.versions.toml)
+Status:      Complete ✓
+Next phase:  2 — AGP 9 Upgrade
+Branch:      chore/upgrade-agp-9  ← create this branch next
 ```
 
-**Next action:** Create `gradle/libs.versions.toml` centralizing all versions from
-the four `build.gradle` files. Then update each module one at a time.
-Detailed steps: `.claude/agents/android-migration.md` → Phase 1.
+**Next action:** Phase 2 requires running Android Studio's AGP Upgrade Assistant
+(*Tools → AGP Upgrade Assistant*) to reach the latest AGP 8.x stable before the
+skill-driven 8.x → 9 step. Run the assistant, confirm sync passes, then invoke the
+`build/agp/agp-9-upgrade` skill. Detailed steps: `.claude/agents/android-migration.md` → Phase 2.
+
+**Known pre-existing test debt (fix in Phase 3):**
+Three test files under `app/src/test/` have broken package imports and stale fakes that
+predate this migration. They do not block Phase 1 or Phase 2 but must be repaired before
+Phase 3 gate (`./gradlew test` must pass). Files:
+- `app/src/test/java/com/fruse/dogedex/DogRepositoryTest.kt`
+- `app/src/test/java/com/fruse/dogedex/viewmodel/DogListViewModelTest.kt`
+- `app/src/test/java/com/fruse/dogedex/viewmodel/AuthViewModelTest.kt`
+
+---
+
+## [v0.3] — 2026-05-18 — Phase 1: Version Catalog
+
+### Status: Done
+
+### Branch
+`chore/migrate-version-catalog`
+
+### Commits
+| SHA | Message |
+|---|---|
+| `e7c76cd` | `chore(deps): add libs.versions.toml with all dependency versions` |
+| `9b17f30` | `chore(deps): wire version catalog and migrate root build.gradle` |
+| `cccd26a` | `chore(deps): migrate core module to version catalog` |
+| `8511dd3` | `chore(deps): migrate auth module to version catalog` |
+| `1dce88c` | `chore(deps): migrate camera module to version catalog` |
+| `48fd221` | `chore(deps): migrate app module to version catalog` |
+
+### Done
+- Created `gradle/libs.versions.toml` with all versions, libraries, plugins, and bundles.
+- Removed legacy `buildscript {}` block from root `build.gradle`; Safe Args moved to `plugins {}`.
+- Migrated all four modules (`core`, `auth`, `camera`, `app`) to version catalog accessors.
+- Unified version conflicts: `appcompat` → 1.6.1, `material` → 1.9.0, `compose-bom` → 2023.05.00,
+  `navigation` → 2.7.0, `lifecycle-*` → 2.6.1, `activity-*` → 1.7.2.
+- Set `compileSdk = 34` in all modules (was 33 in `core`, `auth`, `camera`).
+- Pinned `tensorflow-lite-support:+` to `0.4.4` (was dynamic `+`).
+- Removed dead `hilt-navigation-compose` dependency from `camera` module.
+- Removed duplicate Hilt test block in `auth/build.gradle`.
+- `coroutines-test` upgraded `1.5.0` → `1.7.3`.
+
+### Gate results
+- `./gradlew assembleDebug` — PASS
+- `grep -r "implementation \"" --include="*.gradle" .` — 0 results ✓
+- `grep -r "classpath " --include="*.gradle" .` — 0 results ✓
+
+### Deviations from plan
+- `settings.gradle` `versionCatalogs { from(...) }` block was omitted: Gradle 8.0 auto-discovers
+  `gradle/libs.versions.toml` and registering it explicitly causes a duplicate-registration error.
+- `kotlin-kapt` and `kotlin-parcelize` are applied via legacy short-form IDs in submodules
+  (not `alias()`): Gradle 8.0 raises a hard error when a versioned catalog alias is applied
+  for a plugin already on the classpath without version metadata. This is the correct approach
+  for this Gradle version and will be resolved when AGP 9 + Kotlin 2.x are in place (Phase 2/3).
 
 ---
 

@@ -73,7 +73,8 @@ To invoke a skill, use: `Skill({ skill: "<skill-name>" })`
 
 ## Migration Phases
 
-### Phase 1 — Version Catalog (`libs.versions.toml`)
+### Phase 1 — Version Catalog (`libs.versions.toml`) ✓ COMPLETE
+**Branch used:** `chore/migrate-version-catalog`
 **Risk:** Low — purely additive, zero behavior change  
 **Must complete before:** every other phase
 
@@ -117,9 +118,17 @@ hardcoded versions from all `build.gradle` files.
 ---
 
 ### Phase 2 — AGP 9 Upgrade
+**Branch:** `chore/upgrade-agp-9`
 **Risk:** Medium — breaking DSL changes, Kotlin/Java version gates  
 **Depends on:** Phase 1 complete (versions centralized)  
 **Skill:** `build/agp/agp-9-upgrade`
+
+**Known Gradle 8 carry-over from Phase 1:** `kotlin-kapt` and `kotlin-parcelize` are still
+applied via legacy short-form IDs in submodules because Gradle 8.0 cannot reconcile versioned
+catalog plugin aliases with plugins already on the classpath without version metadata.
+After upgrading to AGP 9 + Kotlin 2.x in this phase, switch those two plugins to
+`alias(libs.plugins.kotlin.kapt)` and `alias(libs.plugins.kotlin.parcelize)` and verify
+no `@Parcelize` or KAPT compilation errors.
 
 **Goal:** Upgrade the build toolchain to AGP 9+, Kotlin 2.x, Java 17, and apply the
 new AGP DSL. Run the Android Studio AGP Upgrade Assistant first (8.1 → 8.x stable),
