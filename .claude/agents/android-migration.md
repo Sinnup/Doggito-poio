@@ -177,30 +177,15 @@ Note: `camera/build.gradle` DataBinding removal deferred to Phase 5.
 
 ---
 
-### Phase 5 — Full Compose Migration (XML → Compose)
-**Branch:** `feat/migrate-views-to-compose`
-**Risk:** Medium — scoped to specific layouts, visual parity required  
-**Depends on:** Phase 4 complete (Activity shells no longer needed)  
-**Skill:** `jetpack-compose/migration/migrate-xml-views-to-jetpack-compose`
+### Phase 5 — Full Compose Migration (XML → Compose) ✓ COMPLETE
+**Branch used:** `feat/migrate-views-to-compose`
 
-**Goal:** Eliminate all remaining XML layouts and DataBinding usage.
-After Phase 4, the only remaining XML surfaces will be in the `camera` module.
-
-**Known XML targets:**
-- `camera` module: CameraX preview layout (DataBinding-based)
-- Any remaining Activity layouts in `app` (verify after Phase 4 deletions)
-
-**Steps:**
-1. Invoke skill: `Skill({ skill: "jetpack-compose/migration/migrate-xml-views-to-jetpack-compose" })`
-2. Migrate camera preview XML layout to a Compose `AndroidView` wrapper around
-   `PreviewView` (CameraX composable interop pattern).
-3. Remove DataBinding from `app/build.gradle` and `camera/build.gradle`:
-   ```groovy
-   // Remove these blocks:
-   buildFeatures { dataBinding true }
-   ```
-4. Remove DataBinding dependency from `libs.versions.toml`.
-5. Sync and verify no DataBinding imports remain.
+**What landed:** `buildFeatures { dataBinding true }` removed from `camera/build.gradle`.
+Unused `appcompat` and `material` dependencies removed from `camera`. Dead
+`camera/src/main/res/values/strings.xml` deleted (3 unreferenced permission strings).
+No XML-to-Compose migration was needed: `camera/layout/` was already empty and
+`AndroidView { PreviewView }` was wired in `CameraScreen.kt` during Phase 4.
+DataBinding is now absent from all modules. `libs.versions.toml` required no changes.
 
 ---
 
