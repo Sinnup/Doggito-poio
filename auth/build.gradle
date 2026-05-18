@@ -1,13 +1,13 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     id 'kotlin-kapt'
-    id 'com.google.dagger.hilt.android'
+    alias(libs.plugins.hilt.android)
 }
 
 android {
     namespace 'com.fruse.dogedex.auth'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 24
@@ -43,77 +43,47 @@ dependencies {
 
     implementation project(path: ":core")
 
-    implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.google.material
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.test.junit
+    androidTestImplementation libs.androidx.espresso.core
 
-    // Jetpack Compose
-    def composeBom = platform('androidx.compose:compose-bom:2023.01.00')
+    def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom
     androidTestImplementation composeBom
 
-    // Choose one of the following:
-    // Material Design 3
-    implementation 'androidx.compose.material3:material3'
-    // or Material Design 2
-    implementation 'androidx.compose.material:material'
-    // or skip Material Design and build directly on top of foundational components
-    implementation 'androidx.compose.foundation:foundation'
-    // or only import the main APIs for the underlying toolkit systems,
-    // such as input and measurement/layout
-    implementation 'androidx.compose.ui:ui'
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.material
+    implementation libs.androidx.compose.foundation
+    implementation libs.androidx.compose.ui
 
-    // Android Studio Preview support
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation libs.androidx.compose.ui.tooling.preview
+    debugImplementation libs.androidx.compose.ui.tooling
 
-    // UI Tests
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
-    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    androidTestImplementation libs.androidx.compose.ui.test.junit4
+    debugImplementation libs.androidx.compose.ui.test.manifest
 
-    // Optional - Included automatically by material, only add when you need
-    // the icons but not the material library (e.g. when using Material3 or a
-    // custom design system based on Foundation)
-    implementation 'androidx.compose.material:material-icons-core'
-    // Optional - Add full set of material icons
-    implementation 'androidx.compose.material:material-icons-extended'
-    // Optional - Add window size utils
-    implementation 'androidx.compose.material3:material3-window-size-class'
+    implementation libs.androidx.compose.material.icons.core
+    implementation libs.androidx.compose.material.icons.extended
+    implementation libs.androidx.compose.material3.window.size
 
-    // Optional - Integration with activities
-    implementation 'androidx.activity:activity-compose:1.6.1'
-    // Optional - Integration with ViewModels
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.lifecycle.viewmodel.compose
 
-    implementation "androidx.navigation:navigation-compose:2.4.1"
+    implementation libs.androidx.navigation.compose
 
-    // Hilt Dependency Injection
-    implementation "com.google.dagger:hilt-android:2.48"
-    kapt "com.google.dagger:hilt-compiler:2.48"
-    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
+    implementation libs.androidx.hilt.navigation.compose
 
-    // For instrumented tests.
-    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.48'
-    // ...with Kotlin.
-    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.48'
-    // ...with Java.
-    androidTestAnnotationProcessor 'com.google.dagger:hilt-android-compiler:2.48'
+    androidTestImplementation libs.hilt.android.testing
+    kaptAndroidTest libs.hilt.android.compiler
+    androidTestAnnotationProcessor libs.hilt.android.compiler
 
-    // For instrumented tests.
-    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.48'
-    // ...with Kotlin.
-    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.48'
-    // ...with Java.
-    androidTestAnnotationProcessor 'com.google.dagger:hilt-android-compiler:2.48'
+    implementation libs.androidx.espresso.idling.resource
 
-    // Espresso idling resources
-    implementation "androidx.test.espresso:espresso-idling-resource:3.5.1"
-
-    // Coil
-    implementation "io.coil-kt:coil:2.4.0"
-    implementation "io.coil-kt:coil-compose:2.4.0"
-
+    implementation libs.coil
+    implementation libs.coil.compose
 }
