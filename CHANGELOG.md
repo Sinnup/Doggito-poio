@@ -9,23 +9,59 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       2 — Build Toolchain Upgrade
+Phase:       3 — KAPT → KSP
 Status:      Complete ✓
-Next phase:  3 — KAPT → KSP
-Branch:      chore/migrate-kapt-to-ksp  ← create this branch next
+Next phase:  4 — Navigation 3
+Branch:      feat/migrate-to-navigation-3  ← create this branch next
 ```
 
-**Next action:** Upgrade Hilt to 2.59.2+, add KSP plugin, and migrate all four modules from
-`kapt` to `ksp` one at a time. Also fix the three pre-existing broken test files before the
-Phase 3 gate (`./gradlew test` must pass). Detailed steps: `.claude/agents/android-migration.md` → Phase 3.
+**Next action:** Replace the three-layer navigation system (Fragment Nav, Activity-based,
+Compose Nav 2) with a single Navigation 3 + Compose graph. Detailed steps:
+`.claude/agents/android-migration.md` → Phase 4.
 
-**Known pre-existing test debt (must fix in Phase 3):**
-Three test files under `app/src/test/` have broken package imports, stale fakes, and
-deprecated `TestCoroutineDispatcher` usage. They must be repaired before the Phase 3 gate.
-- `app/src/test/java/com/fruse/dogedex/DogRepositoryTest.kt`
-- `app/src/test/java/com/fruse/dogedex/viewmodel/DogListViewModelTest.kt`
-- `app/src/test/java/com/fruse/dogedex/viewmodel/AuthViewModelTest.kt`
-- `app/src/test/java/com/fruse/dogedex/viewmodel/DogedexTestCoroutineRule.kt` ← delete this file
+---
+
+## [v0.5] — 2026-05-18 — Phase 3: KAPT → KSP
+
+### Status: Done
+
+### Branch
+`chore/migrate-kapt-to-ksp`
+
+### Commits
+| SHA | Message |
+|---|---|
+| `91c5f14` | `chore(build): add KSP plugin to root build, remove kotlin-kapt catalog entry` |
+| `64c1524` | `chore(build): migrate core and auth modules from kapt to ksp` |
+| `dd49009` | `chore(build): migrate app and camera modules from kapt to ksp` |
+| `e97c46e` | `test(app): replace DogedexTestCoroutineRule with MainDispatcherRule` |
+| `fad29f3` | `test(app): fix broken test imports, fakes, and coroutine APIs` |
+
+### Done
+- Removed `kotlin-kapt` plugin entry from version catalog
+- Added `alias(libs.plugins.ksp) apply false` to root `build.gradle`
+- Replaced `kapt`/`kaptAndroidTest` → `ksp`/`kspAndroidTest` in all four modules
+- Removed all `androidTestAnnotationProcessor` lines (caused duplicate-class errors with KSP)
+- Converted `id 'androidx.navigation.safeargs'` → `alias(libs.plugins.navigation.safe.args)` in `app`
+- Removed `kapt.use.k2=true` from `gradle.properties`
+- Deleted `DogedexTestCoroutineRule.kt`; replaced with `MainDispatcherRule` (TestWatcher-based)
+- Fixed all three previously broken test files: correct imports, `UnconfinedTestDispatcher`,
+  `runTest` replacing `runBlocking`, missing `getProbableDogs` fake override, `19L` type fix,
+  dropped unresolvable `R.string.*` assertions
+
+### Gate results
+- `./gradlew assembleDebug` — PASS
+- `./gradlew test` — PASS ✓ (zero failures — first clean test run in the project)
+- `grep -r "kapt" --include="*.gradle" .` — 0 results ✓
+- `grep -r "kaptAndroidTest\|androidTestAnnotationProcessor" --include="*.gradle" .` — 0 results ✓
+
+### Deviations from plan
+- `kotlin-parcelize` kept as legacy string ID (`id 'kotlin-parcelize'`) in `app` and `core`:
+  applying it as a versioned catalog alias fails because the plugin is bundled inside
+  `kotlin.android` and Gradle cannot reconcile the duplicate registration with a version.
+- KSP version resolved to `2.1.21-2.0.2` (not `2.1.21-1.0.29` from Phase 2 catalog —
+  that patch was unpublished). IDE lint warns about KSP `2.3.4` being available; this is
+  incorrect — `2.3.4` requires Kotlin 2.3.x and is incompatible with our Kotlin 2.1.21.
 
 ---
 

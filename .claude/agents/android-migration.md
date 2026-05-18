@@ -129,11 +129,14 @@ Note: AGP 9 not yet GA — will retarget once it ships stable.
 
 ---
 
-### Phase 3 — KAPT → KSP
-**Branch:** `chore/migrate-kapt-to-ksp`
-**Risk:** Low-medium — mechanical swap, one module at a time  
-**Depends on:** Phase 2 complete  
-**Skill:** Covered in `build/agp/agp-9-upgrade` Step 4
+### Phase 3 — KAPT → KSP ✓ COMPLETE
+**Branch used:** `chore/migrate-kapt-to-ksp`
+
+**What landed:** KSP 2.1.21-2.0.2 in all four modules; `kapt`/`kaptAndroidTest` fully
+removed; `androidTestAnnotationProcessor` removed; `DogedexTestCoroutineRule` deleted and
+replaced with `MainDispatcherRule`; all three broken test files fixed; `./gradlew test`
+passes with zero failures for the first time. `kotlin-parcelize` kept as legacy string ID
+(catalog alias registration conflicts with `kotlin.android` bundle).
 
 **Goal:** Replace KAPT annotation processing with KSP across all modules.
 KSP is incremental and significantly faster than KAPT.
