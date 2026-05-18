@@ -14,3 +14,13 @@
 .cxx
 local.properties
 /.idea
+
+# Signing
+*.keystore
+keyvalues.txt
+
+# Build artifacts
+app/release/
+
+# Claude Code local overrides (machine-specific, never commit)
+.claude/settings.local.json
