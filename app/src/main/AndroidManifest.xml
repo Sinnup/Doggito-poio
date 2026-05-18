@@ -21,26 +21,6 @@
         android:theme="@style/Theme.Dogedex"
         tools:targetApi="33">
         <activity
-            android:name=".dogDetail.DogDetailComposeActivity"
-            android:exported="false"
-            android:label="@string/title_activity_dog_detail_compose"
-            android:theme="@style/Theme.Dogedex" />
-        <activity
-            android:name=".WholeImageActivity"
-            android:exported="false" />
-        <activity
-            android:name=".settings.SettingsActivity"
-            android:exported="false"
-            android:parentActivityName=".main.MainActivity" />
-        <activity
-            android:name=".auth.auth.LoginActivity"
-            android:exported="false"
-            android:parentActivityName=".main.MainActivity"/>
-        <activity
-            android:name=".dogList.DogListActivity"
-            android:exported="false"
-            android:parentActivityName=".main.MainActivity" />
-        <activity
             android:name=".main.MainActivity"
             android:exported="true">
             <intent-filter>
@@ -49,9 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".dogDetail.DogDetailActivity"
-            android:exported="false" />
     </application>
 
 </manifest>

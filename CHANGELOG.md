@@ -9,15 +9,76 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       3 — KAPT → KSP
+Phase:       4 — Navigation 3
 Status:      Complete ✓
-Next phase:  4 — Navigation 3
-Branch:      feat/migrate-to-navigation-3  ← create this branch next
+Next phase:  5 — Full Compose Migration
+Branch:      feat/migrate-views-to-compose  ← create this branch next
 ```
 
-**Next action:** Replace the three-layer navigation system (Fragment Nav, Activity-based,
-Compose Nav 2) with a single Navigation 3 + Compose graph. Detailed steps:
-`.claude/agents/android-migration.md` → Phase 4.
+**Next action:** Migrate camera module DataBinding preview → Compose `AndroidView`.
+Remove `dataBinding` from `camera/build.gradle`. Detailed steps:
+`.claude/agents/android-migration.md` → Phase 5.
+
+---
+
+## [v0.6] — 2026-05-18 — Phase 4: Navigation 3
+
+### Status: Done
+
+### Branch
+`feat/migrate-to-navigation-3`
+
+### Commits
+| SHA | Message |
+|---|---|
+| `c80a340` | `feat(core): add NavKey sealed interface and navigation 3 serialization setup` |
+| `52e2d43` | `feat(core): add SessionRepository and convert MainViewModel to StateFlow UiState` |
+| `5f032f7` | `feat(app): add CameraScreen and SettingsScreen composables` |
+| `0226c29` | `feat(app): wire Navigation 3 NavDisplay in MainActivity — single-activity arch` |
+| `55aab59` | `refactor(app): delete legacy Activity classes replaced by Navigation 3` |
+| `5f60386` | `refactor(auth): delete LoginActivity and remove internal NavHost from AuthScreen` |
+| `b7cb251` | `chore(app): delete legacy XML layouts and remove dataBinding from app module` |
+
+### Done
+- Added `kotlinx-serialization-json 1.7.3` and `navigation 2.8.9` to version catalog
+- Created `NavKey` sealed interface with `@Serializable` destinations:
+  `LoginKey`, `SignUpKey`, `CameraKey`, `DogListKey`, `DogDetailKey`, `SettingsKey`
+- Implemented `SessionRepository` (singleton) backed by SharedPreferences, exposing
+  `isLoggedIn: StateFlow<Boolean>`; `SessionManager` interface introduced for Hilt bindings
+- `MainViewModel` converted from `MutableLiveData` to `StateFlow<MainUiState>`
+- `DogedexNavHost` — single `NavHost` routing the full app; reactive to `isLoggedIn`:
+  - On login → navigate to `CameraKey`, clearing auth back stack
+  - On logout → navigate to `LoginKey`, clearing main back stack
+- `CameraScreen` composable: `AndroidView { PreviewView }`, permission launcher, three FABs
+- `SettingsScreen` composable + `SettingsViewModel`
+- `MainActivity` rewritten to `ComponentActivity` with single `setContent { DogedexNavHost() }`
+- Deleted: `DogListActivity`, `DogDetailActivity`, `DogDetailComposeActivity`,
+  `SettingsActivity`, `WholeImageActivity`, `LoginActivity`, `AuthNavDestinations.kt`,
+  `AuthScreen.kt` (imported deleted `AuthNavDestinations`), `auth_nav_graph.xml`
+- Deleted `DogAdapter.kt` and `dog_list_item.xml` (broken RecyclerView adapter no longer
+  needed after Compose-only list)
+- Removed `dataBinding { enable = true }` from `app/build.gradle`
+- Removed all `activity_*.xml` and `fragment_*.xml` layouts from `app`
+
+### Gate results
+- `./gradlew assembleDebug` — PASS
+- `./gradlew test` — PASS ✓ (zero failures)
+- `DogListActivity`, `LoginActivity`, `DogDetailComposeActivity`, `SettingsActivity`,
+  `WholeImageActivity` — all absent ✓
+- `auth_nav_graph.xml` — absent ✓
+- `dataBinding` in `app/build.gradle` — absent ✓
+
+### Deviations from plan
+- `DogDetailActivity.kt` was present but its body was commented out; deleted entirely.
+- `AuthScreen.kt` deleted (not just stripped): it imported deleted `AuthNavDestinations`,
+  making it uncompilable as-is.
+- `DogAdapter.kt` and `dog_list_item.xml` deleted in Commit 7 (not a separate commit):
+  a broken `@id` reference in the adapter caused resource linking failure.
+- `SessionManager` interface introduced as abstraction over `SessionRepository`:
+  allows `AuthViewModel` and tests to depend on an injectable interface rather than
+  the concrete implementation.
+- `camera/build.gradle` still has `dataBinding` enabled — camera module DataBinding
+  removal is scoped to Phase 5.
 
 ---
 

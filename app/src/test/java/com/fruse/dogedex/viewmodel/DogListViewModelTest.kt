@@ -53,9 +53,10 @@ class DogListViewModelTest {
 
         val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository())
 
-        assertEquals(2, dogListViewModel.dogList.value.size)
-        assertEquals(19L, dogListViewModel.dogList.value[1].id)
-        assert(dogListViewModel.status.value is ApiResponseStatus.Success)
+        assertEquals(2, dogListViewModel.uiState.value.dogs.size)
+        assertEquals(19L, dogListViewModel.uiState.value.dogs[1].id)
+        assertEquals(false, dogListViewModel.uiState.value.isLoading)
+        assertEquals(null, dogListViewModel.uiState.value.error)
     }
 
     @Test
@@ -83,8 +84,8 @@ class DogListViewModelTest {
 
         val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository())
 
-        assertEquals(0, dogListViewModel.dogList.value.size)
-        assert(dogListViewModel.status.value is ApiResponseStatus.Error)
+        assertEquals(0, dogListViewModel.uiState.value.dogs.size)
+        assertEquals(12, dogListViewModel.uiState.value.error)
     }
 
 
@@ -113,7 +114,7 @@ class DogListViewModelTest {
 
         val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository())
 
-        dogListViewModel.resetApiResponseStatus()
-        assert(dogListViewModel.status.value == null)
+        dogListViewModel.dismissError()
+        assertEquals(null, dogListViewModel.uiState.value.error)
     }
 }

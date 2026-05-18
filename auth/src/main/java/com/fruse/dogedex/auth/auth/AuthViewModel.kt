@@ -7,12 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.fruse.dogedex.core.R
 import com.fruse.dogedex.api.responses.ApiResponseStatus
 import com.fruse.dogedex.core.model.User
+import com.fruse.dogedex.core.session.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val authRepository: AuthTasks) : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val authRepository: AuthTasks,
+    private val sessionManager: SessionManager
+) : ViewModel() {
 
     var user = mutableStateOf<User?>(null)
         private set
@@ -86,6 +90,7 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthTasks) :
     private fun handleResponseStatus(apiResponseStatus: ApiResponseStatus<User>) {
         if (apiResponseStatus is ApiResponseStatus.Success) {
             user.value = apiResponseStatus.data
+            sessionManager.login(apiResponseStatus.data)
         }
 
         status.value = apiResponseStatus
