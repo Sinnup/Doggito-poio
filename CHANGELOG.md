@@ -9,15 +9,48 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       4 — Navigation 3
+Phase:       5 — Full Compose Migration
 Status:      Complete ✓
-Next phase:  5 — Full Compose Migration
-Branch:      feat/migrate-views-to-compose  ← create this branch next
+Next phase:  6 — MVI Architecture
+Branch:      refactor/migrate-to-mvi  ← create this branch next
 ```
 
-**Next action:** Migrate camera module DataBinding preview → Compose `AndroidView`.
-Remove `dataBinding` from `camera/build.gradle`. Detailed steps:
-`.claude/agents/android-migration.md` → Phase 5.
+**Next action:** Migrate all ViewModels to MVI (UiState / UiAction / UiEffect).
+Eliminate `MutableLiveData`, `mutableStateOf`, and `ApiResponseStatus` from UI layer.
+Detailed steps: `.claude/agents/android-migration.md` → Phase 6.
+
+---
+
+## [v0.7] — 2026-05-18 — Phase 5: Full Compose Migration
+
+### Status: Done
+
+### Branch
+`feat/migrate-views-to-compose`
+
+### Commits
+| SHA | Message |
+|---|---|
+| `d8b2bdd` | `refactor(camera): remove DataBinding feature flag and dead View-system dependencies` |
+
+### Done
+- Removed `buildFeatures { dataBinding true }` from `camera/build.gradle`
+- Removed unused `appcompat` and `material` dependencies from `camera/build.gradle`
+- Deleted `camera/src/main/res/values/strings.xml` (three unreferenced camera
+  permission strings — permission flow is handled by Compose in `CameraScreen.kt`)
+- DataBinding is now absent from all modules in the project
+
+### Gate results
+- `./gradlew assembleDebug` — PASS
+- `./gradlew test` — PASS ✓ (zero failures)
+- `grep -r "dataBinding" --include="*.gradle" .` — 0 results ✓
+
+### Deviations from plan
+- No XML-to-Compose layout migration was needed: `camera/src/main/res/layout/` was
+  already empty. The `AndroidView { PreviewView }` was wired in `CameraScreen.kt`
+  during Phase 4. Phase 5 reduced to removing the now-dead DataBinding build flag.
+- `libs.versions.toml` required no changes: no DataBinding version entry existed.
+- Empty `layout/` and `drawable/` directories not tracked by git — no cleanup commit needed.
 
 ---
 

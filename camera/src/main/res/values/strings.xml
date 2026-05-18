@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="camera_permission_rejected_message">You need to accept camera permission to use camera</string>
-    <string name="camera_permission_rationale_dialog_title">Acéptame por favor</string>
-    <string name="camera_permission_rationale_dialog_message">Acepta la camara o me de amsiedad</string>
-</resources>
