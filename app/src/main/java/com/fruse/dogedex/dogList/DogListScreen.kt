@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -32,15 +33,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.fruse.dogedex.R
-import com.fruse.dogedex.api.responses.ApiResponseStatus
 import com.fruse.dogedex.core.composables.BackNavigationIcon
 import com.fruse.dogedex.core.composables.ErrorDialog
 import com.fruse.dogedex.core.composables.LoadingWheel
 import com.fruse.dogedex.core.model.Dog
 import com.fruse.dogedex.core.ui.theme.DogedexTheme
-import kotlinx.coroutines.flow.Flow
 
 
 private const val GRID_SPAN_COUNT = 3
@@ -53,9 +53,25 @@ fun DogListScreen(
     onDogClicked: (Dog) -> Unit,
     viewModel: DogListViewModel = hiltViewModel()
 ) {
-    val dogList = viewModel.dogList.value
-    val status = viewModel.status.value
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    DogListContent(
+        uiState = uiState,
+        onNavigationIconClick = onNavigationIconClick,
+        onDogClicked = onDogClicked,
+        onDismissError = viewModel::dismissError
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+private fun DogListContent(
+    uiState: DogListUiState,
+    onNavigationIconClick: () -> Unit,
+    onDogClicked: (Dog) -> Unit,
+    onDismissError: () -> Unit
+) {
     Scaffold(
         topBar = { DogListScreenTopBar { onNavigationIconClick() } },
     ) {
@@ -63,17 +79,17 @@ fun DogListScreen(
             modifier = Modifier.padding(top = it.calculateTopPadding()),
             columns = GridCells.Fixed(GRID_SPAN_COUNT),
             content = {
-                items(dogList) {
-                    DogGridItem(dog = it, onDogClicked = onDogClicked)
+                items(uiState.dogs) { dog ->
+                    DogGridItem(dog = dog, onDogClicked = onDogClicked)
                 }
             })
     }
 
-    if (status is ApiResponseStatus.Loading) {
+    if (uiState.isLoading) {
         LoadingWheel()
-    } else if (status is ApiResponseStatus.Error) {
-        ErrorDialog(messageId = status.messageId) {
-            viewModel.resetApiResponseStatus()
+    } else if (uiState.error != null) {
+        ErrorDialog(messageId = uiState.error) {
+            onDismissError()
         }
     }
 }
@@ -145,28 +161,11 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
 @Composable
 fun DogListScreenPreview() {
     DogedexTheme {
-        DogListScreen(
-            onNavigationIconClick = { /*TODO*/ },
-            onDogClicked = { _ -> },
-            viewModel = DogListViewModel(
-                dogRepository = object : DogTasks {
-                    override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
-                        TODO("Not yet implemented")
-                    }
-
-                    override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> {
-                        TODO("Not yet implemented")
-                    }
-
-                    override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> {
-                        TODO("Not yet implemented")
-                    }
-
-                    override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> {
-                        TODO("Not yet implemented")
-                    }
-
-                }
-            ))
+        DogListContent(
+            uiState = DogListUiState(),
+            onNavigationIconClick = {},
+            onDogClicked = {},
+            onDismissError = {}
+        )
     }
 }

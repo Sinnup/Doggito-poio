@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.fruse.dogedex.auth.auth.LoginActivity
 import com.fruse.dogedex.core.api.ApiServiceInterceptor
-import com.fruse.dogedex.api.responses.ApiResponseStatus
 import com.fruse.dogedex.camera.R
 import com.fruse.dogedex.core.model.User
 import com.fruse.dogedex.databinding.ActivityMainBinding
@@ -38,10 +37,6 @@ import java.util.concurrent.Executors
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    // Register the permissions callback, which handles the user's response to the
-// system permissions dialog. Save the return value, an instance of
-// ActivityResultLauncher. You can use either a val, as shown in this snippet,
-// or a lateinit var in your onAttach() or onCreate() method.
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -82,39 +77,13 @@ class MainActivity : AppCompatActivity() {
             openDogListActivity()
         }
 
-//        binding.takePhotoFab.setOnClickListener {
-//            if (isCameraReady) takePhoto()
-//        }
-
-        viewModel.status.observe(this) { status ->
-            when (status) {
-                is ApiResponseStatus.Error -> {
-                    binding.loadingWheel.isVisible = false
-                    Toast.makeText(this, status.messageId, Toast.LENGTH_SHORT).show()
-                }
-
-                is ApiResponseStatus.Loading -> binding.loadingWheel.isVisible = true
-                is ApiResponseStatus.Success -> binding.loadingWheel.isVisible = false
-            }
-        }
-
-        viewModel.dog.observe(this) { dog ->
-            if (dog != null) {
-                openDogDetailActivity(dog)
-            }
-        }
-
-        viewModel.dogRecognition.observe(this) {
-            enableTakePhotoButton(it)
-        }
-
         requestCameraPermission()
     }
 
-    private fun openDogDetailActivity(dog: Dog) {
+    private fun openDogDetailActivity(dog: Dog, probableDogIds: List<String>) {
         val intent = Intent(this, DogDetailComposeActivity::class.java)
         intent.putExtra(DOG_KEY, dog)
-        intent.putExtra(MOST_PROBABLE_DOG_IDS, ArrayList(viewModel.probableDogIds))
+        intent.putExtra(MOST_PROBABLE_DOG_IDS, ArrayList(probableDogIds))
         intent.putExtra(IS_RECOGNITION_KEY, true)
         startActivity(intent)
     }
@@ -124,32 +93,21 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.checkSelfPermission(
                 this, CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> {
-                // You can use the API that requires the permission.
                 setUpCamera()
             }
 
             shouldShowRequestPermissionRationale(CAMERA) -> {
-                // In an educational UI, explain to the user why your app requires this
-                // permission for a specific feature to behave as expected, and what
-                // features are disabled if it's declined. In this UI, include a
-                // "cancel" or "no thanks" button that lets the user continue
-                // using your app without granting the permission.
-
                 AlertDialog.Builder(this).setTitle(getString(R.string.camera_permission_rationale_dialog_title))
                     .setMessage(getString(R.string.camera_permission_rationale_dialog_message))
                     .setPositiveButton(android.R.string.ok) { _, _ ->
-                        requestPermissionLauncher.launch(
-                            CAMERA
-                        )
+                        requestPermissionLauncher.launch(CAMERA)
                     }.setNegativeButton(android.R.string.cancel) { _, _ ->
 
                     }.show()
             }
 
             else -> {
-                requestPermissionLauncher.launch(
-                    CAMERA
-                )
+                requestPermissionLauncher.launch(CAMERA)
             }
         }
     }
@@ -171,49 +129,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    private fun takePhoto() {
-//        val outputFileOptions = ImageCapture.OutputFileOptions.Builder(getOutputPhotoFile()).build()
-//        imageCapture.takePicture(
-//            outputFileOptions,
-//            cameraExecutor,
-//            object : ImageCapture.OnImageSavedCallback {
-//                override fun onError(error: ImageCaptureException) {
-//                    Toast.makeText(
-//                        this@MainActivity, "Error taking photo $error", Toast.LENGTH_SHORT
-//                    ).show()
-//                }
-//
-//                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-////                    val photoUri = outputFileResults.savedUri
-////
-////                    val bitmap = BitmapFactory.decodeFile(photoUri?.path)
-////
-////                    val dogRecognition = classifier.recognizeImage(bitmap).first()
-//
-////                    viewModel.getDogBYMlId(dogRecognition.id)
-////                    openWholeImageActivity(photoUri.toString())
-//                }
-//            })
-//    }
-
-//    private fun openWholeImageActivity(photoUri: String) {
-//        val intent = Intent(this, WholeImageActivity::class.java)
-//        intent.putExtra(PHOTO_URI_KEY, photoUri)
-//        startActivity(intent)
-//    }
-
-//    private fun getOutputPhotoFile(): File {
-//        val mediaDir = externalMediaDirs.firstOrNull()?.let {
-//            File(it, resources.getString(R.string.app_name) + ".jpg").apply { mkdirs() }
-//        }
-//
-//        return if (mediaDir != null && mediaDir.exists()) {
-//            mediaDir
-//        } else {
-//            filesDir
-//        }
-//    }
-
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
@@ -227,11 +142,8 @@ class MainActivity : AppCompatActivity() {
             val imageAnalysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()
             imageAnalysis.setAnalyzer(cameraExecutor, ImageAnalysis.Analyzer { imageProxy ->
-
                 EspressoIdlingResource.decrement()
                 viewModel.recognizeImage(imageProxy)
-//                enableTakePhotoButton(dogRecognition)
-//                imageProxy.close()
             })
 
             cameraProvider.bindToLifecycle(
@@ -247,7 +159,6 @@ class MainActivity : AppCompatActivity() {
             binding.takePhotoFab.setOnClickListener {
                 viewModel.getDogBYMlId(dogRecognition.id)
             }
-
         } else {
             binding.takePhotoFab.alpha = 0.2f
             binding.takePhotoFab.setOnClickListener(null)
@@ -267,4 +178,3 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 }
-

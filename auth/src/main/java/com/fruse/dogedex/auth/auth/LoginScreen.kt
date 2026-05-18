@@ -179,7 +179,13 @@ fun LoginScreenPreview() {
                 authViewModel = AuthViewModel(
                     authRepository = AuthRepository(
                         apiService = DogsApi.retrofitService
-                    )
+                    ),
+                    sessionManager = object : com.fruse.dogedex.core.session.SessionManager {
+                        override val isLoggedIn: kotlinx.coroutines.flow.StateFlow<Boolean> =
+                            kotlinx.coroutines.flow.MutableStateFlow(false)
+                        override fun login(user: com.fruse.dogedex.core.model.User) {}
+                        override fun logout() {}
+                    }
                 )
             )
         }
