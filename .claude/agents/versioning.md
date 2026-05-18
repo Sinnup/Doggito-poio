@@ -237,6 +237,28 @@ confirm sync passes, then invoke `build/agp/agp-9-upgrade` skill.
 
 ---
 
+## Push Protocol
+
+**After every phase merge to `main`, push immediately:**
+
+```bash
+git push origin main
+```
+
+This is mandatory — do not leave merged phase work local. If the push is rejected
+(remote has diverged), pull first then push:
+
+```bash
+git fetch origin
+git merge origin/main   # resolve any conflicts
+git push origin main
+```
+
+Never force-push `main`. If there is a conflict with remote `main`, always merge
+(not rebase) to preserve the full phase history.
+
+---
+
 ## PR Strategy
 
 One PR per phase. Open the PR when all commits for that phase are on the branch
