@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    id 'kotlin-kapt'
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
 }
 
@@ -48,11 +48,10 @@ dependencies {
     androidTestImplementation libs.androidx.espresso.core
 
     implementation libs.hilt.android
-    kapt libs.hilt.compiler
+    ksp libs.hilt.compiler
 
     androidTestImplementation libs.hilt.android.testing
-    kaptAndroidTest libs.hilt.android.compiler
-    androidTestAnnotationProcessor libs.hilt.android.compiler
+    kspAndroidTest libs.hilt.android.compiler
 
     implementation libs.camerax.camera2
     implementation libs.camerax.lifecycle

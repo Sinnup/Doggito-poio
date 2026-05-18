@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose.compiler)
     id 'kotlin-parcelize'
-    id 'androidx.navigation.safeargs'
-    id 'kotlin-kapt'
+    alias(libs.plugins.navigation.safe.args)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
 }
 
@@ -115,12 +115,11 @@ dependencies {
     implementation libs.androidx.navigation.compose
 
     implementation libs.hilt.android
-    kapt libs.hilt.compiler
+    ksp libs.hilt.compiler
     implementation libs.androidx.hilt.navigation.compose
 
     androidTestImplementation libs.hilt.android.testing
-    kaptAndroidTest libs.hilt.android.compiler
-    androidTestAnnotationProcessor libs.hilt.android.compiler
+    kspAndroidTest libs.hilt.android.compiler
 
     implementation libs.androidx.espresso.idling.resource
 }
