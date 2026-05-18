@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose.compiler)
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
     alias(libs.plugins.hilt.android)
@@ -8,7 +9,7 @@ plugins {
 
 android {
     namespace 'com.fruse.dogedex.core'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         minSdk 24
@@ -24,19 +25,16 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
+
+    kotlin {
+        jvmToolchain(17)
     }
 
     buildFeatures {
         compose true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
 }
 

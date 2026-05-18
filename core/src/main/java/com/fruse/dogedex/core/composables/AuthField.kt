@@ -53,10 +53,11 @@ fun AuthField(
                     .fillMaxWidth()
                     .semantics { testTag = fieldSemantic },
                 isError = errorMessageId != null,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onTertiaryContainer,
                     cursorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
                 )
             )
         }
