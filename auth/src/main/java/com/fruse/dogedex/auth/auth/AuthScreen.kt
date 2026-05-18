@@ -1,16 +1,19 @@
 package com.fruse.dogedex.auth.auth
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.fruse.dogedex.api.responses.ApiResponseStatus
 import com.fruse.dogedex.auth.auth.AuthNavDestinations.LoginScreenDestination
 import com.fruse.dogedex.auth.auth.AuthNavDestinations.SignUpScreenDestination
 import com.fruse.dogedex.core.composables.ErrorDialog
 import com.fruse.dogedex.core.composables.LoadingWheel
-import com.fruse.dogedex.api.responses.ApiResponseStatus
 import com.fruse.dogedex.core.model.User
 
 @Composable
@@ -58,12 +61,23 @@ private fun AuthNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = LoginScreenDestination
+        startDestination = LoginScreenDestination,
+        enterTransition = {
+            slideInHorizontally(
+                animationSpec = tween(300),
+                initialOffsetX = { -it })
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                animationSpec = tween(300),
+                targetOffsetX = { it })
+        },
     ) {
         composable(route = LoginScreenDestination) {
             LoginScreen(
                 onRegisterButtonClick = {
-                    navController.navigate(route = SignUpScreenDestination)
+                    navController.navigate(route = SignUpScreenDestination) {
+                    }
                 },
                 onLoginButtonClick = onLoginButtonClick,
                 authViewModel = authViewModel

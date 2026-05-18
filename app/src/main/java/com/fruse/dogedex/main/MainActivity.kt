@@ -264,6 +264,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun openLoginActivity() {
         startActivity(Intent(this, LoginActivity::class.java))
+        finish()
     }
 }
 
