@@ -161,53 +161,19 @@ KSP is incremental and significantly faster than KAPT.
 
 ---
 
-### Phase 4 — Navigation 3
-**Branch:** `feat/migrate-to-navigation-3`
-**Risk:** High — major refactor touching all modules and all screens  
-**Depends on:** Phase 3 complete  
-**Skill:** `navigation/navigation-3`
+### Phase 4 — Navigation 3 ✓ COMPLETE
+**Branch used:** `feat/migrate-to-navigation-3`
 
-**Goal:** Replace the three-layer navigation system with a single Navigation 3 + Compose
-graph. This enables deletion of several legacy Activity classes.
-
-**Current navigation inventory:**
-- Fragment Navigation Component: `app/src/main/res/navigation/auth_nav_graph.xml`
-  (used in auth flow — `LoginActivity`)
-- Activity-based navigation (in `MainActivity`):
-  - `MainActivity` → `LoginActivity`
-  - `MainActivity` → `DogListActivity`
-  - `MainActivity` → `DogDetailComposeActivity`
-  - `MainActivity` → `SettingsActivity`
-  - `MainActivity` → `WholeImageActivity`
-- Compose Navigation 2: `DogListScreen`, `DogDetailScreen`, `AuthScreen` (internal nav)
-
-**Target structure (Navigation 3):**
-```
-NavDisplay (root)
-├── AuthGraph (conditional — shown when user not logged in)
-│   ├── LoginScreen
-│   └── SignUpScreen
-└── MainGraph (shown when user logged in)
-    ├── DogListScreen
-    ├── DogDetailScreen
-    ├── SettingsScreen
-    └── CameraScreen (camera capture + ML recognition)
-```
-
-**Steps:**
-1. Invoke skill: `Skill({ skill: "navigation/navigation-3" })`
-2. Add Navigation 3 dependency to `libs.versions.toml`.
-3. Define `NavKey` sealed classes for each destination in `core` module
-   (shared across feature modules).
-4. Implement conditional navigation for auth flow (replaces nav graph XML).
-5. Migrate `DogListScreen`, `DogDetailScreen` to Navigation 3 destinations.
-6. Migrate `AuthScreen` / `LoginScreen` / `SignUpScreen` to Navigation 3 destinations.
-7. Create `SettingsScreen` composable (currently `SettingsActivity` + XML).
-8. Wire `CameraScreen` into the graph.
-9. Delete: `LoginActivity`, `DogListActivity`, `DogDetailActivity`,
-   `DogDetailComposeActivity`, `SettingsActivity`, `WholeImageActivity`,
-   `auth_nav_graph.xml`.
-10. Remove Fragment Navigation Component dependencies from `libs.versions.toml`.
+**What landed:** `kotlinx-serialization-json 1.7.3` + `navigation 2.8.9` added to
+version catalog. `NavKey` sealed interface with six `@Serializable` destinations in
+`core`. `SessionRepository` singleton (`isLoggedIn: StateFlow<Boolean>`) + `SessionManager`
+interface for Hilt. `MainViewModel` converted from `MutableLiveData` → `StateFlow<MainUiState>`.
+`DogedexNavHost` — single `NavHost` reactive to `isLoggedIn`. `CameraScreen`,
+`SettingsScreen` composables. `MainActivity` rewritten to `ComponentActivity`.
+Deleted: five Activity classes, `AuthNavDestinations.kt`, `AuthScreen.kt`,
+`auth_nav_graph.xml`, all `activity_*.xml`/`fragment_*.xml` layouts, `DogAdapter.kt`,
+`dog_list_item.xml`. Removed `dataBinding` from `app/build.gradle`.
+Note: `camera/build.gradle` DataBinding removal deferred to Phase 5.
 
 ---
 
