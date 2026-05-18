@@ -132,22 +132,8 @@ Phase 3 gate (`./gradlew test` must pass). Files:
 
 ## UPCOMING PHASES
 
-### Phase 1 — Version Catalog
-**Branch:** `chore/phase-1-version-catalog`
-**Commits (one per module after catalog creation):**
-1. `chore(deps): add libs.versions.toml with all current dependency versions`
-2. `chore(deps): migrate root build.gradle to version catalog`
-3. `chore(deps): migrate app module to version catalog`
-4. `chore(deps): migrate core module to version catalog`
-5. `chore(deps): migrate auth module to version catalog`
-6. `chore(deps): migrate camera module to version catalog`
-
-**Gate:** `grep -r "implementation \"" --include="*.gradle" .` returns nothing.
-
----
-
 ### Phase 2 — AGP 9 Upgrade
-**Branch:** `chore/phase-2-agp9`
+**Branch:** `chore/upgrade-agp-9`
 **Pre-step (user, in Android Studio):** Run AGP Upgrade Assistant (8.1 → 8.x stable).
 **Commits:**
 1. `chore(build): upgrade AGP to 9.x, Kotlin to 2.x, Gradle wrapper`
@@ -160,7 +146,7 @@ Phase 3 gate (`./gradlew test` must pass). Files:
 ---
 
 ### Phase 3 — KAPT → KSP
-**Branch:** `chore/phase-3-ksp`
+**Branch:** `chore/migrate-kapt-to-ksp`
 **Commits (one per module):**
 1. `chore(deps): upgrade Hilt to 2.59.2, add KSP plugin to version catalog`
 2. `chore(build): migrate app module from kapt to ksp`
@@ -174,7 +160,7 @@ Phase 3 gate (`./gradlew test` must pass). Files:
 ---
 
 ### Phase 4 — Navigation 3
-**Branch:** `feat/phase-4-navigation3`
+**Branch:** `feat/migrate-to-navigation-3`
 **Commits (one per destination / concern):**
 1. `feat(core): add NavKey sealed classes for all app destinations`
 2. `feat(core): add SessionRepository exposing auth state as StateFlow`
@@ -193,7 +179,7 @@ Phase 3 gate (`./gradlew test` must pass). Files:
 ---
 
 ### Phase 5 — Full Compose Migration
-**Branch:** `feat/phase-5-compose`
+**Branch:** `feat/migrate-views-to-compose`
 **Commits:**
 1. `feat(camera): replace DataBinding camera preview with Compose AndroidView`
 2. `chore(build): remove dataBinding from app and camera build.gradle`
@@ -203,7 +189,7 @@ Phase 3 gate (`./gradlew test` must pass). Files:
 ---
 
 ### Phase 6 — MVI Architecture
-**Branch:** `refactor/phase-6-mvi`
+**Branch:** `refactor/migrate-to-mvi`
 **Commits (one per ViewModel):**
 1. `chore(deps): add Turbine to test dependencies`
 2. `refactor(app): migrate MainViewModel to MVI (UiState/UiAction/UiEffect)`
@@ -218,7 +204,7 @@ Phase 3 gate (`./gradlew test` must pass). Files:
 ---
 
 ### Phase 7 — Polish
-**Branch:** `chore/phase-7-polish`
+**Branch:** `chore/apply-polish-and-edge-to-edge`
 **Commits:**
 1. `feat(app): apply edge-to-edge window insets to all screens`
 2. `chore(build): analyze and clean R8 rules post-migration`

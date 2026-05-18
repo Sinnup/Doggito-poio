@@ -156,6 +156,7 @@ then apply the skill for the 8.x → 9 boundary.
 ---
 
 ### Phase 3 — KAPT → KSP
+**Branch:** `chore/migrate-kapt-to-ksp`
 **Risk:** Low-medium — mechanical swap, one module at a time  
 **Depends on:** Phase 2 complete  
 **Skill:** Covered in `build/agp/agp-9-upgrade` Step 4
@@ -184,6 +185,7 @@ KSP is incremental and significantly faster than KAPT.
 ---
 
 ### Phase 4 — Navigation 3
+**Branch:** `feat/migrate-to-navigation-3`
 **Risk:** High — major refactor touching all modules and all screens  
 **Depends on:** Phase 3 complete  
 **Skill:** `navigation/navigation-3`
@@ -233,6 +235,7 @@ NavDisplay (root)
 ---
 
 ### Phase 5 — Full Compose Migration (XML → Compose)
+**Branch:** `feat/migrate-views-to-compose`
 **Risk:** Medium — scoped to specific layouts, visual parity required  
 **Depends on:** Phase 4 complete (Activity shells no longer needed)  
 **Skill:** `jetpack-compose/migration/migrate-xml-views-to-jetpack-compose`
@@ -259,6 +262,7 @@ After Phase 4, the only remaining XML surfaces will be in the `camera` module.
 ---
 
 ### Phase 6 — MVI Architecture
+**Branch:** `refactor/migrate-to-mvi`
 **Risk:** Medium — logic restructure in all ViewModels, no UI visual change  
 **Depends on:** Phase 5 complete  
 **Skill:** `testing/testing-setup` (for wiring unit tests to each ViewModel after migration)
@@ -402,6 +406,7 @@ Returns no results.
 ---
 
 ### Phase 7 — Polish
+**Branch:** `chore/apply-polish-and-edge-to-edge`
 **Risk:** Low  
 **Depends on:** Phase 6 complete
 
