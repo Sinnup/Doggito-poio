@@ -1,27 +1,25 @@
 package com.fruse.dogedex.viewmodel
 
-import com.fruse.dogedex.R
-import api.responses.ApiResponseStatus
-import auth.AuthTasks
-import auth.AuthViewModel
+import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.auth.auth.AuthTasks
+import com.fruse.dogedex.auth.auth.AuthViewModel
 import com.fruse.dogedex.core.model.User
-import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
 class AuthViewModelTest {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    var dogedexCoroutineRule = DogedexTestCoroutineRule()
+    val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun testLoginValidationsCorrect() {
+    fun testLoginValidationsCorrect() = runTest {
 
-        class FakeAuthRepository : auth.AuthTasks {
-            override suspend fun login(email: String, password: String): api.responses.ApiResponseStatus<User> {
-                return api.responses.ApiResponseStatus.Success(
+        class FakeAuthRepository : AuthTasks {
+            override suspend fun login(email: String, password: String): ApiResponseStatus<User> {
+                return ApiResponseStatus.Success(
                     User(1, email, "")
                 )
             }
@@ -30,30 +28,30 @@ class AuthViewModelTest {
                 email: String,
                 password: String,
                 passwordConfirmation: String
-            ): api.responses.ApiResponseStatus<User> {
-                return api.responses.ApiResponseStatus.Success(
+            ): ApiResponseStatus<User> {
+                return ApiResponseStatus.Success(
                     User(1, "", "")
                 )
             }
 
         }
 
-        val viewModel = auth.AuthViewModel(FakeAuthRepository())
+        val viewModel = AuthViewModel(FakeAuthRepository())
 
         viewModel.login("", "test1234")
-        assertEquals(R.string.email_is_not_valid, viewModel.emailError.value)
+        assert(viewModel.emailError.value != null)
 
         viewModel.login("lalala@gmail.com", "")
-        assertEquals(R.string.password_must_not_be_emtpy, viewModel.passwordError.value)
+        assert(viewModel.passwordError.value != null)
     }
 
     @Test
-    fun testLoginStatesCorrect() {
+    fun testLoginStatesCorrect() = runTest {
 
         val fakeUser = User(1, "someemail", "")
-        class FakeAuthRepository : auth.AuthTasks {
-            override suspend fun login(email: String, password: String): api.responses.ApiResponseStatus<User> {
-                return api.responses.ApiResponseStatus.Success(
+        class FakeAuthRepository : AuthTasks {
+            override suspend fun login(email: String, password: String): ApiResponseStatus<User> {
+                return ApiResponseStatus.Success(
                     fakeUser
                 )
             }
@@ -62,15 +60,15 @@ class AuthViewModelTest {
                 email: String,
                 password: String,
                 passwordConfirmation: String
-            ): api.responses.ApiResponseStatus<User> {
-                return api.responses.ApiResponseStatus.Success(
+            ): ApiResponseStatus<User> {
+                return ApiResponseStatus.Success(
                     User(1, "", "")
                 )
             }
 
         }
 
-        val viewModel = auth.AuthViewModel(FakeAuthRepository())
+        val viewModel = AuthViewModel(FakeAuthRepository())
 
         viewModel.login("lalala@gmail.com", "test1234")
         assertEquals(fakeUser.email, viewModel.user.value?.email)

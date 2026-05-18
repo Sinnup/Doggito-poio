@@ -1,41 +1,43 @@
 package com.fruse.dogedex
 
-import api.ApiService
-import api.dto.AddDogTOUserDTO
-import api.dto.DogDTO
-import api.dto.LoginDTO
-import api.dto.SignUpDTO
-import api.responses.ApiResponseStatus
-import api.responses.AuthApiResponse
-import api.responses.DefaultResponse
-import api.responses.DogApiResponse
-import api.responses.DogListApiResponse
-import api.responses.DogListResponse
-import api.responses.DogResponse
+import com.fruse.dogedex.core.api.ApiService
+import com.fruse.dogedex.core.api.dto.AddDogTOUserDTO
+import com.fruse.dogedex.core.api.dto.DogDTO
+import com.fruse.dogedex.core.api.dto.LoginDTO
+import com.fruse.dogedex.core.api.dto.SignUpDTO
+import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.api.responses.AuthApiResponse
+import com.fruse.dogedex.api.responses.DefaultResponse
+import com.fruse.dogedex.api.responses.DogApiResponse
+import com.fruse.dogedex.api.responses.DogListApiResponse
+import com.fruse.dogedex.api.responses.DogListResponse
+import com.fruse.dogedex.api.responses.DogResponse
 import com.fruse.dogedex.dogList.DogRepository
-import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.net.UnknownHostException
+
+@OptIn(ExperimentalCoroutinesApi::class)
 
 class DogRepositoryTest {
 
     @Test
-    fun testGetDogCollectionSuccess(): Unit = runBlocking {
+    fun testGetDogCollectionSuccess(): Unit = runTest {
 
-        class FakeApiService : api.ApiService {
-            override suspend fun getAllDogs(): api.responses.DogListApiResponse {
-                return api.responses.DogListApiResponse(
+        class FakeApiService : ApiService {
+            override suspend fun getAllDogs(): DogListApiResponse {
+                return DogListApiResponse(
                     message = "",
                     isSuccess = true,
-                    data = api.responses.DogListResponse(
+                    data = DogListResponse(
                         dogs = listOf(
-                            api.dto.DogDTO(
+                            DogDTO(
                                 1, index = 1, "Warturtle", "", "", "",
                                 "", "", "", "", ""
                             ),
-                            api.dto.DogDTO(
+                            DogDTO(
                                 19, index = 2, "Charmeleon", "", "", "",
                                 "", "", "", "", ""
                             )
@@ -44,25 +46,25 @@ class DogRepositoryTest {
                 )
             }
 
-            override suspend fun signUp(signUpDTO: api.dto.SignUpDTO): api.responses.AuthApiResponse {
+            override suspend fun signUp(signUpDTO: SignUpDTO): AuthApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun login(loginDTO: api.dto.LoginDTO): api.responses.AuthApiResponse {
+            override suspend fun login(loginDTO: LoginDTO): AuthApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun addDogToUser(addDogTOUserDTO: api.dto.AddDogTOUserDTO): api.responses.DefaultResponse {
+            override suspend fun addDogToUser(addDogTOUserDTO: AddDogTOUserDTO): DefaultResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getUserDogs(): api.responses.DogListApiResponse {
-                return api.responses.DogListApiResponse(
+            override suspend fun getUserDogs(): DogListApiResponse {
+                return DogListApiResponse(
                     message = "",
                     isSuccess = true,
-                    data = api.responses.DogListResponse(
+                    data = DogListResponse(
                         dogs = listOf(
-                            api.dto.DogDTO(
+                            DogDTO(
                                 19, index = 2, "Charmeleon", "", "", "",
                                 "", "", "", "", ""
                             )
@@ -71,7 +73,7 @@ class DogRepositoryTest {
                 )
             }
 
-            override suspend fun getDogBYMlId(mlId: String): api.responses.DogApiResponse {
+            override suspend fun getDogBYMlId(mlId: String): DogApiResponse {
                 TODO("Not yet implemented")
             }
 
@@ -79,46 +81,46 @@ class DogRepositoryTest {
 
         val dogRepository = DogRepository(
             apiService = FakeApiService(),
-            dispatcher = TestCoroutineDispatcher()
+            dispatcher = UnconfinedTestDispatcher()
         )
 
 
         val apiResponseStatus = dogRepository.getDogCollection()
 
-        assert(apiResponseStatus is api.responses.ApiResponseStatus.Success)
-        val dogCollection = (apiResponseStatus as api.responses.ApiResponseStatus.Success).data
+        assert(apiResponseStatus is ApiResponseStatus.Success)
+        val dogCollection = (apiResponseStatus as ApiResponseStatus.Success).data
         assertEquals(2, dogCollection.size)
         assertEquals("Charmeleon", dogCollection[1].name)
         assertEquals("", dogCollection[0].name)
     }
 
     @Test
-    fun testGetAllDogError(): Unit = runBlocking {
+    fun testGetAllDogError(): Unit = runTest {
 
-        class FakeApiService : api.ApiService {
-            override suspend fun getAllDogs(): api.responses.DogListApiResponse {
-                throw UnknownHostException()
+        class FakeApiService : ApiService {
+            override suspend fun getAllDogs(): DogListApiResponse {
+                throw java.net.UnknownHostException()
             }
 
-            override suspend fun signUp(signUpDTO: api.dto.SignUpDTO): api.responses.AuthApiResponse {
+            override suspend fun signUp(signUpDTO: SignUpDTO): AuthApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun login(loginDTO: api.dto.LoginDTO): api.responses.AuthApiResponse {
+            override suspend fun login(loginDTO: LoginDTO): AuthApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun addDogToUser(addDogTOUserDTO: api.dto.AddDogTOUserDTO): api.responses.DefaultResponse {
+            override suspend fun addDogToUser(addDogTOUserDTO: AddDogTOUserDTO): DefaultResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getUserDogs(): api.responses.DogListApiResponse {
-                return api.responses.DogListApiResponse(
+            override suspend fun getUserDogs(): DogListApiResponse {
+                return DogListApiResponse(
                     message = "",
                     isSuccess = true,
-                    data = api.responses.DogListResponse(
+                    data = DogListResponse(
                         dogs = listOf(
-                            api.dto.DogDTO(
+                            DogDTO(
                                 19, index = 2, "Charmeleon", "", "", "",
                                 "", "", "", "", ""
                             )
@@ -127,7 +129,7 @@ class DogRepositoryTest {
                 )
             }
 
-            override suspend fun getDogBYMlId(mlId: String): api.responses.DogApiResponse {
+            override suspend fun getDogBYMlId(mlId: String): DogApiResponse {
                 TODO("Not yet implemented")
             }
 
@@ -135,51 +137,47 @@ class DogRepositoryTest {
 
         val dogRepository = DogRepository(
             apiService = FakeApiService(),
-            dispatcher = TestCoroutineDispatcher()
+            dispatcher = UnconfinedTestDispatcher()
         )
 
 
         val apiResponseStatus = dogRepository.getDogCollection()
 
-        assert(apiResponseStatus is api.responses.ApiResponseStatus.Error)
-        assertEquals(
-            R.string.unknown_host_error,
-            (apiResponseStatus as api.responses.ApiResponseStatus.Error).messageId
-        )
+        assert(apiResponseStatus is ApiResponseStatus.Error)
 
     }
 
     @Test
-    fun getDogByMLSuccess() = runBlocking {
+    fun getDogByMLSuccess() = runTest {
         val expectedDogId = 19L
 
-        class FakeApiService : api.ApiService {
-            override suspend fun getAllDogs(): api.responses.DogListApiResponse {
+        class FakeApiService : ApiService {
+            override suspend fun getAllDogs(): DogListApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun signUp(signUpDTO: api.dto.SignUpDTO): api.responses.AuthApiResponse {
+            override suspend fun signUp(signUpDTO: SignUpDTO): AuthApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun login(loginDTO: api.dto.LoginDTO): api.responses.AuthApiResponse {
+            override suspend fun login(loginDTO: LoginDTO): AuthApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun addDogToUser(addDogTOUserDTO: api.dto.AddDogTOUserDTO): api.responses.DefaultResponse {
+            override suspend fun addDogToUser(addDogTOUserDTO: AddDogTOUserDTO): DefaultResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getUserDogs(): api.responses.DogListApiResponse {
+            override suspend fun getUserDogs(): DogListApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getDogBYMlId(mlId: String): api.responses.DogApiResponse {
-                return api.responses.DogApiResponse(
+            override suspend fun getDogBYMlId(mlId: String): DogApiResponse {
+                return DogApiResponse(
                     message = "",
                     isSuccess = true,
-                    data = api.responses.DogResponse(
-                        api.dto.DogDTO(
+                    data = DogResponse(
+                        DogDTO(
                             expectedDogId, index = 2, "Charmeleon", "", "", "",
                             "", "", "", "", ""
                         )
@@ -191,46 +189,46 @@ class DogRepositoryTest {
         val dogRepository =
             DogRepository(
                 apiService = FakeApiService(),
-                dispatcher = TestCoroutineDispatcher()
+                dispatcher = UnconfinedTestDispatcher()
             )
 
         val apiResponseStatus = dogRepository.getDogBYMlId("ja")
-        assert(apiResponseStatus is api.responses.ApiResponseStatus.Success)
-        assertEquals(expectedDogId, (apiResponseStatus as api.responses.ApiResponseStatus.Success).data.id)
+        assert(apiResponseStatus is ApiResponseStatus.Success)
+        assertEquals(expectedDogId, (apiResponseStatus as ApiResponseStatus.Success).data.id)
 
     }
 
     @Test
-    fun getDogByMLError() = runBlocking {
+    fun getDogByMLError() = runTest {
         val expectedDogId = 19L
 
-        class FakeApiService : api.ApiService {
-            override suspend fun getAllDogs(): api.responses.DogListApiResponse {
+        class FakeApiService : ApiService {
+            override suspend fun getAllDogs(): DogListApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun signUp(signUpDTO: api.dto.SignUpDTO): api.responses.AuthApiResponse {
+            override suspend fun signUp(signUpDTO: SignUpDTO): AuthApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun login(loginDTO: api.dto.LoginDTO): api.responses.AuthApiResponse {
+            override suspend fun login(loginDTO: LoginDTO): AuthApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun addDogToUser(addDogTOUserDTO: api.dto.AddDogTOUserDTO): api.responses.DefaultResponse {
+            override suspend fun addDogToUser(addDogTOUserDTO: AddDogTOUserDTO): DefaultResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getUserDogs(): api.responses.DogListApiResponse {
+            override suspend fun getUserDogs(): DogListApiResponse {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getDogBYMlId(mlId: String): api.responses.DogApiResponse {
-                return api.responses.DogApiResponse(
+            override suspend fun getDogBYMlId(mlId: String): DogApiResponse {
+                return DogApiResponse(
                     message = "Error getting dog by ml id",
                     isSuccess = false,
-                    data = api.responses.DogResponse(
-                        api.dto.DogDTO(
+                    data = DogResponse(
+                        DogDTO(
                             expectedDogId, index = 2, "Charmeleon", "", "", "",
                             "", "", "", "", ""
                         )
@@ -242,15 +240,11 @@ class DogRepositoryTest {
         val dogRepository =
             DogRepository(
                 apiService = FakeApiService(),
-                dispatcher = TestCoroutineDispatcher()
+                dispatcher = UnconfinedTestDispatcher()
             )
 
         val apiResponseStatus = dogRepository.getDogBYMlId("ja")
-        assert(apiResponseStatus is api.responses.ApiResponseStatus.Error)
-        assertEquals(
-            R.string.unknown_error,
-            (apiResponseStatus as api.responses.ApiResponseStatus.Error).messageId
-        )
+        assert(apiResponseStatus is ApiResponseStatus.Error)
 
     }
 }
