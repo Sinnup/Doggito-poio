@@ -18,12 +18,15 @@ activityKtx                 = "1.7.2"
 lifecycle                   = "2.6.1"
 
 # Navigation
-navigation                  = "2.7.0"
+navigation                  = "2.8.9"
+
+# Kotlinx Serialization
+kotlinxSerializationJson    = "1.7.3"
 
 # Compose
 composeBom                  = "2025.05.00"
 activityCompose             = "1.7.2"
-hiltNavigationCompose       = "1.0.0"
+hiltNavigationCompose       = "1.2.0"
 
 # Material
 material                    = "1.9.0"
@@ -91,6 +94,9 @@ androidx-activity-compose               = { group = "androidx.activity",        
 # Hilt navigation for Compose (not BOM-managed)
 androidx-hilt-navigation-compose        = { group = "androidx.hilt",              name = "hilt-navigation-compose",       version.ref = "hiltNavigationCompose" }
 
+# Kotlinx Serialization
+kotlinx-serialization-json              = { group = "org.jetbrains.kotlinx",       name = "kotlinx-serialization-json",    version.ref = "kotlinxSerializationJson" }
+
 # Material (View-based)
 google-material                         = { group = "com.google.android.material", name = "material",                     version.ref = "material" }
 
@@ -137,6 +143,7 @@ hilt-android                            = { id = "com.google.dagger.hilt.android
 navigation-safe-args                    = { id = "androidx.navigation.safeargs.kotlin",        version.ref = "navigation" }
 kotlin-compose-compiler                 = { id = "org.jetbrains.kotlin.plugin.compose",        version.ref = "kotlin" }
 ksp                                     = { id = "com.google.devtools.ksp",                    version.ref = "ksp" }
+kotlin-serialization                    = { id = "org.jetbrains.kotlin.plugin.serialization",  version.ref = "kotlin" }
 
 
 [bundles]
