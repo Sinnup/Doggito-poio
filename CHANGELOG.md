@@ -9,24 +9,67 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       1 — Version Catalog (libs.versions.toml)
+Phase:       2 — Build Toolchain Upgrade
 Status:      Complete ✓
-Next phase:  2 — AGP 9 Upgrade
-Branch:      chore/upgrade-agp-9  ← create this branch next
+Next phase:  3 — KAPT → KSP
+Branch:      chore/migrate-kapt-to-ksp  ← create this branch next
 ```
 
-**Next action:** Phase 2 requires running Android Studio's AGP Upgrade Assistant
-(*Tools → AGP Upgrade Assistant*) to reach the latest AGP 8.x stable before the
-skill-driven 8.x → 9 step. Run the assistant, confirm sync passes, then invoke the
-`build/agp/agp-9-upgrade` skill. Detailed steps: `.claude/agents/android-migration.md` → Phase 2.
+**Next action:** Upgrade Hilt to 2.59.2+, add KSP plugin, and migrate all four modules from
+`kapt` to `ksp` one at a time. Also fix the three pre-existing broken test files before the
+Phase 3 gate (`./gradlew test` must pass). Detailed steps: `.claude/agents/android-migration.md` → Phase 3.
 
-**Known pre-existing test debt (fix in Phase 3):**
-Three test files under `app/src/test/` have broken package imports and stale fakes that
-predate this migration. They do not block Phase 1 or Phase 2 but must be repaired before
-Phase 3 gate (`./gradlew test` must pass). Files:
+**Known pre-existing test debt (must fix in Phase 3):**
+Three test files under `app/src/test/` have broken package imports, stale fakes, and
+deprecated `TestCoroutineDispatcher` usage. They must be repaired before the Phase 3 gate.
 - `app/src/test/java/com/fruse/dogedex/DogRepositoryTest.kt`
 - `app/src/test/java/com/fruse/dogedex/viewmodel/DogListViewModelTest.kt`
 - `app/src/test/java/com/fruse/dogedex/viewmodel/AuthViewModelTest.kt`
+- `app/src/test/java/com/fruse/dogedex/viewmodel/DogedexTestCoroutineRule.kt` ← delete this file
+
+---
+
+## [v0.4] — 2026-05-18 — Phase 2: Build Toolchain Upgrade
+
+### Status: Done
+
+### Branch
+`chore/upgrade-agp-9`
+
+### Commits
+| SHA | Message |
+|---|---|
+| `f1057b7` | `chore(build): bump AGP 8.10.1, Kotlin 2.1.21, compileSdk 36, Hilt 2.56.1` |
+| `378b071` | `chore(build): apply Kotlin 2.x DSL — jvmToolchain 17, compose compiler plugin, compileSdk 36` |
+| `f2a4ef1` | `chore(build): enable K2 KAPT compat and configuration cache` |
+| `da28781` | `chore(build): bump Gradle wrapper 8.11.1 → 8.14.5` |
+
+### Done
+- AGP: 8.13.2 → 8.10.1 (latest stable; AGP 9 not yet GA as of this migration)
+- Kotlin: 1.9.0 → 2.1.21 (K2 compiler)
+- Gradle wrapper: 8.13 → 8.14.5
+- KSP: 1.9.0-1.0.13 → 2.1.21-1.0.29 (version scheme changed with Kotlin 2.x)
+- Hilt: 2.48 → 2.56.1 (minimum for Kotlin 2.x / K2 KAPT)
+- Compose BOM: 2023.05.00 → 2025.05.00
+- compileSdk / targetSdk: 34 → 36
+- Java compatibility: VERSION_1_8 → VERSION_17 via `kotlin { jvmToolchain(17) }`
+- `composeOptions { kotlinCompilerExtensionVersion }` removed from all modules
+- `kotlin-compose-compiler` plugin applied to `app`, `core`, `auth`
+- `packagingOptions` renamed to `packaging` in `app`
+- `kapt.use.k2=true` and `org.gradle.configuration-cache=true` added to `gradle.properties`
+- Two deprecated Compose API calls fixed (BOM bump forced migration):
+  - `TextFieldDefaults.outlinedTextFieldColors` → `TextFieldDefaults.colors` (`core/AuthField.kt`)
+  - `TopAppBarDefaults.smallTopAppBarColors` → `TopAppBarDefaults.topAppBarColors` (`app/DogListScreen.kt`)
+
+### Gate results
+- `./gradlew assembleDebug` — PASS
+- `./gradlew assembleRelease` — PASS
+- `./gradlew lint` — PASS (0 errors; 109 warnings are all dependency-upgrade advisories)
+- `./gradlew test` — pre-existing failures only (same 3 files, same root cause as Phase 1)
+
+### Deviations from plan
+- AGP target adjusted from "9.x" to 8.10.1: AGP 9.0 is not yet GA. The plan will be updated
+  to target AGP 9 once it ships stable — all DSL changes applied here are forward-compatible.
 
 ---
 

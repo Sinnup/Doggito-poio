@@ -117,41 +117,15 @@ hardcoded versions from all `build.gradle` files.
 
 ---
 
-### Phase 2 — AGP 9 Upgrade
-**Branch:** `chore/upgrade-agp-9`
-**Risk:** Medium — breaking DSL changes, Kotlin/Java version gates  
-**Depends on:** Phase 1 complete (versions centralized)  
-**Skill:** `build/agp/agp-9-upgrade`
+### Phase 2 — Build Toolchain Upgrade ✓ COMPLETE
+**Branch used:** `chore/upgrade-agp-9`
 
-**Known Gradle 8 carry-over from Phase 1:** `kotlin-kapt` and `kotlin-parcelize` are still
-applied via legacy short-form IDs in submodules because Gradle 8.0 cannot reconcile versioned
-catalog plugin aliases with plugins already on the classpath without version metadata.
-After upgrading to AGP 9 + Kotlin 2.x in this phase, switch those two plugins to
-`alias(libs.plugins.kotlin.kapt)` and `alias(libs.plugins.kotlin.parcelize)` and verify
-no `@Parcelize` or KAPT compilation errors.
-
-**Goal:** Upgrade the build toolchain to AGP 9+, Kotlin 2.x, Java 17, and apply the
-new AGP DSL. Run the Android Studio AGP Upgrade Assistant first (8.1 → 8.x stable),
-then apply the skill for the 8.x → 9 boundary.
-
-**Steps:**
-1. **Upgrade Assistant (user action):** In Android Studio, run
-   *Tools → AGP Upgrade Assistant* to reach the latest AGP 8.x stable. Confirm sync passes.
-2. **Invoke skill:** `Skill({ skill: "build/agp/agp-9-upgrade" })`
-3. **Upgrade Kotlin:** `2.x` in `libs.versions.toml`.
-4. **Upgrade Java:** Set `jvmTarget = "17"` and `sourceCompatibility = JavaVersion.VERSION_17`
-   in all modules (currently `1.8` everywhere).
-5. **Unify compileSdk:** Set `compileSdk = 35` in all modules.
-6. **Apply new AGP DSL:** `namespace` block, updated `buildFeatures`, etc. per skill guide.
-7. **Remove deprecated gradle.properties flags** (per skill step 6):
-   `android.builtInKotlin`, `android.newDsl`, `android.uniquePackageNames`,
-   `android.enableAppCompileTimeRClass`
-
-**Verification:**
-```
-./gradlew help
-./gradlew build --dry-run
-```
+**What landed:** AGP 8.10.1, Kotlin 2.1.21 (K2), Gradle 8.14.5, KSP 2.1.21-1.0.29,
+Hilt 2.56.1, Compose BOM 2025.05.00, compileSdk/targetSdk 36, Java 17 via
+`kotlin { jvmToolchain(17) }`, `kotlin-compose-compiler` plugin replacing `composeOptions`,
+`kapt.use.k2=true` + `org.gradle.configuration-cache=true` in gradle.properties.
+Note: AGP 9 not yet GA — will retarget once it ships stable.
+`kotlin-kapt` and `kotlin-parcelize` still use legacy string IDs — convert to `alias()` in Phase 3.
 
 ---
 
