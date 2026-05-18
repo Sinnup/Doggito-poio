@@ -4,7 +4,7 @@
 # Build toolchain
 agp                         = "8.10.1"
 kotlin                      = "2.1.21"
-ksp                         = "2.1.21-1.0.29"
+ksp                         = "2.1.21-2.0.2"
 
 # AndroidX core
 compileSdk                  = "36"
@@ -133,7 +133,6 @@ android-application                     = { id = "com.android.application",     
 android-library                         = { id = "com.android.library",                        version.ref = "agp" }
 kotlin-android                          = { id = "org.jetbrains.kotlin.android",               version.ref = "kotlin" }
 kotlin-parcelize                        = { id = "org.jetbrains.kotlin.plugin.parcelize",      version.ref = "kotlin" }
-kotlin-kapt                             = { id = "org.jetbrains.kotlin.kapt",                  version.ref = "kotlin" }
 hilt-android                            = { id = "com.google.dagger.hilt.android",             version.ref = "hilt" }
 navigation-safe-args                    = { id = "androidx.navigation.safeargs.kotlin",        version.ref = "navigation" }
 kotlin-compose-compiler                 = { id = "org.jetbrains.kotlin.plugin.compose",        version.ref = "kotlin" }
