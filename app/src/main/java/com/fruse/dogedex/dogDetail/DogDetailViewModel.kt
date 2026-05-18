@@ -27,19 +27,19 @@ class DogDetailViewModel @Inject constructor(
 
     var dog = mutableStateOf(
         dogDetailKey?.dog
-            ?: savedStateHandle.get<Dog>(DogDetailComposeActivity.DOG_KEY)
+            ?: savedStateHandle.get<Dog>("dog")
     )
         private set
 
     private var probableDogIds = mutableStateOf(
         dogDetailKey?.probableDogIds
-            ?: savedStateHandle.get<List<String>>(DogDetailComposeActivity.MOST_PROBABLE_DOG_IDS)
+            ?: savedStateHandle.get<List<String>>("most_probable_dog_ids")
             ?: listOf()
     )
 
     var isRecognition = mutableStateOf(
         dogDetailKey?.isRecognition
-            ?: savedStateHandle.get<Boolean>(DogDetailComposeActivity.IS_RECOGNITION_KEY)
+            ?: savedStateHandle.get<Boolean>("is_recognition")
     )
         private set
 
