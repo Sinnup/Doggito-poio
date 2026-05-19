@@ -128,7 +128,7 @@ class DogListViewModelTest {
     private lateinit var viewModel: DogListViewModel
 
     @Before fun setUp() {
-        viewModel = DogListViewModel(fakeDogRepo, dispatcher)
+        viewModel = DogListViewModel(fakeDogRepo, strings = { "str" }, dispatcher)
     }
 
     @Test fun `initial state is empty non-loading`() = runTest {
@@ -192,8 +192,8 @@ class DogListScreenTest {
         composeRule.setContent {
             DogedexTheme {
                 DogListScreen(
-                    onNavigationIconClick = {},
-                    onDogClicked = {}
+                    onNavigateBack = {},
+                    onNavigateToDogDetail = {}
                 )
             }
         }

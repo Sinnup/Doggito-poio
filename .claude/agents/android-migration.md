@@ -30,6 +30,14 @@ to the next phase.
 **Compose BOM:** inconsistent (2023.01.00 / 2023.05.00) → target latest stable BOM
 **DataBinding:** enabled in `app` and `camera` → remove after Compose migration complete
 
+## Current State (post all phases)
+
+**AGP:** 9.2.1 | **Kotlin:** 2.3.21 | **KSP:** 2.3.8 | **Gradle:** 9.5.1
+**compileSdk:** 37 | **targetSdk:** 36 | **Java:** 17
+**Compose BOM:** 2026.05.01 | **Hilt:** 2.59.2 | **Navigation:** 2.9.8
+**Lifecycle:** 2.10.0 | **Retrofit:** 3.0.0 | **Coil:** 2.7.0 | **CameraX:** 1.6.1
+**Gradle JVM heap:** 4096m
+
 ---
 
 ## Available Skills
@@ -371,8 +379,20 @@ out of scope for this migration.
 
 ---
 
-### Phase 8 — AGP 9 Upgrade
+### Phase 8 — AGP 9 Upgrade ✓ COMPLETE
 **Branch:** `chore/upgrade-agp-9`
+
+**What landed:** AGP 9.2.1 (via 9.0.0 intermediate), Kotlin 2.3.21, KSP 2.3.8, Gradle wrapper
+9.5.1, compileSdk bumped to 37 across all four modules, Gradle JVM heap raised to 4096m.
+Full library refresh: core-KTX 1.18.0, AppCompat 1.7.1, ActivityKtx/ActivityCompose 1.13.0,
+Lifecycle 2.10.0, Navigation 2.9.8, kotlinx-serialization-json 1.11.0, Compose BOM 2026.05.01,
+HiltNavigationCompose 1.3.0, Material 1.14.0, ConstraintLayout 2.2.1, Retrofit 3.0.0, Coil 2.7.0,
+CameraX 1.6.1, AndroidX JUnit 1.3.0, Espresso Core 3.7.0, Coroutines Test 1.11.0, Turbine 1.2.1,
+AndroidX test-rules 1.7.0. `MainActivityTest` migrated from Espresso to Compose test APIs.
+`DogListScreen` callback parameters renamed to `onNavigateBack` / `onNavigateToDogDetail`.
+`DogListViewModel` now requires a `strings: (Int) -> String` parameter.
+FABs in `CameraScreen` wired with semantic test tags (`take-photo-fab`, `dog-list-fab`, `settings-fab`).
+
 **Risk:** Medium — Gradle wrapper major bump + built-in Kotlin removes a plugin from every module  
 **Depends on:** Phase 7 complete  
 **Skill:** `build/agp/agp-9-upgrade`

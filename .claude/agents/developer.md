@@ -182,7 +182,7 @@ Before closing a task for any phase, verify:
 **Phase 2 (AGP 9):**
 - [ ] `./gradlew help` passes
 - [ ] `./gradlew build --dry-run` passes
-- [ ] `compileSdk = 35` in all four `build.gradle` files
+- [ ] `compileSdk = 37` in all four `build.gradle` files
 
 **Phase 3 (KSP):**
 - [ ] `grep -r "kapt" --include="*.gradle" .` returns nothing
