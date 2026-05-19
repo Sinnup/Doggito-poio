@@ -37,7 +37,7 @@ fun DogedexNavHost(sessionManager: SessionManager) {
         }
     }
 
-    val startDestination = if (sessionManager.isLoggedIn.value) CameraKey else LoginKey
+    val startDestination = if (isLoggedIn) CameraKey else LoginKey
 
     NavHost(
         navController = navController,
