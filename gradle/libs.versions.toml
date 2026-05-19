@@ -142,7 +142,6 @@ android-library                         = { id = "com.android.library",         
 kotlin-android                          = { id = "org.jetbrains.kotlin.android",               version.ref = "kotlin" }
 kotlin-parcelize                        = { id = "org.jetbrains.kotlin.plugin.parcelize",      version.ref = "kotlin" }
 hilt-android                            = { id = "com.google.dagger.hilt.android",             version.ref = "hilt" }
-navigation-safe-args                    = { id = "androidx.navigation.safeargs.kotlin",        version.ref = "navigation" }
 kotlin-compose-compiler                 = { id = "org.jetbrains.kotlin.plugin.compose",        version.ref = "kotlin" }
 ksp                                     = { id = "com.google.devtools.ksp",                    version.ref = "ksp" }
 kotlin-serialization                    = { id = "org.jetbrains.kotlin.plugin.serialization",  version.ref = "kotlin" }
