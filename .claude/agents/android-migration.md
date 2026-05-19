@@ -371,6 +371,112 @@ out of scope for this migration.
 
 ---
 
+### Phase 8 — AGP 9 Upgrade
+**Branch:** `chore/upgrade-agp-9`
+**Risk:** Medium — Gradle wrapper major bump + built-in Kotlin removes a plugin from every module  
+**Depends on:** Phase 7 complete  
+**Skill:** `build/agp/agp-9-upgrade`
+
+**Goal:** Upgrade from AGP 8.13.2 to AGP 9.x latest stable, adopt built-in Kotlin (removes
+the `kotlin-android` plugin from all four modules), upgrade Gradle wrapper to 9.1.0+, and
+align the dependency chain (Hilt 2.59.2+, KSP matching the new KGP, Kotlin 2.2.10+).
+
+#### Pre-flight checks
+
+Before starting, run:
+```bash
+git -C ~/.claude/skills pull          # ensure skill is current
+./gradlew help -q                     # confirm clean baseline
+grep -r "android.r8.integratedResourceShrinking\|android.enableNewResourceShrinker" gradle.properties
+```
+The `grep` must return nothing — AGP 9 throws a hard error if either of those flags is set.
+
+#### Version targets (`libs.versions.toml`)
+
+| Key | Current | Target |
+|---|---|---|
+| `agp` | 8.13.2 | 9.x latest stable |
+| `kotlin` | 2.1.21 | 2.2.10+ (AGP 9 bundles 2.2.10 as minimum) |
+| `ksp` | 2.1.21-2.0.2 | match new kotlin version (e.g. `2.2.10-2.0.2`) |
+| `hilt` | 2.56.1 | 2.59.2+ (required by AGP 9 skill Step 1) |
+
+#### Steps
+
+**Step 1 — Version catalog** (`libs.versions.toml`)
+1. Bump `agp`, `kotlin`, `ksp`, `hilt` to targets above.
+2. Remove the `kotlin-android` plugin entry from `[plugins]` — it is replaced by AGP built-in Kotlin:
+   ```toml
+   # DELETE this line:
+   kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+   ```
+3. Verify: `./gradlew help -q`
+
+**Step 2 — Gradle wrapper** (`gradle/wrapper/gradle-wrapper.properties`)
+- AGP 9.0 requires **Gradle 9.1.0 minimum** (hard requirement — Gradle 8.x will refuse).
+- Update `distributionUrl` to the latest stable Gradle 9.x release.
+- Verify: `./gradlew --version`
+
+**Step 3 — Root `build.gradle`**
+- Remove `alias(libs.plugins.kotlin.android) apply false` — the plugin no longer exists in the catalog.
+- The remaining plugins (`android.application`, `android.library`, `hilt.android`, `ksp`, `kotlin.compose.compiler`, `kotlin.serialization`) stay.
+
+**Step 4 — Module `build.gradle` files** (all four: `app`, `core`, `auth`, `camera`)
+For each module:
+1. Remove `alias(libs.plugins.kotlin.android)` — AGP 9 built-in Kotlin replaces it.
+2. Remove the `kotlin { jvmToolchain(17) }` block from inside `android {}` — with built-in
+   Kotlin, `jvmTarget` defaults to `android.compileOptions.targetCompatibility` automatically.
+   The `compileOptions` block (`sourceCompatibility`/`targetCompatibility VERSION_17`) stays.
+3. `app/build.gradle` only — fix `kotlin-parcelize` legacy ID:
+   - Remove `id 'kotlin-parcelize'`
+   - Add `alias(libs.plugins.kotlin.parcelize)`
+   - This was blocked during Phase 3 by a conflict with `kotlin-android`; that conflict is gone now.
+
+**Step 5 — `gradle.properties` audit**
+AGP 9 changes several property defaults and removes others. Verify:
+- `android.r8.integratedResourceShrinking` — must NOT be set (causes hard error).
+- `android.enableNewResourceShrinker.preciseShrinking` — must NOT be set (causes hard error).
+- `android.defaults.buildfeatures.aidl` and `android.defaults.buildfeatures.renderscript` — must NOT be set (removed in AGP 9).
+- After migration succeeds, clean up any of the following opt-out flags the Upgrade
+  Assistant may have inserted: `android.builtInKotlin`, `android.newDsl`,
+  `android.uniquePackageNames`, `android.enableAppCompileTimeRClass`.
+
+**Step 6 — Build verification**
+```bash
+./gradlew help -q                        # DSL check
+./gradlew build --dry-run                # task graph check
+./gradlew :app:assembleDebug             # full debug compile
+./gradlew :app:assembleRelease           # R8 release compile
+./gradlew :app:testDebugUnitTest         # unit tests
+```
+
+**Step 7 — Commit**
+```
+chore(deps): upgrade AGP to 9.x and migrate to built-in Kotlin
+```
+
+#### Known Dogedex-specific risks
+
+| Risk | Mitigation |
+|---|---|
+| Hilt incompatible with built-in Kotlin at lower versions | Hilt 2.59.2+ is tested with AGP 9 built-in Kotlin |
+| `kotlin-parcelize` alias conflict (was an issue in Phase 3) | Resolved — `kotlin-android` is removed first |
+| `kotlin-compose-compiler` plugin — still applies `kotlin.plugin.compose` | This is NOT `kotlin-android`; it stays and works with built-in Kotlin |
+| `kotlin-serialization` plugin — still applies `kotlin.plugin.serialization` | Same — separate from `kotlin-android`; stays |
+| `KSP` still needs explicit version if higher than AGP's bundled default | Keep explicit version in catalog; must match KGP |
+| Groovy DSL build files (`.gradle` not `.gradle.kts`) | AGP 9 supports both; no forced migration to Kotlin DSL |
+
+**Completion check:**
+```bash
+./gradlew :app:assembleRelease          # must succeed
+grep "kotlin.android" app/build.gradle  # must return nothing
+grep "kotlin.android" core/build.gradle # must return nothing
+grep "kotlin.android" auth/build.gradle # must return nothing
+grep "kotlin.android" camera/build.gradle # must return nothing
+grep "id 'kotlin-parcelize'" app/build.gradle # must return nothing
+```
+
+---
+
 ## How to Use This Agent
 
 **To check migration progress:**
