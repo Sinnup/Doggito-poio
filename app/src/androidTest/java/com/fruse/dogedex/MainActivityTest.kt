@@ -6,12 +6,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.test.espresso.Espresso.onView
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -128,14 +124,14 @@ class MainActivityTest {
 
     @Test
     fun showAllFab() {
-        onView(withId(R.id.take_photo_fab)).check(matches(isDisplayed()))
-        onView(withId(R.id.dog_list_fab)).check(matches(isDisplayed()))
-        onView(withId(R.id.settings_fab)).check(matches(isDisplayed()))
+        composeTestRule.onNodeWithTag("take-photo-fab").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("dog-list-fab").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("settings-fab").assertIsDisplayed()
     }
 
     @Test
     fun dogListOpensWhenClickingButton() {
-        onView(withId(R.id.dog_list_fab)).perform(click())
+        composeTestRule.onNodeWithTag("dog-list-fab").performClick()
 
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val string = context.getString(R.string.my_dog_collection)
@@ -146,7 +142,7 @@ class MainActivityTest {
 
     @Test
     fun whenRecognizingDogDetailsScreenOpens() {
-        onView(withId(R.id.take_photo_fab)).perform(click())
+        composeTestRule.onNodeWithTag("take-photo-fab").performClick()
         composeTestRule.onNodeWithTag(testTag = "close-details-screen-fab").assertIsDisplayed()
     }
 

@@ -29,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -158,7 +160,8 @@ private fun CameraContent(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .navigationBarsPadding()
-                .padding(bottom = 32.dp),
+                .padding(bottom = 32.dp)
+                .semantics { testTag = "take-photo-fab" },
             onClick = {
                 if (isCameraReady && isHighConfidence && dogRecognition != null) {
                     onGetDogByMlId(dogRecognition.id)
@@ -175,7 +178,8 @@ private fun CameraContent(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
-                .padding(bottom = 32.dp, end = 16.dp),
+                .padding(bottom = 32.dp, end = 16.dp)
+                .semantics { testTag = "dog-list-fab" },
             onClick = onNavigateToDogList
         ) {
             Icon(
@@ -188,7 +192,8 @@ private fun CameraContent(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .navigationBarsPadding()
-                .padding(bottom = 32.dp, start = 16.dp),
+                .padding(bottom = 32.dp, start = 16.dp)
+                .semantics { testTag = "settings-fab" },
             onClick = onNavigateToSettings
         ) {
             Icon(

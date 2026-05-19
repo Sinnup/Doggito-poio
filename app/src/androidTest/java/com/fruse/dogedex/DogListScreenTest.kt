@@ -40,13 +40,14 @@ class DogListScreenTest {
         }
 
         val viewModel = DogListViewModel(
-            dogRepository = FakeDogRepository()
+            dogRepository = FakeDogRepository(),
+            strings = { "str" }
         )
 
         composeTestRule.setContent {
             DogListScreen(
-                onNavigationIconClick = { },
-                onDogClicked = {},
+                onNavigateBack = { },
+                onNavigateToDogDetail = {},
                 viewModel = viewModel
             )
         }
@@ -76,13 +77,14 @@ class DogListScreenTest {
         }
 
         val viewModel = DogListViewModel(
-            dogRepository = FakeDogRepository()
+            dogRepository = FakeDogRepository(),
+            strings = { "str" }
         )
 
         composeTestRule.setContent {
             DogListScreen(
-                onNavigationIconClick = { },
-                onDogClicked = {},
+                onNavigateBack = { },
+                onNavigateToDogDetail = {},
                 viewModel = viewModel
             )
         }
@@ -127,13 +129,14 @@ class DogListScreenTest {
         }
 
         val viewModel = DogListViewModel(
-            dogRepository = FakeDogRepository()
+            dogRepository = FakeDogRepository(),
+            strings = { "str" }
         )
 
         composeTestRule.setContent {
             DogListScreen(
-                onNavigationIconClick = { },
-                onDogClicked = {},
+                onNavigateBack = { },
+                onNavigateToDogDetail = {},
                 viewModel = viewModel
             )
         }

@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace 'com.fruse.dogedex'
-    compileSdk 36
+    compileSdk 37
 
     defaultConfig {
         applicationId "com.fruse.dogedex"
