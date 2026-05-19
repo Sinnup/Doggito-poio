@@ -1,7 +1,10 @@
 package com.fruse.dogedex.viewmodel
 
+import app.cash.turbine.test
 import com.fruse.dogedex.api.responses.ApiResponseStatus
 import com.fruse.dogedex.core.model.Dog
+import com.fruse.dogedex.dogList.DogListUiAction
+import com.fruse.dogedex.dogList.DogListUiEffect
 import com.fruse.dogedex.dogList.DogListViewModel
 import com.fruse.dogedex.dogList.DogTasks
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +19,8 @@ class DogListViewModelTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
+
+    private val strings = com.fruse.dogedex.core.di.StringResolver { id -> "str_$id" }
 
     @Test
     fun downloadDogListStatusesCorrect() = runTest {
@@ -51,7 +56,7 @@ class DogListViewModelTest {
             override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> = emptyFlow()
         }
 
-        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository())
+        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
 
         assertEquals(2, dogListViewModel.uiState.value.dogs.size)
         assertEquals(19L, dogListViewModel.uiState.value.dogs[1].id)
@@ -82,12 +87,11 @@ class DogListViewModelTest {
             override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> = emptyFlow()
         }
 
-        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository())
+        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
 
         assertEquals(0, dogListViewModel.uiState.value.dogs.size)
-        assertEquals(12, dogListViewModel.uiState.value.error)
+        assertEquals("str_12", dogListViewModel.uiState.value.error)
     }
-
 
     @Test
     fun downloadDogListResetStatus_StatusesCorrect() = runTest {
@@ -112,9 +116,34 @@ class DogListViewModelTest {
             override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> = emptyFlow()
         }
 
-        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository())
+        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
 
-        dogListViewModel.dismissError()
+        dogListViewModel.handleAction(DogListUiAction.DismissError)
         assertEquals(null, dogListViewModel.uiState.value.error)
+    }
+
+    @Test
+    fun onDogClicked_emitsNavigateToDogDetailEffect() = runTest {
+        val fakeDog = Dog(1, index = 1, "", "", "", "", "", "", "", "", "", false)
+        class FakeDogRepository : DogTasks {
+            override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> =
+                ApiResponseStatus.Success(listOf(fakeDog))
+
+            override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> =
+                ApiResponseStatus.Success(Unit)
+
+            override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> =
+                ApiResponseStatus.Success(fakeDog)
+
+            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> = emptyFlow()
+        }
+
+        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
+
+        dogListViewModel.uiEffect.test {
+            dogListViewModel.handleAction(DogListUiAction.OnDogClicked(fakeDog))
+            val effect = awaitItem()
+            assertEquals(DogListUiEffect.NavigateToDogDetail(fakeDog), effect)
+        }
     }
 }

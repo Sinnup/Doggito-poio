@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,17 +50,25 @@ private const val GRID_SPAN_COUNT = 3
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DogListScreen(
-    onNavigationIconClick: () -> Unit,
-    onDogClicked: (Dog) -> Unit,
+    onNavigateToDogDetail: (Dog) -> Unit,
+    onNavigateBack: () -> Unit,
     viewModel: DogListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                is DogListUiEffect.NavigateToDogDetail -> onNavigateToDogDetail(effect.dog)
+            }
+        }
+    }
+
     DogListContent(
         uiState = uiState,
-        onNavigationIconClick = onNavigationIconClick,
-        onDogClicked = onDogClicked,
-        onDismissError = viewModel::dismissError
+        onNavigationIconClick = onNavigateBack,
+        onDogClicked = { viewModel.handleAction(DogListUiAction.OnDogClicked(it)) },
+        onDismissError = { viewModel.handleAction(DogListUiAction.DismissError) }
     )
 }
 
@@ -88,7 +97,7 @@ private fun DogListContent(
     if (uiState.isLoading) {
         LoadingWheel()
     } else if (uiState.error != null) {
-        ErrorDialog(messageId = uiState.error) {
+        ErrorDialog(message = uiState.error) {
             onDismissError()
         }
     }

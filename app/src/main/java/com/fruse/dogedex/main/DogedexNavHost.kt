@@ -87,11 +87,11 @@ fun DogedexNavHost(sessionManager: SessionManager) {
 
         composable<DogListKey> {
             DogListScreen(
-                onNavigationIconClick = {
-                    navController.navigateUp()
-                },
-                onDogClicked = { dog ->
+                onNavigateToDogDetail = { dog ->
                     navController.navigate(DogDetailKey(dog, emptyList(), false))
+                },
+                onNavigateBack = {
+                    navController.navigateUp()
                 }
             )
         }
