@@ -1,6 +1,5 @@
 package com.fruse.dogedex.dogList
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,7 +46,6 @@ import com.fruse.dogedex.core.ui.theme.DogedexTheme
 private const val GRID_SPAN_COUNT = 3
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DogListScreen(
     onNavigateToDogDetail: (Dog) -> Unit,
@@ -73,7 +71,6 @@ fun DogListScreen(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 private fun DogListContent(
     uiState: DogListUiState,
@@ -83,9 +80,9 @@ private fun DogListContent(
 ) {
     Scaffold(
         topBar = { DogListScreenTopBar { onNavigationIconClick() } },
-    ) {
+    ) { paddingValues ->
         LazyVerticalGrid(
-            modifier = Modifier.padding(top = it.calculateTopPadding()),
+            contentPadding = paddingValues,
             columns = GridCells.Fixed(GRID_SPAN_COUNT),
             content = {
                 items(uiState.dogs) { dog ->

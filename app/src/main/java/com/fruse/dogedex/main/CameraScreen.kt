@@ -12,6 +12,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -150,6 +151,7 @@ private fun CameraContent(
         FloatingActionButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
                 .padding(bottom = 32.dp),
             onClick = {
                 if (isCameraReady && isHighConfidence && dogRecognition != null) {
@@ -166,6 +168,7 @@ private fun CameraContent(
         FloatingActionButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
                 .padding(bottom = 32.dp, end = 16.dp),
             onClick = onNavigateToDogList
         ) {
@@ -178,6 +181,7 @@ private fun CameraContent(
         FloatingActionButton(
             modifier = Modifier
                 .align(Alignment.BottomStart)
+                .navigationBarsPadding()
                 .padding(bottom = 32.dp, start = 16.dp),
             onClick = onNavigateToSettings
         ) {

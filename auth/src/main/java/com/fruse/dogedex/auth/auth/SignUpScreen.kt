@@ -1,11 +1,13 @@
 package com.fruse.dogedex.auth.auth
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -26,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,7 +37,6 @@ import com.fruse.dogedex.core.composables.BackNavigationIcon
 import com.fruse.dogedex.core.composables.ErrorDialog
 import com.fruse.dogedex.core.ui.theme.DogedexTheme
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
@@ -56,9 +56,12 @@ fun SignUpScreen(
         }
     }
 
-    Scaffold(topBar = { SignUpScreenToolbar(onNavigateBack) }) {
+    Scaffold(
+        topBar = { SignUpScreenToolbar(onNavigateBack) },
+        contentWindowInsets = WindowInsets.safeDrawing
+    ) { paddingValues ->
         SignUpContent(
-            topPadding = it.calculateTopPadding(),
+            paddingValues = paddingValues,
             uiState = uiState,
             onSignUpClick = { email, password, passwordConfirmation ->
                 viewModel.handleAction(AuthUiAction.SignUp(email, password, passwordConfirmation))
@@ -85,7 +88,7 @@ fun SignUpScreenToolbar(
 
 @Composable
 private fun SignUpContent(
-    topPadding: Dp,
+    paddingValues: PaddingValues,
     uiState: AuthUiState,
     onSignUpClick: (email: String, password: String, passwordConfirmation: String) -> Unit,
     onFieldChanged: () -> Unit,
@@ -98,7 +101,7 @@ private fun SignUpContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = topPadding)
+            .padding(paddingValues)
             .padding(
                 top = 32.dp, start = 16.dp, end = 16.dp, bottom = 16.dp
             ), horizontalAlignment = Alignment.CenterHorizontally
@@ -176,7 +179,7 @@ private fun SignUpContent(
 fun SignUpScreenPreview() {
     DogedexTheme {
         SignUpContent(
-            topPadding = 0.dp,
+            paddingValues = PaddingValues(0.dp),
             uiState = AuthUiState(),
             onSignUpClick = { _, _, _ -> },
             onFieldChanged = {},

@@ -1,12 +1,14 @@
 package com.fruse.dogedex.auth.auth
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,7 +38,6 @@ import com.fruse.dogedex.core.composables.AuthField
 import com.fruse.dogedex.core.composables.ErrorDialog
 import com.fruse.dogedex.core.ui.theme.DogedexTheme
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
@@ -58,11 +58,12 @@ fun LoginScreen(
     }
 
     Scaffold(
-        topBar = { LoginScreenToolbar() }
-    ) {
+        topBar = { LoginScreenToolbar() },
+        contentWindowInsets = WindowInsets.safeDrawing
+    ) { paddingValues ->
         Surface {
             LoginContent(
-                topPadding = it.calculateTopPadding(),
+                paddingValues = paddingValues,
                 uiState = uiState,
                 onNavigateToSignUp = onNavigateToSignUp,
                 onLoginClick = { email, password ->
@@ -86,7 +87,7 @@ fun LoginScreenToolbar() {
 
 @Composable
 private fun LoginContent(
-    topPadding: Dp,
+    paddingValues: PaddingValues,
     uiState: AuthUiState,
     onNavigateToSignUp: () -> Unit,
     onLoginClick: (email: String, password: String) -> Unit,
@@ -99,7 +100,7 @@ private fun LoginContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = topPadding)
+            .padding(paddingValues)
             .padding(
                 top = 32.dp,
                 start = 16.dp,
@@ -188,7 +189,7 @@ fun LoginScreenPreview() {
     DogedexTheme {
         Surface {
             LoginContent(
-                topPadding = 0.dp,
+                paddingValues = PaddingValues(0.dp),
                 uiState = AuthUiState(),
                 onNavigateToSignUp = {},
                 onLoginClick = { _, _ -> },
