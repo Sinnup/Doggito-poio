@@ -2,6 +2,7 @@ package com.fruse.dogedex.main
 
 import android.Manifest.permission.CAMERA
 import android.content.pm.PackageManager
+import android.view.Surface
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -14,11 +15,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +57,7 @@ fun CameraScreen(
             when (effect) {
                 is MainUiEffect.NavigateToDogDetail ->
                     onNavigateToDogDetail(effect.dog, effect.probableDogIds)
+
                 is MainUiEffect.NavigateToDogList -> onNavigateToDogList()
                 is MainUiEffect.NavigateToSettings -> onNavigateToSettings()
             }
@@ -102,17 +104,17 @@ private fun CameraContent(
             preview.setSurfaceProvider(previewView.surfaceProvider)
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             val capture = ImageCapture.Builder()
-                .setTargetRotation(previewView.display?.rotation ?: 0)
+                .setTargetRotation(previewView.display?.rotation ?: Surface.ROTATION_0)
                 .build()
             imageCapture.value = capture
 
             val imageAnalysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
-            imageAnalysis.setAnalyzer(cameraExecutor, ImageAnalysis.Analyzer { imageProxy ->
+            imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
                 EspressoIdlingResource.decrement()
                 onRecognizeImage(imageProxy)
-            })
+            }
 
             cameraProvider.unbindAll()
             cameraProvider.bindToLifecycle(
@@ -130,9 +132,13 @@ private fun CameraContent(
 
     LaunchedEffect(Unit) {
         when {
-            ContextCompat.checkSelfPermission(context, CAMERA) == PackageManager.PERMISSION_GRANTED -> {
+            ContextCompat.checkSelfPermission(
+                context,
+                CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
                 startCamera()
             }
+
             else -> {
                 permissionLauncher.launch(CAMERA)
             }
@@ -173,7 +179,7 @@ private fun CameraContent(
             onClick = onNavigateToDogList
         ) {
             Icon(
-                imageVector = Icons.Filled.List,
+                imageVector = Icons.AutoMirrored.Filled.List,
                 contentDescription = null
             )
         }

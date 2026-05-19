@@ -189,8 +189,18 @@ DataBinding is now absent from all modules. `libs.versions.toml` required no cha
 
 ---
 
-### Phase 6 — MVI Architecture
+### Phase 6 — MVI Architecture ✓ COMPLETE
 **Branch:** `refactor/migrate-to-mvi`
+
+**What landed:** `UiState`/`UiAction`/`UiEffect` contracts added for all four screens.
+`DogListViewModel`, `DogDetailViewModel`, `MainViewModel`, and `AuthViewModel` fully migrated
+to MVI — `MutableLiveData` and `mutableStateOf` removed, replaced with `StateFlow<UiState>`
+and `Channel<UiEffect>`. `StringResolverModule` added to `core` for unit-testable string
+resolution. All composables updated to `collectAsStateWithLifecycle()` + single `handleAction`
+lambda. `AuthViewModelTest` rewritten with 5 Turbine-based tests. Zero `MutableLiveData` or
+`observeAsState` references remain outside tests. `ApiResponseStatus` confined to Repositories
+and ViewModels only — no Composable imports it.
+
 **Risk:** Medium — logic restructure in all ViewModels, no UI visual change  
 **Depends on:** Phase 5 complete  
 **Skill:** `testing/testing-setup` (for wiring unit tests to each ViewModel after migration)
@@ -333,8 +343,19 @@ Returns no results.
 
 ---
 
-### Phase 7 — Polish
+### Phase 7 — Polish ✓ COMPLETE
 **Branch:** `chore/apply-polish-and-edge-to-edge`
+
+**What landed:** `enableEdgeToEdge()` added to `MainActivity`; `adjustResize` set in
+`AndroidManifest.xml`; `Scaffold(contentWindowInsets = WindowInsets.safeDrawing)` applied
+to `LoginScreen` and `SignUpScreen` for IME safety; `contentPadding` on `LazyVerticalGrid`
+in `DogListScreen`; `navigationBarsPadding()` on FABs in `CameraScreen` and `DogDetailScreen`.
+`minifyEnabled true` + `shrinkResources true` enabled in app release build; stack-trace
+attributes uncommented in `app/proguard-rules.pro`; no-op `proguardFiles` removed from
+library modules; unused `navigation-safe-args` plugin removed from version catalog;
+`org.gradle.parallel=true` enabled. Screenshot tests and `connectedAndroidTest` are
+out of scope for this migration.
+
 **Risk:** Low  
 **Depends on:** Phase 6 complete
 
