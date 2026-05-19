@@ -43,28 +43,31 @@ import java.util.concurrent.Executors
 
 @Composable
 fun CameraScreen(
-    viewModel: MainViewModel = hiltViewModel(),
-    onNavigateToDogDetail: (dog: Dog, probableDogIds: List<String>, isRecognition: Boolean) -> Unit,
+    onNavigateToDogDetail: (dog: Dog, probableDogIds: List<String>) -> Unit,
     onNavigateToDogList: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    viewModel: MainViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.recognizedDog) {
-        val dog = uiState.recognizedDog
-        if (dog != null) {
-            onNavigateToDogDetail(dog, uiState.probableDogIds, true)
-            viewModel.onDogDetailNavigated()
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                is MainUiEffect.NavigateToDogDetail ->
+                    onNavigateToDogDetail(effect.dog, effect.probableDogIds)
+                is MainUiEffect.NavigateToDogList -> onNavigateToDogList()
+                is MainUiEffect.NavigateToSettings -> onNavigateToSettings()
+            }
         }
     }
 
     CameraContent(
         uiState = uiState,
-        onRecognizeImage = viewModel::recognizeImage,
-        onGetDogByMlId = viewModel::getDogBYMlId,
-        onDismissError = viewModel::dismissError,
-        onNavigateToDogList = onNavigateToDogList,
-        onNavigateToSettings = onNavigateToSettings
+        onRecognizeImage = { viewModel.handleAction(MainUiAction.RecognizeImage(it)) },
+        onGetDogByMlId = { viewModel.handleAction(MainUiAction.GetDogByMlId(it)) },
+        onDismissError = { viewModel.handleAction(MainUiAction.DismissError) },
+        onNavigateToDogList = { viewModel.handleAction(MainUiAction.NavigateToDogList) },
+        onNavigateToSettings = { viewModel.handleAction(MainUiAction.NavigateToSettings) }
     )
 }
 
@@ -187,7 +190,7 @@ private fun CameraContent(
         if (uiState.isLoading) {
             LoadingWheel()
         } else if (uiState.error != null) {
-            ErrorDialog(messageId = uiState.error) {
+            ErrorDialog(message = uiState.error) {
                 onDismissError()
             }
         }

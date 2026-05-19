@@ -73,8 +73,8 @@ fun DogedexNavHost(sessionManager: SessionManager) {
 
         composable<CameraKey> {
             CameraScreen(
-                onNavigateToDogDetail = { dog, probableDogIds, isRecognition ->
-                    navController.navigate(DogDetailKey(dog, probableDogIds, isRecognition))
+                onNavigateToDogDetail = { dog, probableDogIds ->
+                    navController.navigate(DogDetailKey(dog, probableDogIds, true))
                 },
                 onNavigateToDogList = {
                     navController.navigate(DogListKey)

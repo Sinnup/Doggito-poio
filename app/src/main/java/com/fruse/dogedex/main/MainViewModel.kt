@@ -4,40 +4,73 @@ import androidx.camera.core.ImageProxy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fruse.dogedex.api.responses.ApiResponseStatus
-import com.fruse.dogedex.core.model.Dog
-import com.fruse.dogedex.core.session.SessionManager
-import com.fruse.dogedex.core.session.SessionRepository
-import com.fruse.dogedex.dogList.DogTasks
 import com.fruse.dogedex.camera.machinelearning.ClassifierTasks
 import com.fruse.dogedex.camera.machinelearning.DogRecognition
+import com.fruse.dogedex.core.di.StringResolver
+import com.fruse.dogedex.core.model.Dog
+import com.fruse.dogedex.core.session.SessionManager
+import com.fruse.dogedex.dogList.DogTasks
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MainUiState(
     val isLoading: Boolean = false,
-    val recognizedDog: Dog? = null,
-    val error: Int? = null,
-    val requiresLogin: Boolean = false,
+    val error: String? = null,
     val dogRecognition: DogRecognition? = null,
     val probableDogIds: List<String> = emptyList()
 )
+
+sealed class MainUiAction {
+    data class RecognizeImage(val imageProxy: ImageProxy) : MainUiAction()
+    data class GetDogByMlId(val mlId: String) : MainUiAction()
+    data object DismissError : MainUiAction()
+    data object NavigateToDogList : MainUiAction()
+    data object NavigateToSettings : MainUiAction()
+}
+
+sealed class MainUiEffect {
+    data class NavigateToDogDetail(val dog: Dog, val probableDogIds: List<String>) : MainUiEffect()
+    data object NavigateToDogList : MainUiEffect()
+    data object NavigateToSettings : MainUiEffect()
+}
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val dogRepository: DogTasks,
     private val classifierRepository: ClassifierTasks,
-    val sessionRepository: SessionManager
+    val sessionRepository: SessionManager,
+    private val strings: StringResolver
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    fun recognizeImage(imageProxy: ImageProxy) {
+    private val _uiEffect = Channel<MainUiEffect>(Channel.BUFFERED)
+    val uiEffect: Flow<MainUiEffect> = _uiEffect.receiveAsFlow()
+
+    fun handleAction(action: MainUiAction) {
+        when (action) {
+            is MainUiAction.RecognizeImage -> recognizeImage(action.imageProxy)
+            is MainUiAction.GetDogByMlId -> getDogByMlId(action.mlId)
+            is MainUiAction.DismissError -> _uiState.update { it.copy(error = null) }
+            is MainUiAction.NavigateToDogList -> viewModelScope.launch {
+                _uiEffect.send(MainUiEffect.NavigateToDogList)
+            }
+            is MainUiAction.NavigateToSettings -> viewModelScope.launch {
+                _uiEffect.send(MainUiEffect.NavigateToSettings)
+            }
+        }
+    }
+
+    private fun recognizeImage(imageProxy: ImageProxy) {
         viewModelScope.launch {
             val dogRecognitionList = classifierRepository.recognizeImage(imageProxy)
             updateDogRecognition(dogRecognitionList)
@@ -59,26 +92,23 @@ class MainViewModel @Inject constructor(
         _uiState.update { it.copy(dogRecognition = dogRecognitionList.firstOrNull()) }
     }
 
-    fun getDogBYMlId(mlDogID: String) {
+    private fun getDogByMlId(mlDogId: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            when (val result = dogRepository.getDogBYMlId(mlDogID)) {
-                is ApiResponseStatus.Success ->
-                    _uiState.update { it.copy(isLoading = false, recognizedDog = result.data) }
+            when (val result = dogRepository.getDogBYMlId(mlDogId)) {
+                is ApiResponseStatus.Success -> {
+                    _uiState.update { it.copy(isLoading = false) }
+                    _uiEffect.send(
+                        MainUiEffect.NavigateToDogDetail(result.data, _uiState.value.probableDogIds)
+                    )
+                }
                 is ApiResponseStatus.Error ->
-                    _uiState.update { it.copy(isLoading = false, error = result.messageId) }
+                    _uiState.update {
+                        it.copy(isLoading = false, error = strings.resolve(result.messageId))
+                    }
                 is ApiResponseStatus.Loading ->
                     _uiState.update { it.copy(isLoading = true) }
             }
         }
-    }
-
-    fun dismissError() {
-        _uiState.update { it.copy(error = null) }
-    }
-
-
-    fun onDogDetailNavigated() {
-        _uiState.update { it.copy(recognizedDog = null) }
     }
 }
