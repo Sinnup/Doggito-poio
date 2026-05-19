@@ -55,6 +55,7 @@ junit                       = "4.13.2"
 androidxJunit               = "1.1.5"
 espressoCore                = "3.5.1"
 coroutinesTest              = "1.7.3"
+turbine                     = "1.2.0"
 
 
 [libraries]
@@ -132,6 +133,7 @@ androidx-test-junit                     = { group = "androidx.test.ext",        
 androidx-espresso-core                  = { group = "androidx.test.espresso",      name = "espresso-core",                 version.ref = "espressoCore" }
 androidx-espresso-idling-resource       = { group = "androidx.test.espresso",      name = "espresso-idling-resource",      version.ref = "espressoCore" }
 kotlinx-coroutines-test                 = { group = "org.jetbrains.kotlinx",       name = "kotlinx-coroutines-test",       version.ref = "coroutinesTest" }
+turbine                                 = { group = "app.cash.turbine",             name = "turbine",                       version.ref = "turbine" }
 
 
 [plugins]
