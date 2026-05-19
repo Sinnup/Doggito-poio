@@ -12,6 +12,7 @@ import com.fruse.dogedex.auth.auth.SignUpScreen
 import com.fruse.dogedex.core.navigation.CameraKey
 import com.fruse.dogedex.core.navigation.DogDetailKey
 import com.fruse.dogedex.core.navigation.DogListKey
+import com.fruse.dogedex.core.navigation.DogType
 import com.fruse.dogedex.core.navigation.LoginKey
 import com.fruse.dogedex.core.navigation.SettingsKey
 import com.fruse.dogedex.core.navigation.SignUpKey
@@ -94,7 +95,11 @@ fun DogedexNavHost(sessionManager: SessionManager) {
             )
         }
 
-        composable<DogDetailKey> {
+        composable<DogDetailKey>(
+            typeMap = mapOf(
+                kotlin.reflect.typeOf<com.fruse.dogedex.core.model.Dog>() to DogType
+            )
+        ) {
             DogDetailScreen(
                 onNavigateBack = {
                     navController.navigateUp()
