@@ -1,6 +1,8 @@
 package com.fruse.dogedex.auth.auth
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,6 +12,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,52 +28,69 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fruse.dogedex.core.R
 import com.fruse.dogedex.core.composables.AuthField
 import com.fruse.dogedex.core.composables.BackNavigationIcon
-import com.fruse.dogedex.core.api.DogsApi
+import com.fruse.dogedex.core.composables.ErrorDialog
+import com.fruse.dogedex.core.ui.theme.DogedexTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    onNavigationIconCLick: () -> Unit,
-    onSignUpButtonClick: (email: String, password: String, passwordConfirmation: String) -> (Unit),
-    authViewModel: AuthViewModel
+    onNavigateBack: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(topBar = { SignUpScreenToolbar(onNavigationIconCLick) }) {
-        Content(
-            it.calculateTopPadding(),
-            onSignUpButtonClick = onSignUpButtonClick,
-            authViewModel,
-            resetFieldErrors = { authViewModel.resetErrors() }
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                is AuthUiEffect.NavigateToHome -> onNavigateToHome()
+                is AuthUiEffect.NavigateToLogin -> onNavigateBack()
+                is AuthUiEffect.NavigateToSignUp -> Unit
+            }
+        }
+    }
+
+    Scaffold(topBar = { SignUpScreenToolbar(onNavigateBack) }) {
+        SignUpContent(
+            topPadding = it.calculateTopPadding(),
+            uiState = uiState,
+            onSignUpClick = { email, password, passwordConfirmation ->
+                viewModel.handleAction(AuthUiAction.SignUp(email, password, passwordConfirmation))
+            },
+            onFieldChanged = { viewModel.handleAction(AuthUiAction.ResetFieldErrors) },
+            onDismissError = { viewModel.handleAction(AuthUiAction.DismissError) }
         )
     }
 }
 
 @Composable
 fun SignUpScreenToolbar(
-    onNavigationIconCLick: () -> Unit
+    onNavigationIconClick: () -> Unit
 ) {
     TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) },
         backgroundColor = Color.Red,
         contentColor = Color.White,
         navigationIcon = {
             BackNavigationIcon {
-                onNavigationIconCLick()
+                onNavigationIconClick()
             }
         })
 }
 
 @Composable
-private fun Content(
+private fun SignUpContent(
     topPadding: Dp,
-    onSignUpButtonClick: (email: String, password: String, passwordConfirmation: String) -> (Unit),
-    authViewModel: AuthViewModel,
-    resetFieldErrors: () -> Unit
+    uiState: AuthUiState,
+    onSignUpClick: (email: String, password: String, passwordConfirmation: String) -> Unit,
+    onFieldChanged: () -> Unit,
+    onDismissError: () -> Unit
 ) {
-
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val confirmPassword = remember { mutableStateOf("") }
@@ -87,10 +108,10 @@ private fun Content(
             email = email.value,
             ontTextChanged = {
                 email.value = it
-                resetFieldErrors()
+                onFieldChanged()
             },
             modifier = Modifier.fillMaxWidth(),
-            errorMessageId = authViewModel.emailError.value
+            errorMessage = uiState.emailError
         )
 
         AuthField(
@@ -98,13 +119,13 @@ private fun Content(
             email = password.value,
             ontTextChanged = {
                 password.value = it
-                resetFieldErrors()
+                onFieldChanged()
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             visualTransformation = PasswordVisualTransformation(),
-            errorMessageId = authViewModel.passwordError.value
+            errorMessage = uiState.passwordError
         )
 
         AuthField(
@@ -112,13 +133,13 @@ private fun Content(
             email = confirmPassword.value,
             ontTextChanged = {
                 confirmPassword.value = it
-                resetFieldErrors()
+                onFieldChanged()
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             visualTransformation = PasswordVisualTransformation(),
-            errorMessageId = authViewModel.passwordConfirmationError.value
+            errorMessage = uiState.passwordConfirmationError
         )
 
         Button(modifier = Modifier
@@ -126,7 +147,7 @@ private fun Content(
             .padding(top = 16.dp)
             .semantics { testTag = "signup-screen-register-button" },
             onClick = {
-                onSignUpButtonClick(email.value, password.value, confirmPassword.value)
+                onSignUpClick(email.value, password.value, confirmPassword.value)
             }) {
             Text(
                 text = stringResource(id = R.string.sign_up),
@@ -135,26 +156,31 @@ private fun Content(
             )
         }
     }
+
+    if (uiState.error != null) {
+        ErrorDialog(message = uiState.error) {
+            onDismissError()
+        }
+    }
 }
 
-@Preview
+@Preview(
+    uiMode = UI_MODE_NIGHT_YES,
+    name = "DefaultPreviewDark"
+)
+@Preview(
+    uiMode = UI_MODE_NIGHT_NO,
+    name = "DefaultPreviewLight"
+)
 @Composable
 fun SignUpScreenPreview() {
-    SignUpScreen(
-        onNavigationIconCLick = {},
-        onSignUpButtonClick = { _, _, _ ->
-
-        },
-        authViewModel = AuthViewModel(
-            authRepository = AuthRepository(
-                apiService = DogsApi.retrofitService
-            ),
-            sessionManager = object : com.fruse.dogedex.core.session.SessionManager {
-                override val isLoggedIn: kotlinx.coroutines.flow.StateFlow<Boolean> =
-                    kotlinx.coroutines.flow.MutableStateFlow(false)
-                override fun login(user: com.fruse.dogedex.core.model.User) {}
-                override fun logout() {}
-            }
-        ),
-    )
+    DogedexTheme {
+        SignUpContent(
+            topPadding = 0.dp,
+            uiState = AuthUiState(),
+            onSignUpClick = { _, _, _ -> },
+            onFieldChanged = {},
+            onDismissError = {}
+        )
+    }
 }

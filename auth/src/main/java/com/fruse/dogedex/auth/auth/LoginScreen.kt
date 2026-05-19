@@ -14,6 +14,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,28 +30,46 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fruse.dogedex.core.R
-import com.fruse.dogedex.core.api.DogsApi
 import com.fruse.dogedex.core.composables.AuthField
+import com.fruse.dogedex.core.composables.ErrorDialog
 import com.fruse.dogedex.core.ui.theme.DogedexTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    onRegisterButtonClick: () -> Unit,
-    onLoginButtonClick: (email: String, password: String) -> Unit,
-    authViewModel: AuthViewModel
+    onNavigateToSignUp: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                is AuthUiEffect.NavigateToHome -> onNavigateToHome()
+                is AuthUiEffect.NavigateToSignUp -> onNavigateToSignUp()
+                is AuthUiEffect.NavigateToLogin -> Unit
+            }
+        }
+    }
+
     Scaffold(
         topBar = { LoginScreenToolbar() }
     ) {
         Surface {
-            Content(
-                it.calculateTopPadding(),
-                onRegisterButtonClick,
-                onLoginButtonClick,
-                authViewModel
+            LoginContent(
+                topPadding = it.calculateTopPadding(),
+                uiState = uiState,
+                onNavigateToSignUp = onNavigateToSignUp,
+                onLoginClick = { email, password ->
+                    viewModel.handleAction(AuthUiAction.Login(email, password))
+                },
+                onFieldChanged = { viewModel.handleAction(AuthUiAction.ResetFieldErrors) },
+                onDismissError = { viewModel.handleAction(AuthUiAction.DismissError) }
             )
         }
     }
@@ -65,13 +85,14 @@ fun LoginScreenToolbar() {
 }
 
 @Composable
-private fun Content(
+private fun LoginContent(
     topPadding: Dp,
-    onRegisterButtonClick: () -> Unit,
-    onLoginButtonClick: (email: String, password: String) -> Unit,
-    authViewModel: AuthViewModel
+    uiState: AuthUiState,
+    onNavigateToSignUp: () -> Unit,
+    onLoginClick: (email: String, password: String) -> Unit,
+    onFieldChanged: () -> Unit,
+    onDismissError: () -> Unit
 ) {
-
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
@@ -92,11 +113,10 @@ private fun Content(
             email = email.value,
             ontTextChanged = {
                 email.value = it
-                authViewModel.resetErrors()
+                onFieldChanged()
             },
-            modifier = Modifier
-                .fillMaxWidth(),
-            errorMessageId = authViewModel.emailError.value,
+            modifier = Modifier.fillMaxWidth(),
+            errorMessage = uiState.emailError,
             errorSemantic = "email-field-error",
             fieldSemantic = "email-field"
         )
@@ -109,7 +129,7 @@ private fun Content(
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             visualTransformation = PasswordVisualTransformation(),
-            errorMessageId = authViewModel.passwordError.value,
+            errorMessage = uiState.passwordError,
             errorSemantic = "password-field-error",
             fieldSemantic = "password-field"
         )
@@ -119,9 +139,7 @@ private fun Content(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
                 .semantics { testTag = "login-button" },
-            onClick = {
-                onLoginButtonClick(email.value, password.value)
-            },
+            onClick = { onLoginClick(email.value, password.value) },
         ) {
             Text(
                 text = stringResource(id = R.string.login),
@@ -140,7 +158,7 @@ private fun Content(
 
         Text(
             modifier = Modifier
-                .clickable(enabled = true, onClick = onRegisterButtonClick)
+                .clickable(enabled = true, onClick = onNavigateToSignUp)
                 .fillMaxWidth()
                 .padding(16.dp)
                 .semantics { testTag = "login-screen-register-button" },
@@ -148,6 +166,12 @@ private fun Content(
             text = stringResource(id = R.string.register),
             fontWeight = FontWeight.Medium,
         )
+    }
+
+    if (uiState.error != null) {
+        ErrorDialog(message = uiState.error) {
+            onDismissError()
+        }
     }
 }
 
@@ -162,33 +186,15 @@ private fun Content(
 @Composable
 fun LoginScreenPreview() {
     DogedexTheme {
-//        LoginScreen(
-//            onRegisterButtonClick = {},
-//            onLoginButtonClick = { _, _ -> },
-//            authViewModel = AuthViewModel(
-//                authRepository = AuthRepository(
-//                    apiService = DogsApi.retrofitService
-//                )
-//            )
-//        )
         Surface {
-            Content(
+            LoginContent(
                 topPadding = 0.dp,
-                onRegisterButtonClick = { },
-                onLoginButtonClick = { _, _ -> },
-                authViewModel = AuthViewModel(
-                    authRepository = AuthRepository(
-                        apiService = DogsApi.retrofitService
-                    ),
-                    sessionManager = object : com.fruse.dogedex.core.session.SessionManager {
-                        override val isLoggedIn: kotlinx.coroutines.flow.StateFlow<Boolean> =
-                            kotlinx.coroutines.flow.MutableStateFlow(false)
-                        override fun login(user: com.fruse.dogedex.core.model.User) {}
-                        override fun logout() {}
-                    }
-                )
+                uiState = AuthUiState(),
+                onNavigateToSignUp = {},
+                onLoginClick = { _, _ -> },
+                onFieldChanged = {},
+                onDismissError = {}
             )
         }
-
     }
 }

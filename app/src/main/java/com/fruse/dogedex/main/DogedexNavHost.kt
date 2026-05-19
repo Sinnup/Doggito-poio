@@ -3,12 +3,10 @@ package com.fruse.dogedex.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.fruse.dogedex.auth.auth.AuthViewModel
 import com.fruse.dogedex.auth.auth.LoginScreen
 import com.fruse.dogedex.auth.auth.SignUpScreen
 import com.fruse.dogedex.core.navigation.CameraKey
@@ -46,28 +44,28 @@ fun DogedexNavHost(sessionManager: SessionManager) {
         startDestination = startDestination
     ) {
         composable<LoginKey> {
-            val authViewModel: AuthViewModel = hiltViewModel()
             LoginScreen(
-                onRegisterButtonClick = {
+                onNavigateToSignUp = {
                     navController.navigate(SignUpKey)
                 },
-                onLoginButtonClick = { email, password ->
-                    authViewModel.login(email, password)
-                },
-                authViewModel = authViewModel
+                onNavigateToHome = {
+                    navController.navigate(CameraKey) {
+                        popUpTo(LoginKey) { inclusive = true }
+                    }
+                }
             )
         }
 
         composable<SignUpKey> {
-            val authViewModel: AuthViewModel = hiltViewModel()
             SignUpScreen(
-                onNavigationIconCLick = {
+                onNavigateBack = {
                     navController.navigateUp()
                 },
-                onSignUpButtonClick = { email, password, passwordConfirmation ->
-                    authViewModel.signUp(email, password, passwordConfirmation)
-                },
-                authViewModel = authViewModel
+                onNavigateToHome = {
+                    navController.navigate(CameraKey) {
+                        popUpTo(LoginKey) { inclusive = true }
+                    }
+                }
             )
         }
 
