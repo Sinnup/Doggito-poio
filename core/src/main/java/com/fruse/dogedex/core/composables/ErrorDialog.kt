@@ -16,6 +16,17 @@ fun ErrorDialog(
     @StringRes messageId: Int,
     onErrorDialogDismiss: () -> Unit
 ) {
+    ErrorDialog(
+        message = stringResource(id = messageId),
+        onErrorDialogDismiss = onErrorDialogDismiss
+    )
+}
+
+@Composable
+fun ErrorDialog(
+    message: String,
+    onErrorDialogDismiss: () -> Unit
+) {
     AlertDialog(
         modifier = Modifier.semantics { testTag = "error-dialog" },
         onDismissRequest = { },
@@ -23,7 +34,7 @@ fun ErrorDialog(
             Text(stringResource(R.string.oops_something_happened))
         },
         text = {
-            Text(text = stringResource(id = messageId))
+            Text(text = message)
         },
         confirmButton = {
             Button(onClick = { onErrorDialogDismiss() }) {

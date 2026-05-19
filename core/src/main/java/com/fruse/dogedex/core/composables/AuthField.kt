@@ -28,16 +28,20 @@ fun AuthField(
     modifier: Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     errorMessageId: Int? = null,
+    errorMessage: String? = null,
     errorSemantic: String = "",
     fieldSemantic: String = ""
 ) {
+    val resolvedError = when {
+        errorMessage != null -> errorMessage
+        errorMessageId != null -> stringResource(id = errorMessageId)
+        else -> null
+    }
     Surface {
         Column(modifier = modifier) {
-            if (errorMessageId != null) {
+            if (resolvedError != null) {
                 Text(
-                    text = stringResource(
-                        id = errorMessageId
-                    ),
+                    text = resolvedError,
                     modifier = Modifier
                         .fillMaxWidth()
                         .semantics { testTag = errorSemantic },
@@ -52,7 +56,7 @@ fun AuthField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .semantics { testTag = fieldSemantic },
-                isError = errorMessageId != null,
+                isError = resolvedError != null,
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = MaterialTheme.colorScheme.onTertiaryContainer,
                     unfocusedTextColor = MaterialTheme.colorScheme.onTertiaryContainer,
