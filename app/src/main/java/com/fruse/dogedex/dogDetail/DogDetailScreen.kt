@@ -21,7 +21,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,36 +39,57 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import com.fruse.dogedex.R
 import com.fruse.dogedex.core.composables.ErrorDialog
 import com.fruse.dogedex.core.composables.LoadingWheel
-import com.fruse.dogedex.api.responses.ApiResponseStatus
 import com.fruse.dogedex.core.model.Dog
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun DogDetailScreen(
-    viewModel: DogDetailViewModel = hiltViewModel(),
-    finishActivity: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: DogDetailViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val probableDogsDialogEnabled = remember { mutableStateOf(false) }
-
-    val status = viewModel.status
-    val statusValue = status.value
-    val dog = viewModel.dog.value
-    val isRecognition = viewModel.isRecognition.value ?: false
-
-    if (statusValue is ApiResponseStatus.Success) {
-        finishActivity()
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                is DogDetailUiEffect.DogAdded -> onNavigateBack()
+                is DogDetailUiEffect.NavigateBack -> onNavigateBack()
+            }
+        }
     }
 
+    LaunchedEffect(uiState.hasDogBeenAdded) {
+        if (uiState.hasDogBeenAdded) {
+            onNavigateBack()
+        }
+    }
+
+    val dog = uiState.dog
     if (dog == null) {
-        finishActivity()
+        LaunchedEffect(Unit) { onNavigateBack() }
         return
     }
+
+    DogDetailContent(
+        uiState = uiState,
+        dog = dog,
+        onAction = viewModel::handleAction
+    )
+}
+
+@Composable
+private fun DogDetailContent(
+    uiState: DogDetailUiState,
+    dog: Dog,
+    onAction: (DogDetailUiAction) -> Unit
+) {
+    val probableDogsDialogEnabled = remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -76,8 +98,8 @@ fun DogDetailScreen(
             .padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
         contentAlignment = Alignment.TopCenter
     ) {
-        DogInformation(dog, isRecognition) {
-            viewModel.getProbableDogs()
+        DogInformation(dog, uiState.isRecognition) {
+            onAction(DogDetailUiAction.LoadProbableDogs)
             probableDogsDialogEnabled.value = true
         }
         Image(
@@ -93,33 +115,32 @@ fun DogDetailScreen(
                 .align(alignment = Alignment.BottomCenter)
                 .semantics { testTag = "close-details-screen-fab" },
             onClick = {
-                if (isRecognition) {
-                    viewModel.addDogToUser()
+                if (uiState.isRecognition) {
+                    onAction(DogDetailUiAction.AddDogToUser)
                 } else {
-                    finishActivity()
+                    onAction(DogDetailUiAction.NavigateBack)
                 }
             }
         ) {
             Icon(imageVector = Icons.Filled.Check, contentDescription = "Fab")
         }
 
-        if (statusValue is ApiResponseStatus.Loading) {
+        if (uiState.isLoading) {
             LoadingWheel()
-        } else if (statusValue is ApiResponseStatus.Error) {
-            ErrorDialog(messageId = statusValue.messageId) {
-                viewModel.resetApiResponseStatus()
+        } else if (uiState.error != null) {
+            ErrorDialog(message = uiState.error) {
+                onAction(DogDetailUiAction.DismissError)
             }
         }
 
-        val probableDogList = viewModel.probableDogList.collectAsState().value
         if (probableDogsDialogEnabled.value) {
             MostProbableDogsDialog(
-                mostProbableDogs = probableDogList,
+                mostProbableDogs = uiState.probableDogs,
                 onShowMostProbableDogsDialogDismiss = {
                     probableDogsDialogEnabled.value = false
                 },
                 onItemClicked = {
-                    viewModel.updateDog(it)
+                    onAction(DogDetailUiAction.UpdateDog(it))
                 }
             )
         }
@@ -364,6 +385,9 @@ fun DogDetailScreenPreview() {
         "", "10 - 12", "Friendly, playful",
         "5", "6"
     )
-    DogDetailScreen(
-        finishActivity = {})
+    DogDetailContent(
+        uiState = DogDetailUiState(dog = dog),
+        dog = dog,
+        onAction = {}
+    )
 }

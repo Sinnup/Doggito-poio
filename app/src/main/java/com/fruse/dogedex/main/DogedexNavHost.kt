@@ -98,7 +98,7 @@ fun DogedexNavHost(sessionManager: SessionManager) {
 
         composable<DogDetailKey> {
             DogDetailScreen(
-                finishActivity = {
+                onNavigateBack = {
                     navController.navigateUp()
                 }
             )
