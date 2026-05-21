@@ -1,5 +1,6 @@
 package com.fruse.dogedex.core.api.dto
 
+import com.fruse.dogedex.core.database.entities.DogEntity
 import com.fruse.dogedex.core.model.Dog
 
 

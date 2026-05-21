@@ -21,7 +21,7 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 
-class DogRepositoryTest {
+class DogEntityRepositoryTest {
 
     @Test
     fun testGetDogCollectionSuccess(): Unit = runTest {

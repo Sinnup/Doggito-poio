@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import org.junit.Rule
 import org.junit.Test
 
-class DogListScreenTest {
+class DogEntityListScreenTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()

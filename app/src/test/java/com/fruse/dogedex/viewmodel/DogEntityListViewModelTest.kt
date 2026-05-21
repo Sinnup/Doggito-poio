@@ -15,7 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 
 
-class DogListViewModelTest {
+class DogEntityListViewModelTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
