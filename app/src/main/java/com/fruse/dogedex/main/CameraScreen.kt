@@ -29,10 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -156,23 +156,26 @@ private fun CameraContent(
         val dogRecognition = uiState.dogRecognition
         val isHighConfidence = (dogRecognition?.confidence ?: 0f) > 70f
 
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .navigationBarsPadding()
-                .padding(bottom = 32.dp)
-                .semantics { testTag = "take-photo-fab" },
-            onClick = {
-                if (isCameraReady && isHighConfidence && dogRecognition != null) {
-                    onGetDogByMlId(dogRecognition.id)
+        if (isHighConfidence) {
+            FloatingActionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(bottom = 32.dp)
+                    .semantics { testTag = "take-photo-fab" },
+                onClick = {
+                    if (isCameraReady && dogRecognition != null) {
+                        onGetDogByMlId(dogRecognition.id)
+                    }
                 }
+            ) {
+                Icon(
+                    painter = painterResource(id = com.fruse.dogedex.R.drawable.ic_baseline_photo_camera),
+                    contentDescription = null
+                )
             }
-        ) {
-            Icon(
-                painter = painterResource(id = com.fruse.dogedex.R.drawable.ic_baseline_photo_camera),
-                contentDescription = null
-            )
         }
+
 
         FloatingActionButton(
             modifier = Modifier
