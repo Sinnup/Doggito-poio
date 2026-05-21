@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -104,11 +105,14 @@ private fun DogDetailContent(
             onAction(DogDetailUiAction.LoadProbableDogs)
             probableDogsDialogEnabled.value = true
         }
+        val filesDir = LocalContext.current.filesDir
         Image(
             modifier = Modifier
                 .width(270.dp)
                 .padding(top = 80.dp),
-            painter = rememberAsyncImagePainter(model = dog.imageUrl),
+            painter = rememberAsyncImagePainter(
+                model = java.io.File(filesDir, "images/${dog.imageUrl}.jpg")
+            ),
             contentDescription = dog.name
         )
 

@@ -1,6 +1,5 @@
 package com.fruse.dogedex.dogList
 
-import android.content.Context
 import com.fruse.dogedex.R
 import com.fruse.dogedex.core.api.ApiService
 import com.fruse.dogedex.core.api.dto.AddDogTOUserDTO
@@ -118,15 +117,6 @@ class DogRepository @Inject constructor(
         }
     }
 
-    private suspend fun getUserDogsDB(): ResponseStatus<List<Dog>> {
-        val dogEntityList = database.dogDao().getUserDogs()
-        val dogEntityMapper = DogEntityMapper()
-
-        return ResponseStatus.Success(
-            dogEntityMapper.fromDogEntityListTODogDomainList(dogEntityList)
-        )
-    }
-
     override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
         return makeNetworkCall {
             val response = apiService.getDogByMlId(mlDogId)
@@ -150,32 +140,8 @@ class DogRepository @Inject constructor(
         }.flowOn(dispatcher)
 
     override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
-        return withContext(dispatcher) {
-            // Se crean 2 tareas para que se ejecuten de forma asíncrona, al final una vez
-            // completadas todas, se procede a la siguiente línea de código
-            val allDogsListResponseDeferred = async { downloadDogsDB() }
-            val userDogsListResponseDeferred = async { getUserDogsDB() }
-
-            val allDogsListResponse = allDogsListResponseDeferred.await()
-            val userDogsListResponse = userDogsListResponseDeferred.await()
-
-            if (allDogsListResponse is ResponseStatus.Error) {
-                allDogsListResponse
-            } else if (userDogsListResponse is ResponseStatus.Error) {
-                userDogsListResponse
-            } else if (allDogsListResponse is ResponseStatus.Success &&
-                userDogsListResponse is ResponseStatus.Success
-            ) {
-                ResponseStatus.Success(
-                    getCollectionList(
-                        allDogsListResponse.data,
-                        userDogsListResponse.data
-                    )
-                )
-            } else {
-                ResponseStatus.Error(R.string.unknown_error)
-            }
-        }
+        // inCollection is already stored per row — one query is enough
+        return downloadDogsDB()
     }
 
     override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
@@ -192,9 +158,8 @@ class DogRepository @Inject constructor(
     override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
         return withContext(dispatcher) {
             val dogEntity = database.dogDao().getDogByMLId(mlDogId)
-
-            val dogEntityMapper = DogEntityMapper()
-            ResponseStatus.Success(dogEntityMapper.fromDogEntityToDogDomain(dogEntity))
+                ?: return@withContext ResponseStatus.Error(R.string.unknown_error)
+            ResponseStatus.Success(DogEntityMapper().fromDogEntityToDogDomain(dogEntity))
         }
     }
 

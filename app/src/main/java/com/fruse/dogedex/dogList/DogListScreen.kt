@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
 import com.fruse.dogedex.R
 import com.fruse.dogedex.core.composables.BackNavigationIcon
@@ -117,6 +118,7 @@ fun DogListScreenTopBar(onClick: () -> Unit) {
 @Composable
 fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
     if (dog.inCollection) {
+        val filesDir = LocalContext.current.filesDir
         Surface(
             modifier = Modifier
                 .padding(8.dp)
@@ -126,7 +128,9 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
             shape = RoundedCornerShape(4.dp)
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = dog.imageUrl),
+                painter = rememberAsyncImagePainter(
+                    model = java.io.File(filesDir, "images/${dog.imageUrl}.jpg")
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .background(Color.White)

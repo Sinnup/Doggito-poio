@@ -125,15 +125,15 @@ class MainViewModel @Inject constructor(
 
     fun setUpAssets(context: Context) {
         viewModelScope.launch(dispatcher) {
-
-            val jsonDogList = context.assets.open(DOGS_JSON_FILE).bufferedReader().use {
-                it.readText()
+            try {
+                val jsonDogList = context.assets.open(DOGS_JSON_FILE).bufferedReader().use {
+                    it.readText()
+                }
+                val dogsList = Json.decodeFromString<List<Dog>>(jsonDogList)
+                dogRepository.insertAllDogs(dogsList)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
             }
-
-            val dogsList = Json.decodeFromString<List<Dog>>(jsonDogList)
-            dogRepository.insertAllDogs(dogsList)
-
-
         }
         copyImagesToLocalStorage()
     }
