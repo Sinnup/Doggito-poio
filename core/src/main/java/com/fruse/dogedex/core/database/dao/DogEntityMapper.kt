@@ -1,6 +1,5 @@
 package com.fruse.dogedex.core.database.dao
 
-import com.fruse.dogedex.core.api.dto.DogDTO
 import com.fruse.dogedex.core.database.entities.DogEntity
 import com.fruse.dogedex.core.model.Dog
 
@@ -23,27 +22,27 @@ class DogEntityMapper {
         )
     }
 
-    fun fromDogEntityListTODogDomainList(dogEntityList: List<DogEntity>): List<Dog> {
-        return dogEntityList.map { fromDogEntityToDogDomain(it) }
+    fun fromDogDomainListTODogEntityList(dogList: List<Dog>): List<DogEntity> {
+        return dogList.map { fromDogDomainToDogEntity(it) }
     }
 
-    fun fromDogDTOToDogDomain(dogDTO: DogDTO): Dog {
-        return Dog(
-            dogDTO.id,
-            dogDTO.index,
-            dogDTO.name,
-            dogDTO.type,
-            dogDTO.heightFemale,
-            dogDTO.heightMale,
-            dogDTO.imageUrl,
-            dogDTO.lifeExpectancy,
-            dogDTO.temperament,
-            dogDTO.weightFemale,
-            dogDTO.weightMale
+    fun fromDogDomainToDogEntity(dog: Dog): DogEntity {
+        return DogEntity(
+            dog.id,
+            dog.index,
+            dog.name,
+            dog.type,
+            dog.heightFemale,
+            dog.heightMale,
+            dog.imageUrl,
+            dog.lifeExpectancy,
+            dog.temperament,
+            dog.weightFemale,
+            dog.weightMale
         )
     }
 
-    fun fromDogDTOListTODogDomainList(dogDTOList: List<DogDTO>): List<Dog> {
-        return dogDTOList.map { fromDogDTOToDogDomain(it) }
+    fun fromDogEntityListTODogDomainList(dogEntityList: List<DogEntity>): List<Dog> {
+        return dogEntityList.map { fromDogEntityToDogDomain(it) }
     }
 }
