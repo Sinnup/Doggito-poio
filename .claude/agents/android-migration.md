@@ -36,7 +36,19 @@ to the next phase.
 **compileSdk:** 37 | **targetSdk:** 36 | **Java:** 17
 **Compose BOM:** 2026.05.01 | **Hilt:** 2.59.2 | **Navigation:** 2.9.8
 **Lifecycle:** 2.10.0 | **Retrofit:** 3.0.0 | **Coil:** 2.7.0 | **CameraX:** 1.6.1
-**Gradle JVM heap:** 4096m
+**Room:** 2.8.4 | **Gradle JVM heap:** 4096m
+
+### Offline-first layer (2026-05-21)
+
+Remote APIs are down. The app now operates fully offline:
+- `ApiResponseStatus` renamed to `ResponseStatus` in `core.api.responses`
+- Room DB (`DogedexDatabase` v1) with `DogEntity`, `DogDao`, `DogEntityMapper`
+- `dogs.json` + dog images bundled in `app/src/main/assets/`
+- `MainActivity.onCreate` seeds the DB via `MainViewModel.setUpAssets()`
+- All ViewModel calls use `*DB()` variants of `DogTasks`
+- Login bypassed: `DogedexNavHost` hardcodes `isLoggedIn = true`
+- To re-enable remote: restore `sessionManager.isLoggedIn` in `DogedexNavHost`
+  and switch ViewModels back from `*DB()` to original Retrofit methods
 
 ---
 
