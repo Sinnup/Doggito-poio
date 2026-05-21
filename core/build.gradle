@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.androidx.room)
 }
 
 android {
@@ -30,6 +31,10 @@ android {
 
     buildFeatures {
         compose true
+    }
+
+    room {
+        schemaDirectory "$projectDir/schemas"
     }
 }
 
@@ -75,4 +80,8 @@ dependencies {
     implementation libs.androidx.compose.material.icons.core
     implementation libs.androidx.compose.material.icons.extended
     implementation libs.androidx.compose.material3.window.size
+
+    api libs.room.runtime
+    ksp libs.room.compiler
+    api libs.room.ktx
 }

@@ -9,15 +9,81 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       5 — Full Compose Migration
+Phase:       Offline-first — Local Data Source
 Status:      Complete ✓
-Next phase:  6 — MVI Architecture
-Branch:      refactor/migrate-to-mvi  ← create this branch next
+Next phase:  6 — MVI Architecture (paused while APIs are unavailable)
+Branch:      refactor/migrate-to-local-data-source (current)
 ```
 
-**Next action:** Migrate all ViewModels to MVI (UiState / UiAction / UiEffect).
-Eliminate `MutableLiveData`, `mutableStateOf`, and `ApiResponseStatus` from UI layer.
-Detailed steps: `.claude/agents/android-migration.md` → Phase 6.
+**Context:** Remote APIs are down. App now seeds all dog data from bundled assets into
+Room on startup and bypasses login. `ApiResponseStatus` renamed to `ResponseStatus` and
+moved to the canonical `core.api.responses` package. When the API is restored, re-enable
+`sessionManager.isLoggedIn` in `DogedexNavHost` and switch ViewModel calls back from the
+`*DB()` variants to the original Retrofit methods.
+
+**Next action:** Continue feature work on the local data layer — DogList screen
+displaying local DB data, DogDetail adding to collection via Room.
+
+---
+
+## [v0.8] — 2026-05-21 — Offline-first Local Data Source
+
+### Status: Done
+
+### Branch
+`refactor/migrate-to-local-data-source`
+
+### Commits
+| SHA | Message |
+|---|---|
+| `e98e526` | `refactor(core): rename ApiResponseStatus to ResponseStatus and fix response package` |
+| `87009c8` | `feat(core): add Room database layer and AssetCopyHelper infrastructure` |
+| `707715e` | `feat(app): offline-first data layer — bypass login, seed Room DB from bundled assets` |
+| `2cdd155` | `test(app): update test files for local data source and bundle dog assets` |
+
+### Done
+- **`ApiResponseStatus` → `ResponseStatus`**: renamed sealed class and moved from
+  legacy `com.fruse.dogedex.api.responses` package to the canonical
+  `com.fruse.dogedex.core.api.responses`; all API response DTOs (Auth, Dog, Default,
+  DogList, DogListResponse, DogResponse, UserResponse) package declarations updated;
+  `ApiService.getDogBYMlId` renamed to `getDogByMlId`
+- **Room database** (`core` module): `DogEntity`, `DogDao`, `DogedexDatabase` (v1),
+  `DogEntityMapper`, `DatabaseModule` Hilt provider; Room 2.8.4 added to catalog and
+  `core/build.gradle` with schema directory configured
+- **AssetCopyHelper** (`core`): utility that recursively copies an assets subfolder
+  to `context.filesDir`; `AssetModule` Hilt provider
+- **ImageRepository** (`app`): copies `assets/images/` to local storage on startup
+- **DogTasks / DogRepository** (`app`): added five DB-backed method variants —
+  `insertAllDogs`, `getDogCollectionDB`, `addDogToUserDB`, `getDogBYMlIdDB`,
+  `getProbableDogsDB`
+- **MainViewModel**: `setUpAssets(context)` reads `dogs.json` from assets, bulk-inserts
+  all 118 breeds into Room, then copies dog images to `filesDir`; ML recognition
+  result now resolved via `getDogBYMlIdDB`
+- **MainActivity**: instantiates `MainViewModel` via `viewModels()` and calls
+  `setUpAssets(this)` in `onCreate`; `DOGS_JSON_FILE = "dogs.json"` constant
+- **DogedexNavHost**: `isLoggedIn` hardcoded to `true` so the app opens directly on
+  `CameraScreen` while the remote auth API is unavailable
+- **CameraScreen**: take-photo FAB is only shown when ML confidence ≥ 70%
+- **DogListViewModel / DogDetailViewModel**: switched to `*DB()` repository methods
+- **Assets bundled**: `app/src/main/assets/dogs.json` (118 breeds) and
+  `app/src/main/assets/images/` (118 JPEG files, ~4.6 MB)
+- **Test renames**: `DogListScreenTest` → `DogEntityListScreenTest`,
+  `DogRepositoryTest` → `DogEntityRepositoryTest`,
+  `DogListViewModelTest` → `DogEntityListViewModelTest`
+
+### Gate results
+- `./gradlew assembleDebug` — pending verification
+- `./gradlew test` — pending verification
+
+### Deviations from plan
+- This work is not part of the numbered migration phases; it is a prerequisite
+  workaround while remote APIs are unavailable. Phase 6 (MVI Architecture) will
+  follow once the offline layer is stable.
+- `DogDao.getDogByMLId` queries `WHERE id = :mlDogId` using a `String` parameter
+  against a `Long` primary key — SQLite implicit cast handles this, but the ML
+  identifier and the numeric DB id must be kept in sync in `dogs.json`.
+- `_copyStatus` and `_isLoading` in `MainViewModel` are currently unused by any
+  UI — wiring them is left for the next feature pass.
 
 ---
 

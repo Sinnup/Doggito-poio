@@ -2,7 +2,7 @@ package com.fruse.dogedex.dogList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.core.api.responses.ResponseStatus
 import com.fruse.dogedex.core.di.StringResolver
 import com.fruse.dogedex.core.model.Dog
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,6 +54,7 @@ class DogListViewModel @Inject constructor(
             is DogListUiAction.OnDogClicked -> viewModelScope.launch {
                 _uiEffect.send(DogListUiEffect.NavigateToDogDetail(action.dog))
             }
+
             is DogListUiAction.DismissError -> _uiState.update { it.copy(error = null) }
         }
     }
@@ -61,12 +62,20 @@ class DogListViewModel @Inject constructor(
     private fun getDogCollection() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            when (val result = dogRepository.getDogCollection()) {
-                is ApiResponseStatus.Success ->
+//            when (val result = dogRepository.getDogCollection()) {
+            when (val result = dogRepository.getDogCollectionDB()) {
+                is ResponseStatus.Success ->
                     _uiState.update { it.copy(isLoading = false, dogs = result.data) }
-                is ApiResponseStatus.Error ->
-                    _uiState.update { it.copy(isLoading = false, error = strings.resolve(result.messageId)) }
-                is ApiResponseStatus.Loading ->
+
+                is ResponseStatus.Error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = strings.resolve(result.messageId)
+                        )
+                    }
+
+                is ResponseStatus.Loading ->
                     _uiState.update { it.copy(isLoading = true) }
             }
         }

@@ -3,7 +3,7 @@ package com.fruse.dogedex.auth.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fruse.dogedex.core.R
-import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.core.api.responses.ResponseStatus
 import com.fruse.dogedex.core.di.StringResolver
 import com.fruse.dogedex.core.model.User
 import com.fruse.dogedex.core.session.SessionManager
@@ -58,7 +58,7 @@ class AuthViewModel @Inject constructor(
     private val _uiEffect = Channel<AuthUiEffect>(Channel.BUFFERED)
     val uiEffect: Flow<AuthUiEffect> = _uiEffect.receiveAsFlow()
 
-    fun handleAction(action: AuthUiAction) {
+    fun  handleAction(action: AuthUiAction) {
         when (action) {
             is AuthUiAction.Login -> login(action.email, action.password)
             is AuthUiAction.SignUp -> signUp(action.email, action.password, action.passwordConfirmation)
@@ -114,17 +114,17 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleResponseStatus(apiResponseStatus: ApiResponseStatus<User>) {
+    private suspend fun handleResponseStatus(apiResponseStatus: ResponseStatus<User>) {
         when (apiResponseStatus) {
-            is ApiResponseStatus.Success -> {
+            is ResponseStatus.Success -> {
                 sessionManager.login(apiResponseStatus.data)
                 _uiState.update { it.copy(isLoading = false) }
                 _uiEffect.send(AuthUiEffect.NavigateToHome)
             }
-            is ApiResponseStatus.Error -> _uiState.update {
+            is ResponseStatus.Error -> _uiState.update {
                 it.copy(isLoading = false, error = strings.resolve(apiResponseStatus.messageId))
             }
-            is ApiResponseStatus.Loading -> _uiState.update { it.copy(isLoading = true) }
+            is ResponseStatus.Loading -> _uiState.update { it.copy(isLoading = true) }
         }
     }
 }

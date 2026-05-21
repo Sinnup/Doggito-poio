@@ -3,6 +3,8 @@ package com.fruse.dogedex.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,7 +26,8 @@ import com.fruse.dogedex.settings.SettingsScreen
 @Composable
 fun DogedexNavHost(sessionManager: SessionManager) {
     val navController = rememberNavController()
-    val isLoggedIn by sessionManager.isLoggedIn.collectAsStateWithLifecycle()
+//    val isLoggedIn by sessionManager.isLoggedIn.collectAsStateWithLifecycle() // Use when login is good again.
+    val isLoggedIn by remember { mutableStateOf(true) }
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {

@@ -1,4 +1,4 @@
-package com.fruse.dogedex.api.responses
+package com.fruse.dogedex.core.api.responses
 
 import com.fruse.dogedex.core.api.dto.DogDTO
 

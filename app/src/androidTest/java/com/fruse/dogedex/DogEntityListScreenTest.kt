@@ -4,7 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.core.api.responses.ResponseStatus
 import com.fruse.dogedex.dogList.DogListScreen
 import com.fruse.dogedex.dogList.DogListViewModel
 import com.fruse.dogedex.dogList.DogTasks
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import org.junit.Rule
 import org.junit.Test
 
-class DogListScreenTest {
+class DogEntityListScreenTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -21,19 +21,19 @@ class DogListScreenTest {
     @Test
     fun progressBarShowsWhenLoadingState() {
         class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
-                return ApiResponseStatus.Loading()
+            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
+                return ResponseStatus.Loading()
             }
 
-            override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> {
+            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> {
+            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> {
+            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
                 TODO("Not yet implemented")
             }
 
@@ -58,19 +58,19 @@ class DogListScreenTest {
     @Test
     fun errorDialogShowsIfErrorGettingDogs() {
         class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
-                return ApiResponseStatus.Error(messageId = R.string.there_was_an_error)
+            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
+                return ResponseStatus.Error(messageId = R.string.there_was_an_error)
             }
 
-            override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> {
+            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> {
+            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> {
+            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
                 TODO("Not yet implemented")
             }
 
@@ -99,8 +99,8 @@ class DogListScreenTest {
         val dog2Name = "Guillermo"
 
         class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
-                return ApiResponseStatus.Success(
+            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
+                return ResponseStatus.Success(
                     listOf(
                         Dog(
                             1, index = 1, "Chihuahua", "", "", "",
@@ -114,15 +114,15 @@ class DogListScreenTest {
                 )
             }
 
-            override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> {
+            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> {
+            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> {
+            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
                 TODO("Not yet implemented")
             }
 

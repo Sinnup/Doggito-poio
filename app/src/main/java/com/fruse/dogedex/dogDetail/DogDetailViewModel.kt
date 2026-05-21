@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.core.api.responses.ResponseStatus
 import com.fruse.dogedex.core.di.StringResolver
 import com.fruse.dogedex.core.model.Dog
 import com.fruse.dogedex.core.navigation.DogDetailKey
@@ -87,14 +87,17 @@ class DogDetailViewModel @Inject constructor(
     private fun addDogToUser() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            when (val result = dogRepository.addDogToUser(_uiState.value.dog?.id ?: 0)) {
-                is ApiResponseStatus.Success ->
+//            when (val result = dogRepository.addDogToUser(_uiState.value.dog?.id ?: 0)) {
+            when (val result = dogRepository.addDogToUserDB(_uiState.value.dog?.id ?: 0)) {
+                is ResponseStatus.Success ->
                     _uiState.update { it.copy(isLoading = false, hasDogBeenAdded = true) }
-                is ApiResponseStatus.Error ->
+
+                is ResponseStatus.Error ->
                     _uiState.update {
                         it.copy(isLoading = false, error = strings.resolve(result.messageId))
                     }
-                is ApiResponseStatus.Loading ->
+
+                is ResponseStatus.Loading ->
                     _uiState.update { it.copy(isLoading = true) }
             }
         }
@@ -103,8 +106,9 @@ class DogDetailViewModel @Inject constructor(
     private fun loadProbableDogs() {
         viewModelScope.launch {
             _uiState.update { it.copy(probableDogs = emptyList()) }
-            dogRepository.getProbableDogs(probableDogIds).collect { status ->
-                if (status is ApiResponseStatus.Success) {
+//            dogRepository.getProbableDogs(probableDogIds).collect { status ->
+            dogRepository.getProbableDogsDB(probableDogIds).collect { status ->
+                if (status is ResponseStatus.Success) {
                     _uiState.update { it.copy(probableDogs = it.probableDogs + status.data) }
                 }
             }

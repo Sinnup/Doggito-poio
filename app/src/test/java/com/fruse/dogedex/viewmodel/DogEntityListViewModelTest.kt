@@ -1,7 +1,7 @@
 package com.fruse.dogedex.viewmodel
 
 import app.cash.turbine.test
-import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.core.api.responses.ResponseStatus
 import com.fruse.dogedex.core.model.Dog
 import com.fruse.dogedex.dogList.DogListUiAction
 import com.fruse.dogedex.dogList.DogListUiEffect
@@ -15,7 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 
 
-class DogListViewModelTest {
+class DogEntityListViewModelTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
@@ -25,8 +25,8 @@ class DogListViewModelTest {
     @Test
     fun downloadDogListStatusesCorrect() = runTest {
         class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
-                return ApiResponseStatus.Success(
+            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
+                return ResponseStatus.Success(
                     listOf(
                         Dog(
                             1, index = 1, "", "", "", "",
@@ -40,12 +40,12 @@ class DogListViewModelTest {
                 )
             }
 
-            override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> {
-                return ApiResponseStatus.Success(Unit)
+            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
+                return ResponseStatus.Success(Unit)
             }
 
-            override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> {
-                return ApiResponseStatus.Success(
+            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
+                return ResponseStatus.Success(
                     Dog(
                         1, index = 1, "", "", "", "",
                         "", "", "", "", "", false
@@ -53,7 +53,7 @@ class DogListViewModelTest {
                 )
             }
 
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> = emptyFlow()
+            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> = emptyFlow()
         }
 
         val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
@@ -67,16 +67,16 @@ class DogListViewModelTest {
     @Test
     fun downloadDogListError_StatusesCorrect() = runTest {
         class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
-                return ApiResponseStatus.Error(messageId = 12)
+            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
+                return ResponseStatus.Error(messageId = 12)
             }
 
-            override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> {
-                return ApiResponseStatus.Success(Unit)
+            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
+                return ResponseStatus.Success(Unit)
             }
 
-            override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> {
-                return ApiResponseStatus.Success(
+            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
+                return ResponseStatus.Success(
                     Dog(
                         1, index = 1, "", "", "", "",
                         "", "", "", "", "", false
@@ -84,7 +84,7 @@ class DogListViewModelTest {
                 )
             }
 
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> = emptyFlow()
+            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> = emptyFlow()
         }
 
         val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
@@ -96,16 +96,16 @@ class DogListViewModelTest {
     @Test
     fun downloadDogListResetStatus_StatusesCorrect() = runTest {
         class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
-                return ApiResponseStatus.Error(messageId = 12)
+            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
+                return ResponseStatus.Error(messageId = 12)
             }
 
-            override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> {
-                return ApiResponseStatus.Success(Unit)
+            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
+                return ResponseStatus.Success(Unit)
             }
 
-            override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> {
-                return ApiResponseStatus.Success(
+            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
+                return ResponseStatus.Success(
                     Dog(
                         1, index = 1, "", "", "", "",
                         "", "", "", "", "", false
@@ -113,7 +113,7 @@ class DogListViewModelTest {
                 )
             }
 
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> = emptyFlow()
+            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> = emptyFlow()
         }
 
         val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
@@ -126,16 +126,16 @@ class DogListViewModelTest {
     fun onDogClicked_emitsNavigateToDogDetailEffect() = runTest {
         val fakeDog = Dog(1, index = 1, "", "", "", "", "", "", "", "", "", false)
         class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> =
-                ApiResponseStatus.Success(listOf(fakeDog))
+            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> =
+                ResponseStatus.Success(listOf(fakeDog))
 
-            override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> =
-                ApiResponseStatus.Success(Unit)
+            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> =
+                ResponseStatus.Success(Unit)
 
-            override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> =
-                ApiResponseStatus.Success(fakeDog)
+            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> =
+                ResponseStatus.Success(fakeDog)
 
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> = emptyFlow()
+            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> = emptyFlow()
         }
 
         val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)

@@ -11,7 +11,7 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.core.api.responses.ResponseStatus
 import com.fruse.dogedex.camera.di.ClassifierModule
 import com.fruse.dogedex.dogList.DogTasks
 import com.fruse.dogedex.camera.machinelearning.ClassifierTasks
@@ -63,8 +63,8 @@ class MainActivityTest {
     }
 
     class FakeDogRepository @Inject constructor() : DogTasks {
-        override suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
-            return ApiResponseStatus.Success(
+        override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
+            return ResponseStatus.Success(
                 listOf(
                     Dog(
                         1, index = 1, "Chihuahua", "", "", "",
@@ -78,12 +78,12 @@ class MainActivityTest {
             )
         }
 
-        override suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> {
+        override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
             TODO("Not yet implemented")
         }
 
-        override suspend fun getDogBYMlId(mlDogId: String): ApiResponseStatus<Dog> {
-            return ApiResponseStatus.Success(
+        override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
+            return ResponseStatus.Success(
                 Dog(
                     89, index = 70, "Chow chow", "", "", "",
                     "", "", "", "", "", true
@@ -91,7 +91,7 @@ class MainActivityTest {
             )
         }
 
-        override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ApiResponseStatus<Dog>> {
+        override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
             TODO("Not yet implemented")
         }
 

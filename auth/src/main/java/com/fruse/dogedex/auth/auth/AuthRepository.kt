@@ -5,7 +5,7 @@ import com.fruse.dogedex.core.api.dto.LoginDTO
 import com.fruse.dogedex.core.api.dto.SignUpDTO
 import com.fruse.dogedex.core.api.dto.UserDTOMapper
 import com.fruse.dogedex.core.api.makeNetworkCall
-import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.core.api.responses.ResponseStatus
 import com.fruse.dogedex.core.model.User
 import javax.inject.Inject
 
@@ -15,13 +15,13 @@ interface AuthTasks {
     suspend fun login(
         email: String,
         password: String
-    ): ApiResponseStatus<User>
+    ): ResponseStatus<User>
 
     suspend fun signUp(
         email: String,
         password: String,
         passwordConfirmation: String
-    ): ApiResponseStatus<User>
+    ): ResponseStatus<User>
 }
 
 class AuthRepository @Inject constructor(
@@ -31,7 +31,7 @@ class AuthRepository @Inject constructor(
     override suspend fun login(
         email: String,
         password: String
-    ): ApiResponseStatus<User> {
+    ): ResponseStatus<User> {
         return makeNetworkCall {
             val loginDTO = LoginDTO(email, password)
             val loginResponse = apiService.login(loginDTO)
@@ -50,7 +50,7 @@ class AuthRepository @Inject constructor(
         email: String,
         password: String,
         passwordConfirmation: String
-    ): ApiResponseStatus<User> {
+    ): ResponseStatus<User> {
         return makeNetworkCall {
             val signUpDTO = SignUpDTO(email, password, passwordConfirmation)
             val signUpResponse = apiService.signUp(signUpDTO)
