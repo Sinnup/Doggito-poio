@@ -5,13 +5,13 @@ import com.fruse.dogedex.core.api.dto.AddDogTOUserDTO
 import com.fruse.dogedex.core.api.dto.DogDTO
 import com.fruse.dogedex.core.api.dto.LoginDTO
 import com.fruse.dogedex.core.api.dto.SignUpDTO
-import com.fruse.dogedex.api.responses.ApiResponseStatus
-import com.fruse.dogedex.api.responses.AuthApiResponse
-import com.fruse.dogedex.api.responses.DefaultResponse
-import com.fruse.dogedex.api.responses.DogApiResponse
-import com.fruse.dogedex.api.responses.DogListApiResponse
-import com.fruse.dogedex.api.responses.DogListResponse
-import com.fruse.dogedex.api.responses.DogResponse
+import com.fruse.dogedex.core.api.responses.ResponseStatus
+import com.fruse.dogedex.core.api.responses.AuthApiResponse
+import com.fruse.dogedex.core.api.responses.DefaultResponse
+import com.fruse.dogedex.core.api.responses.DogApiResponse
+import com.fruse.dogedex.core.api.responses.DogListApiResponse
+import com.fruse.dogedex.core.api.responses.DogListResponse
+import com.fruse.dogedex.core.api.responses.DogResponse
 import com.fruse.dogedex.dogList.DogRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -73,7 +73,7 @@ class DogEntityRepositoryTest {
                 )
             }
 
-            override suspend fun getDogBYMlId(mlId: String): DogApiResponse {
+            override suspend fun getDogByMlId(mlId: String): DogApiResponse {
                 TODO("Not yet implemented")
             }
 
@@ -87,8 +87,8 @@ class DogEntityRepositoryTest {
 
         val apiResponseStatus = dogRepository.getDogCollection()
 
-        assert(apiResponseStatus is ApiResponseStatus.Success)
-        val dogCollection = (apiResponseStatus as ApiResponseStatus.Success).data
+        assert(apiResponseStatus is ResponseStatus.Success)
+        val dogCollection = (apiResponseStatus as ResponseStatus.Success).data
         assertEquals(2, dogCollection.size)
         assertEquals("Charmeleon", dogCollection[1].name)
         assertEquals("", dogCollection[0].name)
@@ -129,7 +129,7 @@ class DogEntityRepositoryTest {
                 )
             }
 
-            override suspend fun getDogBYMlId(mlId: String): DogApiResponse {
+            override suspend fun getDogByMlId(mlId: String): DogApiResponse {
                 TODO("Not yet implemented")
             }
 
@@ -143,7 +143,7 @@ class DogEntityRepositoryTest {
 
         val apiResponseStatus = dogRepository.getDogCollection()
 
-        assert(apiResponseStatus is ApiResponseStatus.Error)
+        assert(apiResponseStatus is ResponseStatus.Error)
 
     }
 
@@ -172,7 +172,7 @@ class DogEntityRepositoryTest {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getDogBYMlId(mlId: String): DogApiResponse {
+            override suspend fun getDogByMlId(mlId: String): DogApiResponse {
                 return DogApiResponse(
                     message = "",
                     isSuccess = true,
@@ -193,8 +193,8 @@ class DogEntityRepositoryTest {
             )
 
         val apiResponseStatus = dogRepository.getDogBYMlId("ja")
-        assert(apiResponseStatus is ApiResponseStatus.Success)
-        assertEquals(expectedDogId, (apiResponseStatus as ApiResponseStatus.Success).data.id)
+        assert(apiResponseStatus is ResponseStatus.Success)
+        assertEquals(expectedDogId, (apiResponseStatus as ResponseStatus.Success).data.id)
 
     }
 
@@ -223,7 +223,7 @@ class DogEntityRepositoryTest {
                 TODO("Not yet implemented")
             }
 
-            override suspend fun getDogBYMlId(mlId: String): DogApiResponse {
+            override suspend fun getDogByMlId(mlId: String): DogApiResponse {
                 return DogApiResponse(
                     message = "Error getting dog by ml id",
                     isSuccess = false,
@@ -244,7 +244,7 @@ class DogEntityRepositoryTest {
             )
 
         val apiResponseStatus = dogRepository.getDogBYMlId("ja")
-        assert(apiResponseStatus is ApiResponseStatus.Error)
+        assert(apiResponseStatus is ResponseStatus.Error)
 
     }
 }

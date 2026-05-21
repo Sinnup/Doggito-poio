@@ -1,7 +1,7 @@
 package com.fruse.dogedex.viewmodel
 
 import app.cash.turbine.test
-import com.fruse.dogedex.api.responses.ApiResponseStatus
+import com.fruse.dogedex.core.api.responses.ResponseStatus
 import com.fruse.dogedex.auth.auth.AuthTasks
 import com.fruse.dogedex.auth.auth.AuthUiAction
 import com.fruse.dogedex.auth.auth.AuthUiEffect
@@ -34,14 +34,14 @@ class AuthViewModelTest {
     @Test
     fun testLogin_emptyEmail_setsEmailError() = runTest {
         class FakeAuthRepository : AuthTasks {
-            override suspend fun login(email: String, password: String): ApiResponseStatus<User> =
-                ApiResponseStatus.Success(User(1, email, ""))
+            override suspend fun login(email: String, password: String): ResponseStatus<User> =
+                ResponseStatus.Success(User(1, email, ""))
 
             override suspend fun signUp(
                 email: String,
                 password: String,
                 passwordConfirmation: String
-            ): ApiResponseStatus<User> = ApiResponseStatus.Success(User(1, "", ""))
+            ): ResponseStatus<User> = ResponseStatus.Success(User(1, "", ""))
         }
 
         val viewModel = AuthViewModel(FakeAuthRepository(), fakeSessionManager, strings)
@@ -54,14 +54,14 @@ class AuthViewModelTest {
     @Test
     fun testLogin_emptyPassword_setsPasswordError() = runTest {
         class FakeAuthRepository : AuthTasks {
-            override suspend fun login(email: String, password: String): ApiResponseStatus<User> =
-                ApiResponseStatus.Success(User(1, email, ""))
+            override suspend fun login(email: String, password: String): ResponseStatus<User> =
+                ResponseStatus.Success(User(1, email, ""))
 
             override suspend fun signUp(
                 email: String,
                 password: String,
                 passwordConfirmation: String
-            ): ApiResponseStatus<User> = ApiResponseStatus.Success(User(1, "", ""))
+            ): ResponseStatus<User> = ResponseStatus.Success(User(1, "", ""))
         }
 
         val viewModel = AuthViewModel(FakeAuthRepository(), fakeSessionManager, strings)
@@ -76,14 +76,14 @@ class AuthViewModelTest {
         val fakeUser = User(1, "someemail", "")
 
         class FakeAuthRepository : AuthTasks {
-            override suspend fun login(email: String, password: String): ApiResponseStatus<User> =
-                ApiResponseStatus.Success(fakeUser)
+            override suspend fun login(email: String, password: String): ResponseStatus<User> =
+                ResponseStatus.Success(fakeUser)
 
             override suspend fun signUp(
                 email: String,
                 password: String,
                 passwordConfirmation: String
-            ): ApiResponseStatus<User> = ApiResponseStatus.Success(User(1, "", ""))
+            ): ResponseStatus<User> = ResponseStatus.Success(User(1, "", ""))
         }
 
         val viewModel = AuthViewModel(FakeAuthRepository(), fakeSessionManager, strings)
@@ -98,14 +98,14 @@ class AuthViewModelTest {
     @Test
     fun testLogin_error_setsErrorState() = runTest {
         class FakeAuthRepository : AuthTasks {
-            override suspend fun login(email: String, password: String): ApiResponseStatus<User> =
-                ApiResponseStatus.Error(42)
+            override suspend fun login(email: String, password: String): ResponseStatus<User> =
+                ResponseStatus.Error(42)
 
             override suspend fun signUp(
                 email: String,
                 password: String,
                 passwordConfirmation: String
-            ): ApiResponseStatus<User> = ApiResponseStatus.Success(User(1, "", ""))
+            ): ResponseStatus<User> = ResponseStatus.Success(User(1, "", ""))
         }
 
         val viewModel = AuthViewModel(FakeAuthRepository(), fakeSessionManager, strings)
@@ -118,14 +118,14 @@ class AuthViewModelTest {
     @Test
     fun testDismissError_clearsError() = runTest {
         class FakeAuthRepository : AuthTasks {
-            override suspend fun login(email: String, password: String): ApiResponseStatus<User> =
-                ApiResponseStatus.Error(42)
+            override suspend fun login(email: String, password: String): ResponseStatus<User> =
+                ResponseStatus.Error(42)
 
             override suspend fun signUp(
                 email: String,
                 password: String,
                 passwordConfirmation: String
-            ): ApiResponseStatus<User> = ApiResponseStatus.Success(User(1, "", ""))
+            ): ResponseStatus<User> = ResponseStatus.Success(User(1, "", ""))
         }
 
         val viewModel = AuthViewModel(FakeAuthRepository(), fakeSessionManager, strings)
