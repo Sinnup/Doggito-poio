@@ -2,6 +2,7 @@ package com.fruse.dogedex.dogList
 
 import android.content.Context
 import com.fruse.dogedex.core.utils.AssetCopyHelper
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
 
@@ -12,7 +13,7 @@ interface ImageRepository {
 
 class ImageRepositoryImpl @Inject constructor(
     private val assetCopyHelper: AssetCopyHelper,
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) : ImageRepository {
 
     companion object {
