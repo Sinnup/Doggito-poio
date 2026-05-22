@@ -3,6 +3,7 @@ package com.fruse.dogedex.dogList
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,29 +13,31 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
 import com.fruse.dogedex.R
 import com.fruse.dogedex.core.composables.BackNavigationIcon
@@ -104,13 +107,13 @@ private fun DogListContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DogListScreenTopBar(onClick: () -> Unit) {
-    TopAppBar(
+    CenterAlignedTopAppBar(
         title = { Text(text = stringResource(R.string.my_dog_collection)) },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        navigationIcon = { BackNavigationIcon(onClick) }
+        navigationIcon = { BackNavigationIcon(onClick = onClick) }
     )
 }
 
@@ -146,16 +149,18 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
             color = Color.Red,
             shape = RoundedCornerShape(4.dp)
         ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                text = dog.index.toString(),
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                fontSize = 42.sp,
-                fontWeight = FontWeight.Black
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = dog.index.toString(),
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.Black,
+                )
+            }
         }
     }
 }
@@ -177,5 +182,27 @@ fun DogListScreenPreview() {
             onDogClicked = {},
             onDismissError = {}
         )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun DogGridItemPreview() {
+    DogedexTheme {
+        DogGridItem(
+            dog = Dog(
+                id = 123L,
+                index = 123,
+                name = "asdasd",
+                type = "asdasd",
+                heightFemale = "asdasd",
+                heightMale = "asdasd",
+                imageUrl = "12312312332",
+                lifeExpectancy = "12",
+                temperament = "35",
+                weightFemale = "weightFemale",
+                weightMale = "weightMale",
+                inCollection = false
+            ), {})
     }
 }
