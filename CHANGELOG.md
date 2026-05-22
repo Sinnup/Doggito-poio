@@ -9,18 +9,33 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       v0.9 — Camera & Navigation Improvements
+Phase:       Post-v0.9 incremental
 Status:      Complete ✓
 Next action: Feature work on DogDetail collection flow / restore remote API when available
 Branch:      main
 ```
 
 **Context:** Remote APIs are still down. The app operates fully offline using Room +
-bundled assets. Navigation to `DogDetailScreen` now passes `Dog`, `probableDogIds`, and
-`isRecognition` explicitly through the route, eliminating null-deserialization bugs.
-Camera tap-to-focus is functional. Portrait-mode dog detection is fixed. When the API is
-restored, re-enable `sessionManager.isLoggedIn` in `DogedexNavHost` and switch ViewModel
-calls back from the `*DB()` variants to the original Retrofit methods.
+bundled assets. `targetSdk` is now 37. `MostProbableDogsDialog` shows thumbnails for each
+probable dog. When the API is restored, re-enable `sessionManager.isLoggedIn` in
+`DogedexNavHost` and switch ViewModel calls back from the `*DB()` variants to the original
+Retrofit methods.
+
+---
+
+## [post-v0.9] — 2026-05-22 — Incremental improvements
+
+### Status: Done
+
+### Branch
+`main`
+
+### Done
+
+- **`app/build.gradle`**: `targetSdk` bumped 36 → 37
+- **`MostProbableDogsDialog`**: each list item now displays a 56 dp thumbnail on the right,
+  loaded from local storage (`filesDir/images/<imageUrl>.jpg` via Coil) — consistent with
+  the image display in `DogDetailScreen`
 
 ---
 

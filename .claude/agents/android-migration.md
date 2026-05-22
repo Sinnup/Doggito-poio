@@ -33,10 +33,15 @@ to the next phase.
 ## Current State (post all phases)
 
 **AGP:** 9.2.1 | **Kotlin:** 2.3.21 | **KSP:** 2.3.8 | **Gradle:** 9.5.1
-**compileSdk:** 37 | **targetSdk:** 36 | **Java:** 17
+**compileSdk:** 37 | **targetSdk:** 37 | **Java:** 17
 **Compose BOM:** 2026.05.01 | **Hilt:** 2.59.2 | **Navigation:** 2.9.8
 **Lifecycle:** 2.10.0 | **Retrofit:** 3.0.0 | **Coil:** 2.7.0 | **CameraX:** 1.6.1
 **Room:** 2.8.4 | **Gradle JVM heap:** 4096m
+
+### Post-v0.9 incremental changes (2026-05-22)
+
+- `app/build.gradle`: `targetSdk` bumped from 36 to 37
+- `MostProbableDogsDialog`: each probable-dog list item now shows a 56 dp thumbnail loaded from local storage (`filesDir/images/<imageUrl>.jpg` via Coil), consistent with `DogDetailScreen`
 
 ### Camera & Navigation fixes (2026-05-22 — v0.9)
 
