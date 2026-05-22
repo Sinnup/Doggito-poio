@@ -3,6 +3,7 @@ package com.fruse.dogedex.camera.machinelearning
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
+import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.YuvImage
 import androidx.camera.core.ImageProxy
@@ -20,7 +21,7 @@ class ClassifierRepository @Inject constructor(
 ) : ClassifierTasks {
 
     override suspend fun recognizeImage(imageProxy: ImageProxy): List<DogRecognition> {
-//                val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+        val rotationDegrees = imageProxy.imageInfo.rotationDegrees
 
         return withContext(Dispatchers.IO) {
             val bitmap = convertImageProxyToBitmap(imageProxy)
@@ -28,9 +29,16 @@ class ClassifierRepository @Inject constructor(
             if (bitmap == null) {
                 listOf(DogRecognition("", 0f))
             } else {
-                classifier.recognizeImage(bitmap).subList(0, 5)
+                val rotatedBitmap = rotateBitmap(bitmap, rotationDegrees)
+                classifier.recognizeImage(rotatedBitmap).subList(0, 5)
             }
         }
+    }
+
+    private fun rotateBitmap(bitmap: Bitmap, degrees: Int): Bitmap {
+        if (degrees == 0) return bitmap
+        val matrix = Matrix().apply { postRotate(degrees.toFloat()) }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)

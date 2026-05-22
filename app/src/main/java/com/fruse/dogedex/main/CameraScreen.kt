@@ -5,19 +5,21 @@ import android.content.pm.PackageManager
 import android.view.Surface
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -29,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
@@ -92,6 +95,7 @@ private fun CameraContent(
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
     val imageCapture = remember { mutableStateOf<ImageCapture?>(null) }
     val previewView = remember { PreviewView(context) }
+    val camera = remember { mutableStateOf<Camera?>(null) }
 
     DisposableEffect(Unit) {
         onDispose { cameraExecutor.shutdown() }
@@ -103,15 +107,17 @@ private fun CameraContent(
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder().build()
-            preview.setSurfaceProvider(previewView.surfaceProvider)
+            preview.surfaceProvider = previewView.surfaceProvider
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             val capture = ImageCapture.Builder()
                 .setTargetRotation(previewView.display?.rotation ?: Surface.ROTATION_0)
+
                 .build()
             imageCapture.value = capture
 
             val imageAnalysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setTargetRotation(previewView.display?.rotation ?: Surface.ROTATION_0)
                 .build()
             imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
                 EspressoIdlingResource.decrement()
@@ -119,7 +125,7 @@ private fun CameraContent(
             }
 
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
+            camera.value = cameraProvider.bindToLifecycle(
                 lifecycleOwner, cameraSelector, preview, capture, imageAnalysis
             )
             isCameraReady = true
@@ -150,7 +156,16 @@ private fun CameraContent(
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
             factory = { previewView },
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures { offset ->
+                        val point = previewView.meteringPointFactory
+                            .createPoint(offset.x, offset.y)
+                        val action = FocusMeteringAction.Builder(point).build()
+                        camera.value?.cameraControl?.startFocusAndMetering(action)
+                    }
+                }
         )
 
         val dogRecognition = uiState.dogRecognition
@@ -191,19 +206,19 @@ private fun CameraContent(
             )
         }
 
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .navigationBarsPadding()
-                .padding(bottom = 32.dp, start = 16.dp)
-                .semantics { testTag = "settings-fab" },
-            onClick = onNavigateToSettings
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Settings,
-                contentDescription = null
-            )
-        }
+//        FloatingActionButton(
+//            modifier = Modifier
+//                .align(Alignment.BottomStart)
+//                .navigationBarsPadding()
+//                .padding(bottom = 32.dp, start = 16.dp)
+//                .semantics { testTag = "settings-fab" },
+//            onClick = onNavigateToSettings
+//        ) {
+//            Icon(
+//                imageVector = Icons.Filled.Settings,
+//                contentDescription = null
+//            )
+//        }
 
         if (uiState.isLoading) {
             LoadingWheel()
