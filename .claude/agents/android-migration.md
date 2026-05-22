@@ -38,6 +38,16 @@ to the next phase.
 **Lifecycle:** 2.10.0 | **Retrofit:** 3.0.0 | **Coil:** 2.7.0 | **CameraX:** 1.6.1
 **Room:** 2.8.4 | **Gradle JVM heap:** 4096m
 
+### Camera & Navigation fixes (2026-05-22 — v0.9)
+
+- `DogDetailViewModel`: fixed `savedStateHandle.toRoute<DogDetailKey>()` — missing `typeMap` caused silent null deserialization of the custom `Dog` NavType
+- `DogedexNavHost`: `composable<DogDetailKey>` now extracts args with `it.toRoute<DogDetailKey>()` and passes `dog`, `probableDogIds`, `isRecognition` explicitly to `DogDetailScreen`
+- `DogDetailScreen`: signature updated to accept the three route args as explicit parameters; null-dog guard removed
+- `CameraScreen`: tap-to-focus via `pointerInput`/`detectTapGestures` on `AndroidView` modifier (replaces broken `setOnTouchListener`); `ImageAnalysis` now sets `setTargetRotation`
+- `ClassifierRepository`: portrait-mode detection fixed — `imageProxy.imageInfo.rotationDegrees` now applied via `Matrix.postRotate` before feeding bitmap to TFLite
+- `DogListScreen`: `TopAppBar` → `CenterAlignedTopAppBar`; `DogGridItem` index text wrapped in `Box(contentAlignment = Center)` to prevent overflow
+- `BackNavigationIcon`: `tint: Color = Color.Black` parameter added
+
 ### Offline-first layer (2026-05-21)
 
 Remote APIs are down. The app now operates fully offline:

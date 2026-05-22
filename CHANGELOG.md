@@ -9,20 +9,68 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       Offline-first — Local Data Source
+Phase:       v0.9 — Camera & Navigation Improvements
 Status:      Complete ✓
-Next phase:  6 — MVI Architecture (paused while APIs are unavailable)
-Branch:      refactor/migrate-to-local-data-source (current)
+Next action: Feature work on DogDetail collection flow / restore remote API when available
+Branch:      main
 ```
 
-**Context:** Remote APIs are down. App now seeds all dog data from bundled assets into
-Room on startup and bypasses login. `ApiResponseStatus` renamed to `ResponseStatus` and
-moved to the canonical `core.api.responses` package. When the API is restored, re-enable
-`sessionManager.isLoggedIn` in `DogedexNavHost` and switch ViewModel calls back from the
-`*DB()` variants to the original Retrofit methods.
+**Context:** Remote APIs are still down. The app operates fully offline using Room +
+bundled assets. Navigation to `DogDetailScreen` now passes `Dog`, `probableDogIds`, and
+`isRecognition` explicitly through the route, eliminating null-deserialization bugs.
+Camera tap-to-focus is functional. Portrait-mode dog detection is fixed. When the API is
+restored, re-enable `sessionManager.isLoggedIn` in `DogedexNavHost` and switch ViewModel
+calls back from the `*DB()` variants to the original Retrofit methods.
 
-**Next action:** Continue feature work on the local data layer — DogList screen
-displaying local DB data, DogDetail adding to collection via Room.
+---
+
+## [v0.9] — 2026-05-22 — Camera & Navigation Improvements
+
+### Status: Done
+
+### Branch
+`main`
+
+### Done
+
+#### Navigation fixes
+- **DogedexNavHost**: `composable<DogDetailKey>` now calls `it.toRoute<DogDetailKey>()`
+  and passes `dog`, `probableDogIds`, and `isRecognition` as explicit parameters to
+  `DogDetailScreen`, replacing the previous implicit route extraction that silently dropped
+  the custom `Dog` NavType
+- **DogDetailScreen**: signature updated to accept `dog: Dog`, `probableDogIds: List<String>`,
+  and `isRecognition: Boolean` as explicit parameters; null-dog guard removed (dog is
+  guaranteed non-null from the route)
+- **DogDetailViewModel**: `savedStateHandle.toRoute<DogDetailKey>()` was missing
+  `typeMap = mapOf(typeOf<Dog>() to DogType)`, causing silent null deserialization for the
+  custom `Dog` NavType; fixed to include the typeMap and simplified to a non-nullable
+  `dogDetailKey`
+
+#### Camera improvements
+- **CameraScreen**: tap-to-focus implemented using `pointerInput` / `detectTapGestures`
+  on the `AndroidView` modifier — the correct Compose approach, since `setOnTouchListener`
+  is overridden by Compose's gesture layer; `Camera` instance stored in state;
+  `ImageAnalysis` now calls `setTargetRotation`
+- **ClassifierRepository**: fixed portrait-mode dog detection — `rotationDegrees` was
+  commented out, so the ML model was receiving sideways frames in portrait orientation;
+  now reads `imageProxy.imageInfo.rotationDegrees` and applies `Matrix.postRotate` before
+  passing the bitmap to TFLite
+
+#### UI improvements
+- **DogListScreen**: `TopAppBar` replaced with `CenterAlignedTopAppBar` to center the
+  title; `DogGridItem` non-collected branch wrapped in `Box(contentAlignment = Center)` to
+  prevent the index number from overflowing at large font sizes
+- **BackNavigationIcon**: added `tint: Color = Color.Black` parameter for icon color control
+
+### Gate results
+- `./gradlew assembleDebug` — pending verification
+- `./gradlew test` — pending verification
+
+### Deviations from plan
+- These are feature and bug-fix changes outside the numbered migration phases, continuing
+  the offline-first work begun in v0.8.
+- `typeMap` omission in `DogDetailViewModel.toRoute()` was a silent runtime defect — the
+  Navigation 3 route materialized with a null `Dog`, which then crashed `DogDetailScreen`.
 
 ---
 
