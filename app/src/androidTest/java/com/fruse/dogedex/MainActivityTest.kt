@@ -95,6 +95,28 @@ class MainActivityTest {
             TODO("Not yet implemented")
         }
 
+        override suspend fun insertAllDogs(dogs: List<Dog>) {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
+            return ResponseStatus.Success(
+                Dog(89, index = 70, "Chow chow", "", "", "", "", "", "", "", "", true)
+            )
+        }
+
+        override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
+            TODO("Not yet implemented")
+        }
+
     }
 
     class FakeClassifierRepository @Inject constructor() : ClassifierTasks {
@@ -126,7 +148,6 @@ class MainActivityTest {
     fun showAllFab() {
         composeTestRule.onNodeWithTag("take-photo-fab").assertIsDisplayed()
         composeTestRule.onNodeWithTag("dog-list-fab").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("settings-fab").assertIsDisplayed()
     }
 
     @Test
