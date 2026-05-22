@@ -52,6 +52,9 @@ import com.fruse.dogedex.core.model.Dog
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun DogDetailScreen(
+    dog: Dog,
+    probableDogIds: List<String>,
+    isRecognition: Boolean,
     onNavigateBack: () -> Unit,
     viewModel: DogDetailViewModel = hiltViewModel()
 ) {
@@ -70,12 +73,6 @@ fun DogDetailScreen(
         if (uiState.hasDogBeenAdded) {
             onNavigateBack()
         }
-    }
-
-    val dog = uiState.dog
-    if (dog == null) {
-        LaunchedEffect(Unit) { onNavigateBack() }
-        return
     }
 
     DogDetailContent(

@@ -1,14 +1,18 @@
 package com.fruse.dogedex.main
 
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.fruse.dogedex.auth.auth.LoginScreen
 import com.fruse.dogedex.auth.auth.SignUpScreen
 import com.fruse.dogedex.core.navigation.CameraKey
@@ -44,6 +48,7 @@ fun DogedexNavHost(sessionManager: SessionManager) {
     val startDestination = if (isLoggedIn) CameraKey else LoginKey
 
     NavHost(
+//        modifier = Modifier.safeContentPadding(),
         navController = navController,
         startDestination = startDestination
     ) {
@@ -100,10 +105,14 @@ fun DogedexNavHost(sessionManager: SessionManager) {
 
         composable<DogDetailKey>(
             typeMap = mapOf(
-                kotlin.reflect.typeOf<com.fruse.dogedex.core.model.Dog>() to DogType
+                kotlin.reflect.typeOf<com.fruse.dogedex.core.model.Dog>() to DogType,
             )
         ) {
+            val args = it.toRoute<DogDetailKey>()
             DogDetailScreen(
+                dog = args.dog,
+                probableDogIds = args.probableDogIds,
+                isRecognition = args.isRecognition,
                 onNavigateBack = {
                     navController.navigateUp()
                 }

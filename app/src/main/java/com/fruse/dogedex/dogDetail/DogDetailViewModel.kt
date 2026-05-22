@@ -8,6 +8,7 @@ import com.fruse.dogedex.core.api.responses.ResponseStatus
 import com.fruse.dogedex.core.di.StringResolver
 import com.fruse.dogedex.core.model.Dog
 import com.fruse.dogedex.core.navigation.DogDetailKey
+import com.fruse.dogedex.core.navigation.DogType
 import com.fruse.dogedex.dogList.DogTasks
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -49,17 +50,13 @@ class DogDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val dogDetailKey: DogDetailKey? = runCatching {
-        savedStateHandle.toRoute<DogDetailKey>()
-    }.getOrNull()
+    private val dogDetailKey: DogDetailKey = savedStateHandle.toRoute(
+        typeMap = mapOf(kotlin.reflect.typeOf<Dog>() to DogType)
+    )
 
-    private val initialDog = dogDetailKey?.dog ?: savedStateHandle.get<Dog>("dog")
-    private val probableDogIds = dogDetailKey?.probableDogIds
-        ?: savedStateHandle.get<List<String>>("most_probable_dog_ids")
-        ?: listOf()
-    private val initialIsRecognition = dogDetailKey?.isRecognition
-        ?: savedStateHandle.get<Boolean>("is_recognition")
-        ?: false
+    private val initialDog = dogDetailKey.dog
+    private val probableDogIds = dogDetailKey.probableDogIds
+    private val initialIsRecognition = dogDetailKey.isRecognition
 
     private val _uiState = MutableStateFlow(
         DogDetailUiState(
