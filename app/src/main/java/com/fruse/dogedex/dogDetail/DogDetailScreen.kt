@@ -21,6 +21,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,6 +50,7 @@ import com.fruse.dogedex.R
 import com.fruse.dogedex.core.composables.ErrorDialog
 import com.fruse.dogedex.core.composables.LoadingWheel
 import com.fruse.dogedex.core.model.Dog
+import com.fruse.dogedex.core.ui.theme.DogedexTheme
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -77,7 +80,7 @@ fun DogDetailScreen(
 
     DogDetailContent(
         uiState = uiState,
-        dog = dog,
+        dog = uiState.dog ?: dog,
         onAction = viewModel::handleAction
     )
 }
@@ -93,7 +96,7 @@ private fun DogDetailContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.secondary_background))
+            .background(MaterialTheme.colorScheme.secondaryContainer)
             .navigationBarsPadding()
             .padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
         contentAlignment = Alignment.TopCenter
@@ -165,7 +168,7 @@ fun DogInformation(
             modifier = Modifier
                 .fillMaxWidth(),
             shape = RoundedCornerShape(4.dp),
-            color = colorResource(id = android.R.color.white)
+            color = MaterialTheme.colorScheme.background
         ) {
             Column(
                 modifier = Modifier
@@ -177,7 +180,7 @@ fun DogInformation(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(id = R.string.dog_index_format, dog.index),
                     fontSize = 32.sp,
-                    color = colorResource(id = R.color.text_black),
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.End
                 )
 
@@ -188,7 +191,7 @@ fun DogInformation(
                         .padding(top = 8.dp, bottom = 8.dp, start = 8.dp, end = 8.dp),
                     text = dog.name,
                     fontSize = 32.sp,
-                    color = colorResource(id = R.color.text_black),
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Medium
                 )
@@ -202,14 +205,14 @@ fun DogInformation(
                     ),
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp,
-                    color = colorResource(id = R.color.text_black)
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Text(
                     text = dog.temperament,
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp,
-                    color = colorResource(id = R.color.text_black),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -257,7 +260,7 @@ fun DogInformation(
                             text = dog.type,
                             textAlign = TextAlign.Center,
                             fontSize = 16.sp,
-                            color = colorResource(id = R.color.text_black),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.padding(top = 8.dp)
                         )
@@ -265,7 +268,7 @@ fun DogInformation(
                             text = stringResource(id = R.string.group),
                             textAlign = TextAlign.Center,
                             fontSize = 16.sp,
-                            color = colorResource(id = R.color.text_black),
+                            color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
@@ -343,7 +346,7 @@ private fun DogDataColumn(
         Text(
             text = genre,
             textAlign = TextAlign.Center,
-            color = colorResource(id = R.color.text_black),
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 8.dp)
         )
 
@@ -352,21 +355,21 @@ private fun DogDataColumn(
             textAlign = TextAlign.Center,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = colorResource(id = R.color.text_black),
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 8.dp)
         )
         Text(
             text = stringResource(id = R.string.weight),
             textAlign = TextAlign.Center,
             fontSize = 16.sp,
-            color = colorResource(id = R.color.dark_gray)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Text(
             text = height,
             textAlign = TextAlign.Center,
             fontSize = 16.sp,
-            color = colorResource(id = R.color.text_black),
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(top = 8.dp)
         )
@@ -374,23 +377,25 @@ private fun DogDataColumn(
             text = stringResource(id = R.string.height),
             textAlign = TextAlign.Center,
             fontSize = 16.sp,
-            color = colorResource(id = R.color.dark_gray)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun DogDetailScreenPreview() {
-    val dog = Dog(
-        1L, 78, "Pug",
-        "Herding", "70", "75",
-        "", "10 - 12", "Friendly, playful",
-        "5", "6"
-    )
-    DogDetailContent(
-        uiState = DogDetailUiState(dog = dog),
-        dog = dog,
-        onAction = {}
-    )
+    DogedexTheme {
+        val dog = Dog(
+            1L, 78, "Pug",
+            "Herding", "70", "75",
+            "", "10 - 12", "Friendly, playful",
+            "5", "6"
+        )
+        DogDetailContent(
+            uiState = DogDetailUiState(dog = dog),
+            dog = dog,
+            onAction = {}
+        )
+    }
 }

@@ -79,6 +79,9 @@ fun DogedexNavHost(sessionManager: SessionManager) {
         }
 
         composable<CameraKey> {
+            LaunchedEffect(CameraKey) {
+                navController.clearBackStack(CameraKey)
+            }
             CameraScreen(
                 onNavigateToDogDetail = { dog, probableDogIds ->
                     navController.navigate(DogDetailKey(dog, probableDogIds, true))
