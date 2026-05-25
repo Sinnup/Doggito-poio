@@ -37,5 +37,7 @@
     <string name="not_your_dog">Not your dog? Tap to see other dogs</string>
     <string name="other_probable_dogs">Other probable dogs</string>
     <string name="dismiss">Dismiss</string>
+    <string name="privacy_policy_url">https://YOUR_PRIVACY_POLICY_URL_HERE</string>
+    <string name="privacy_policy">Privacy Policy</string>
 
 </resources>

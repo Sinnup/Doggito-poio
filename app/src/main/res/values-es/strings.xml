@@ -38,4 +38,6 @@
     <string name="not_your_dog">¿No es tu perro? Toca para ver otros perros</string>
     <string name="other_probable_dogs">Otros perros probables</string>
     <string name="dismiss">Cerrar</string>
+    <string name="privacy_policy_url">https://YOUR_PRIVACY_POLICY_URL_HERE</string>
+    <string name="privacy_policy">Política de privacidad</string>
 </resources>
