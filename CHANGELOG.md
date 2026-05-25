@@ -9,14 +9,36 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       Post-v1.2 network removal
+Phase:       Post-v1.3 unit test cleanup
 Status:      Complete ✓
-Next action: Prepare release APK and upload to Play Console
+Next action: Final Release verification
 Branch:      main
 ```
 
-**Context:** App is now fully offline-first. All network-related code (Retrofit, OkHttp,
-ApiService) and dependencies have been removed. App uses bundled assets and Room DB.
+**Context:** The project is now fully offline-first with comprehensive unit test coverage.
+All core components are verified on the JVM.
+
+---
+
+## [v1.3] — 2026-05-23 — Testing & Infrastructure Cleanup
+
+### Status: Done
+
+### Branch
+`main`
+
+### Done
+
+- **Unit Tests Coverage**: Created comprehensive unit tests for all ViewModels (`MainViewModel`, `DogListViewModel`, `DogDetailViewModel`) and Repositories.
+- **Core Tests**: Added `DogEntityMapperTest` in the `:core` module to verify data mapping logic.
+- **Test Infrastructure**: Integrated **Robolectric** and `navigation-testing` to support Android-dependent unit tests (like `SavedStateHandle` and `NavType` logic).
+- **Robolectric SDK Fix**: Configured unit tests to run on SDK 35 to avoid compatibility issues with AGP 9.
+- **Mocking**: Adopted **Mockito** and **Mockito-Kotlin** for robust dependency isolation in repository tests.
+- **Cleanup**: Purged all boilerplate `ExampleUnitTest` and `ExampleInstrumentedTest` files project-wide.
+
+### Gate results
+- `./gradlew assembleDebug` — PASS
+- `./gradlew test` — PASS ✓ (21 unit tests verified)
 
 ---
 

@@ -28,6 +28,12 @@ to the next phase.
 
 **The app is now fully offline-first.** No network or authentication required.
 
+### v1.3 Testing & Infrastructure Cleanup (2026-05-23)
+
+- **Comprehensive Unit Tests**: Full coverage for ViewModels and Repository.
+- **JVM Testing**: Robolectric + navigation-testing integrated for Android component tests on JVM.
+- **Core Verification**: Added data mapper tests in `:core`.
+
 ### v1.2 Network Removal (2026-05-23)
 
 - **Network Cleanup**: Retrofit, OkHttp, and Moshi removed.
