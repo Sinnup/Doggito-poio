@@ -9,17 +9,32 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       Post-v0.9 incremental
+Phase:       Post-v1.0 release polish
 Status:      Complete ✓
-Next action: Feature work on DogDetail collection flow / restore remote API when available
+Next action: Prepare release APK and upload to Play Console
 Branch:      main
 ```
 
-**Context:** Remote APIs are still down. The app operates fully offline using Room +
-bundled assets. `targetSdk` is now 37. `MostProbableDogsDialog` shows thumbnails for each
-probable dog. When the API is restored, re-enable `sessionManager.isLoggedIn` in
-`DogedexNavHost` and switch ViewModel calls back from the `*DB()` variants to the original
-Retrofit methods.
+**Context:** App is now ready for release. AGP 9.2 compat issues resolved. Splash screen
+implemented. Material 3 migration for dialogs complete. targetSdk set to 35.
+
+---
+
+## [v1.0] — 2026-05-23 — Release Polish & AGP 9 Migration
+
+### Status: Done
+
+### Branch
+`main`
+
+### Done
+
+- **AGP 9 Compatibility**: migrated legacy `applicationVariants` to modern `androidComponents` API in `app/build.gradle`.
+- **SDK Update**: unified `compileSdk` and `targetSdk` to 35 (Android 15) in `libs.versions.toml`.
+- **Splash Screen**: implemented `androidx.core:core-splashscreen` API. Added `Theme.App.Starting` and called `installSplashScreen()` in `MainActivity`.
+- **Material 3 Migration**: fixed `MostProbableDogsDialog` to use Material 3 `AlertDialog` parameters (confirmButton), resolving build errors.
+- **Theme & UI Polish**: updated `Theme.Dogedex` to inherit from `Theme.Material3.DayNight.NoActionBar` and configured transparent system bars for full edge-to-edge support.
+- **Lint Cleanup**: removed unused imports, added trailing commas, fixed deprecated `hiltViewModel` calls, and improved code style in `CameraScreen`, `DogedexNavHost`, and `MostProbableDogsDialog`.
 
 ---
 

@@ -7,15 +7,18 @@ kotlin                      = "2.3.21"
 ksp                         = "2.3.8"
 
 # AndroidX core
-compileSdk                  = "37"
+compileSdk                  = "35"
 minSdk                      = "24"
-targetSdk                   = "36"
+targetSdk                   = "35"
 coreKtx                     = "1.18.0"
 appcompat                   = "1.7.1"
 activityKtx                 = "1.13.0"
 
 # Lifecycle
 lifecycle                   = "2.10.0"
+
+# Splashscreen
+splashscreen                = "1.2.0"
 
 # Navigation
 navigation                  = "2.9.8"
@@ -94,6 +97,7 @@ androidx-compose-material-icons-extended= { group = "androidx.compose.material",
 androidx-compose-material3              = { group = "androidx.compose.material3",  name = "material3" }
 androidx-compose-material3-window-size  = { group = "androidx.compose.material3",  name = "material3-window-size-class" }
 androidx-activity-compose               = { group = "androidx.activity",           name = "activity-compose",              version.ref = "activityCompose" }
+androidx-core-splashscreen             = { group = "androidx.core",              name = "core-splashscreen",             version.ref = "splashscreen" }
 
 # Hilt navigation for Compose (not BOM-managed)
 androidx-hilt-navigation-compose        = { group = "androidx.hilt",              name = "hilt-navigation-compose",       version.ref = "hiltNavigationCompose" }
