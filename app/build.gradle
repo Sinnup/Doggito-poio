@@ -62,6 +62,31 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName.set("doggito-poio_${variant.name}.apk")
+        }
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name ==~ /bundle[A-Z].*/) {
+        def buildDirPath = layout.buildDirectory.get().asFile.absolutePath
+        task.doLast {
+            def variantName = task.name.substring('bundle'.length())
+            variantName = variantName[0].toLowerCase() + variantName.substring(1)
+            def bundleDir = new File("${buildDirPath}/outputs/bundle/${variantName}")
+            if (bundleDir.exists()) {
+                bundleDir.listFiles()?.findAll { it.name.endsWith('.aab') }?.each { f ->
+                    f.renameTo(new File(bundleDir, "doggito-poio_${variantName}.aab"))
+                }
+            }
+        }
+    }
 }
 
 dependencies {
