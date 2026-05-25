@@ -19,34 +19,25 @@ to the next phase.
 ## Project Snapshot (baseline at migration start)
 
 **Modules:** `app`, `core`, `camera`
-**AGP:** 8.1.0 → target 9.x latest stable
-**Kotlin:** 1.9.0 → target 2.x
-**Java compatibility:** 1.8 → target 17
-**compileSdk:** 34 (app) / 33 (core, auth, camera) → unify to 35
-**Annotation processing:** KAPT → target KSP
-**DI:** Hilt 2.48 → target 2.59.2+
-**Navigation:** hybrid (Fragment Nav Component + Activity-based + Compose Nav 2) → target Navigation 3
-**State management:** mixed LiveData + Compose mutableStateOf → target StateFlow + UiState
-**Compose BOM:** inconsistent (2023.01.00 / 2023.05.00) → target latest stable BOM
-**DataBinding:** enabled in `app` and `camera` → remove after Compose migration complete
-
-## Current State (post all phases)
-
 **AGP:** 9.2.1 | **Kotlin:** 2.3.21 | **KSP:** 2.3.8 | **Gradle:** 9.5.1
 **compileSdk:** 35 | **targetSdk:** 35 | **Java:** 17
 **Compose BOM:** 2026.05.01 | **Hilt:** 2.59.2 | **Navigation:** 2.9.8
 **Splashscreen:** 1.2.0 | **Lifecycle:** 2.10.0
 
+## Current State (post all phases)
+
+**The app is now fully offline-first.** No network or authentication required.
+
 ### v1.2 Network Removal (2026-05-23)
 
 - **Network Cleanup**: Retrofit, OkHttp, and Moshi removed.
 - **API Removal**: `core/api` package deleted.
-- **Offline-Only**: `DogRepository` converted to use local DB only.
+- **Offline-Only**: `DogRepository` converted to use local DB only. `ResponseStatus` moved to `core.model`.
 
 ### v1.1 Auth Removal (2026-05-23)
 
 - **Auth Cleanup**: `:auth` module removed. Login and SignUp flows deleted.
-- **NavHost**: simplified to start at `CameraKey`.
+- **NavHost**: simplified to start directly at `CameraKey`.
 - **Session**: `SessionManager` and `SessionRepository` removed.
 
 ### v1.0 Release Polish & AGP 9 Final (2026-05-23)
