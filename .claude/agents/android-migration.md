@@ -33,10 +33,18 @@ to the next phase.
 ## Current State (post all phases)
 
 **AGP:** 9.2.1 | **Kotlin:** 2.3.21 | **KSP:** 2.3.8 | **Gradle:** 9.5.1
-**compileSdk:** 37 | **targetSdk:** 37 | **Java:** 17
+**compileSdk:** 35 | **targetSdk:** 35 | **Java:** 17
 **Compose BOM:** 2026.05.01 | **Hilt:** 2.59.2 | **Navigation:** 2.9.8
-**Lifecycle:** 2.10.0 | **Retrofit:** 3.0.0 | **Coil:** 2.7.0 | **CameraX:** 1.6.1
-**Room:** 2.8.4 | **Gradle JVM heap:** 4096m
+**Splashscreen:** 1.2.0 | **Lifecycle:** 2.10.0 | **Retrofit:** 3.0.0
+
+### v1.0 Release Polish & AGP 9 Final (2026-05-23)
+
+- **AGP 9 Compatibility**: Migrated legacy `applicationVariants` to modern `androidComponents.onVariants` in `app/build.gradle`.
+- **SDK Alignment**: `compileSdk` and `targetSdk` unified to 35 for Play Store compliance.
+- **Splash Screen**: Implemented `androidx.core:core-splashscreen` API; added `Theme.App.Starting` and wired `installSplashScreen()`.
+- **Material 3**: `MostProbableDogsDialog` migrated to M3 `AlertDialog` (confirmButton parameter).
+- **Theme**: `Theme.Dogedex` now inherits from `Theme.Material3.DayNight.NoActionBar` with transparent system bars.
+- **Lint**: Resolved unused imports, missing commas, and deprecated `hiltViewModel` calls in `CameraScreen` and `DogedexNavHost`.
 
 ### Post-v0.9 incremental changes (2026-05-22)
 
