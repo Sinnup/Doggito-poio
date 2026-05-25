@@ -53,7 +53,7 @@ fun CameraScreen(
     onNavigateToDogDetail: (dog: Dog, probableDogIds: List<String>) -> Unit,
     onNavigateToDogList: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -75,7 +75,7 @@ fun CameraScreen(
         onGetDogByMlId = { viewModel.handleAction(MainUiAction.GetDogByMlId(it)) },
         onDismissError = { viewModel.handleAction(MainUiAction.DismissError) },
         onNavigateToDogList = { viewModel.handleAction(MainUiAction.NavigateToDogList) },
-        onNavigateToSettings = { viewModel.handleAction(MainUiAction.NavigateToSettings) }
+        onNavigateToSettings = { viewModel.handleAction(MainUiAction.NavigateToSettings) },
     )
 }
 
@@ -91,7 +91,7 @@ private fun CameraContent(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var isCameraReady by remember { mutableStateOf(false) }
+    var isCameraReady by remember { mutableStateOf(value = false) }
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
     val imageCapture = remember { mutableStateOf<ImageCapture?>(null) }
     val previewView = remember { PreviewView(context) }
@@ -104,46 +104,45 @@ private fun CameraContent(
     fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         EspressoIdlingResource.increment()
-        cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder().build()
-            preview.surfaceProvider = previewView.surfaceProvider
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-            val capture = ImageCapture.Builder()
-                .setTargetRotation(previewView.display?.rotation ?: Surface.ROTATION_0)
+        cameraProviderFuture.addListener(
+            {
+                val cameraProvider = cameraProviderFuture.get()
+                val preview = Preview.Builder().build()
+                preview.surfaceProvider = previewView.surfaceProvider
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                val capture = ImageCapture.Builder()
+                    .setTargetRotation(previewView.display?.rotation ?: Surface.ROTATION_0)
+                    .build()
+                imageCapture.value = capture
 
-                .build()
-            imageCapture.value = capture
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .setTargetRotation(previewView.display?.rotation ?: Surface.ROTATION_0)
+                    .build()
+                imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
+                    EspressoIdlingResource.decrement()
+                    onRecognizeImage(imageProxy)
+                }
 
-            val imageAnalysis = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setTargetRotation(previewView.display?.rotation ?: Surface.ROTATION_0)
-                .build()
-            imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
-                EspressoIdlingResource.decrement()
-                onRecognizeImage(imageProxy)
-            }
-
-            cameraProvider.unbindAll()
-            camera.value = cameraProvider.bindToLifecycle(
-                lifecycleOwner, cameraSelector, preview, capture, imageAnalysis
-            )
-            isCameraReady = true
-        }, ContextCompat.getMainExecutor(context))
+                cameraProvider.unbindAll()
+                camera.value = cameraProvider.bindToLifecycle(
+                    lifecycleOwner, cameraSelector, preview, capture, imageAnalysis
+                )
+                isCameraReady = true
+            },
+            ContextCompat.getMainExecutor(context),
+        )
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
+        ActivityResultContracts.RequestPermission(),
     ) { isGranted ->
         if (isGranted) startCamera()
     }
 
     LaunchedEffect(Unit) {
-        when {
-            ContextCompat.checkSelfPermission(
-                context,
-                CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
+        when (PackageManager.PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(context, CAMERA) -> {
                 startCamera()
             }
 
@@ -179,7 +178,7 @@ private fun CameraContent(
                     .padding(bottom = 32.dp)
                     .semantics { testTag = "take-photo-fab" },
                 onClick = {
-                    if (isCameraReady && dogRecognition != null) {
+                    if (isCameraReady && (dogRecognition != null)) {
                         onGetDogByMlId(dogRecognition.id)
                     }
                 }
@@ -222,8 +221,8 @@ private fun CameraContent(
 
         if (uiState.isLoading) {
             LoadingWheel()
-        } else if (uiState.error != null) {
-            ErrorDialog(message = uiState.error) {
+        } else uiState.error?.let {
+            ErrorDialog(message = it) {
                 onDismissError()
             }
         }

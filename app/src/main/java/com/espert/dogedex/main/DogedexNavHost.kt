@@ -1,13 +1,10 @@
 package com.espert.dogedex.main
 
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,8 +27,8 @@ import com.espert.dogedex.settings.SettingsScreen
 @Composable
 fun DogedexNavHost(sessionManager: SessionManager) {
     val navController = rememberNavController()
-//    val isLoggedIn by sessionManager.isLoggedIn.collectAsStateWithLifecycle() // Use when login is good again.
-    val isLoggedIn by remember { mutableStateOf(true) }
+    val isLoggedIn by sessionManager.isLoggedIn.collectAsStateWithLifecycle()
+    // val isLoggedIn by remember { mutableStateOf(value = true) }
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
@@ -48,9 +45,8 @@ fun DogedexNavHost(sessionManager: SessionManager) {
     val startDestination = if (isLoggedIn) CameraKey else LoginKey
 
     NavHost(
-//        modifier = Modifier.safeContentPadding(),
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
     ) {
         composable<LoginKey> {
             LoginScreen(
