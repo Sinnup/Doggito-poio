@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace 'com.fruse.dogedex.core'
+    namespace 'com.espert.dogedex.core'
     compileSdk 37
 
     defaultConfig {

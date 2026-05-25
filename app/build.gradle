@@ -14,7 +14,7 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    namespace 'com.fruse.dogedex'
+    namespace 'com.espert.dogedex'
     compileSdk 37
 
     signingConfigs {
@@ -27,13 +27,13 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.fruse.dogedex"
+        applicationId "com.espert.dogedex"
         minSdk 24
         targetSdk 37
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "com.fruse.dogedex.CustomTestRunner"
+        testInstrumentationRunner "com.espert.dogedex.CustomTestRunner"
         vectorDrawables {
             useSupportLibrary true
         }

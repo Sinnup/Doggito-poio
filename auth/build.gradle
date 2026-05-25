@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace 'com.fruse.dogedex.auth'
+    namespace 'com.espert.dogedex.auth'
     compileSdk 37
 
     defaultConfig {

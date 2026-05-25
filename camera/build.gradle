@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace 'com.fruse.dogedex.camera'
+    namespace 'com.espert.dogedex.camera'
     compileSdk 37
 
     defaultConfig {
