@@ -1,10 +1,13 @@
 package com.espert.dogedex.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.testing.invoke
 import app.cash.turbine.test
 import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.core.di.StringResolver
 import com.espert.dogedex.core.model.Dog
+import com.espert.dogedex.core.navigation.DogDetailKey
+import com.espert.dogedex.core.navigation.DogType
 import com.espert.dogedex.dogDetail.DogDetailUiAction
 import com.espert.dogedex.dogDetail.DogDetailUiEffect
 import com.espert.dogedex.dogDetail.DogDetailViewModel
@@ -18,21 +21,15 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /**
  * Unit tests for [DogDetailViewModel] action handlers.
- *
- * Note: [DogDetailViewModel] reads its initial state from [SavedStateHandle] via
- * `savedStateHandle.toRoute<DogDetailKey>(typeMap = ...)`. That code path calls
- * `android.net.Uri.decode` (an Android API) and `Bundle.getParcelable` (requires
- * Android runtime), so the ViewModel always starts with `dog = null` in these JVM
- * unit tests — there is no Robolectric configured in this project.
- *
- * All tests that need a non-null dog first dispatch [DogDetailUiAction.UpdateDog] to
- * inject the dog into the state before exercising the action under test. This is the
- * same code path used by the Compose screen when the DogDetailKey is rebuilt from
- * Navigation arguments.
  */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
 class DogDetailViewModelTest {
 
     @get:Rule
@@ -66,44 +63,23 @@ class DogDetailViewModelTest {
         override suspend fun getDogCollection(): ResponseStatus<List<Dog>> =
             throw AssertionError("unexpected call to getDogCollection")
 
-        override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> =
-            throw AssertionError("unexpected call to addDogToUser")
+        override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> = addDogResult
 
-        override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> =
-            throw AssertionError("unexpected call to getDogBYMlId")
+        override suspend fun getDogByMlId(mlDogId: String): ResponseStatus<Dog> =
+            throw AssertionError("unexpected call to getDogByMlId")
 
         override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> =
-            throw AssertionError("unexpected call to getProbableDogs")
+            probableDogsFlow
 
         override suspend fun insertAllDogs(dogs: List<Dog>) =
             throw AssertionError("unexpected call to insertAllDogs")
-
-        override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> =
-            throw AssertionError("unexpected call to getDogCollectionDB")
-
-        override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> = addDogResult
-
-        override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> =
-            throw AssertionError("unexpected call to getDogBYMlIdDB")
-
-        override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> =
-            probableDogsFlow
     }
 
-    /**
-     * Creates a [DogDetailViewModel] with a minimal [SavedStateHandle].
-     * The `dog`, `probableDogIds`, and `isRecognition` keys match the
-     * [com.espert.dogedex.core.navigation.DogDetailKey] field names that Navigation
-     * would populate at runtime. On the JVM without Robolectric the `dog` field
-     * deserialization silently falls back to null due to missing Android API stubs,
-     * so the initial `uiState.dog` will be null.
-     */
     private fun createViewModel(repo: DogTasks = makeFakeRepo()): DogDetailViewModel {
+        val route = DogDetailKey(testDog)
         val handle = SavedStateHandle(
-            mapOf(
-                "probableDogIds" to emptyList<String>(),
-                "isRecognition" to false
-            )
+            route = route,
+            typeMap = mapOf(kotlin.reflect.typeOf<Dog>() to DogType)
         )
         return DogDetailViewModel(
             dogRepository = repo,
@@ -121,8 +97,6 @@ class DogDetailViewModelTest {
         val errorRepo = makeFakeRepo(addDogResult = ResponseStatus.Error(42))
         val viewModel = createViewModel(errorRepo)
 
-        // Put the dog into state so addDogToUser has a non-trivial subject
-        viewModel.handleAction(DogDetailUiAction.UpdateDog(testDog))
         viewModel.handleAction(DogDetailUiAction.AddDogToUser)
 
         // Error should be set
@@ -140,10 +114,11 @@ class DogDetailViewModelTest {
     @Test
     fun updateDog_setsNewDogInState() = runTest {
         val viewModel = createViewModel()
+        val otherDog = testDog.copy(name = "Other")
 
-        viewModel.handleAction(DogDetailUiAction.UpdateDog(testDog))
+        viewModel.handleAction(DogDetailUiAction.UpdateDog(otherDog))
 
-        assertEquals(testDog, viewModel.uiState.value.dog)
+        assertEquals(otherDog, viewModel.uiState.value.dog)
     }
 
     // -------------------------------------------------------------------------
@@ -171,7 +146,6 @@ class DogDetailViewModelTest {
     fun addDogToUser_success_setsHasDogBeenAddedTrue() = runTest {
         val viewModel = createViewModel(makeFakeRepo(addDogResult = ResponseStatus.Success(Unit)))
 
-        viewModel.handleAction(DogDetailUiAction.UpdateDog(testDog))
         viewModel.handleAction(DogDetailUiAction.AddDogToUser)
 
         assertTrue(viewModel.uiState.value.hasDogBeenAdded)
@@ -190,7 +164,6 @@ class DogDetailViewModelTest {
             makeFakeRepo(addDogResult = ResponseStatus.Error(errorMessageId))
         )
 
-        viewModel.handleAction(DogDetailUiAction.UpdateDog(testDog))
         viewModel.handleAction(DogDetailUiAction.AddDogToUser)
 
         assertEquals("str_$errorMessageId", viewModel.uiState.value.error)
@@ -210,5 +183,6 @@ class DogDetailViewModelTest {
         assertNull(viewModel.uiState.value.error)
         assertFalse(viewModel.uiState.value.hasDogBeenAdded)
         assertTrue(viewModel.uiState.value.probableDogs.isEmpty())
+        assertEquals(testDog, viewModel.uiState.value.dog)
     }
 }

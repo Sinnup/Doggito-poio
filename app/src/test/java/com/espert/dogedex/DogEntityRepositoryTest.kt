@@ -2,7 +2,7 @@ package com.espert.dogedex
 
 import com.espert.dogedex.core.database.DogedexDatabase
 import com.espert.dogedex.core.database.dao.DogDao
-import com.espert.dogedex.core.database.dao.DogEntity
+import com.espert.dogedex.core.database.entities.DogEntity
 import com.espert.dogedex.core.model.Dog
 import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.dogList.DogRepository
@@ -18,6 +18,7 @@ import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DogEntityRepositoryTest {
@@ -92,6 +93,6 @@ class DogEntityRepositoryTest {
         )
         dogRepository.insertAllDogs(dogs)
 
-        verify(dogDao).insertDogs(org.mockito.kotlin.any())
+        verify(dogDao).insertDogs(any())
     }
 }

@@ -50,13 +50,17 @@ class DogDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val dogDetailKey: DogDetailKey = savedStateHandle.toRoute(
-        typeMap = mapOf(kotlin.reflect.typeOf<Dog>() to DogType)
-    )
+    private val dogDetailKey: DogDetailKey? = try {
+        savedStateHandle.toRoute(
+            typeMap = mapOf(kotlin.reflect.typeOf<Dog>() to DogType)
+        )
+    } catch (e: Exception) {
+        null
+    }
 
-    private val initialDog = dogDetailKey.dog
-    private val probableDogIds = dogDetailKey.probableDogIds
-    private val initialIsRecognition = dogDetailKey.isRecognition
+    private val initialDog = dogDetailKey?.dog
+    private val probableDogIds = dogDetailKey?.probableDogIds ?: emptyList()
+    private val initialIsRecognition = dogDetailKey?.isRecognition ?: false
 
     private val _uiState = MutableStateFlow(
         DogDetailUiState(

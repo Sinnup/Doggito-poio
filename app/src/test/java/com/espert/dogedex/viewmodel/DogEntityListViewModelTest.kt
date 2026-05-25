@@ -22,60 +22,22 @@ class DogEntityListViewModelTest {
 
     private val strings = com.espert.dogedex.core.di.StringResolver { id -> "str_$id" }
 
+    class FakeDogRepository : DogTasks {
+        var dogs = listOf(
+            Dog(1, index = 1, "", "", "", "", "", "", "", "", "", false),
+            Dog(19, index = 2, "", "", "", "", "", "", "", "", "", false)
+        )
+        var status: ResponseStatus<List<Dog>> = ResponseStatus.Success(dogs)
+
+        override suspend fun getDogCollection(): ResponseStatus<List<Dog>> = status
+        override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> = ResponseStatus.Success(Unit)
+        override suspend fun getDogByMlId(mlDogId: String): ResponseStatus<Dog> = ResponseStatus.Success(dogs[0])
+        override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> = emptyFlow()
+        override suspend fun insertAllDogs(dogs: List<Dog>) {}
+    }
+
     @Test
     fun downloadDogListStatusesCorrect() = runTest {
-        class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
-                return ResponseStatus.Success(
-                    listOf(
-                        Dog(
-                            1, index = 1, "", "", "", "",
-                            "", "", "", "", "", false
-                        ),
-                        Dog(
-                            19, index = 2, "", "", "", "",
-                            "", "", "", "", "", false
-                        )
-                    )
-                )
-            }
-
-            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
-                return ResponseStatus.Success(Unit)
-            }
-
-            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
-                return ResponseStatus.Success(
-                    Dog(
-                        1, index = 1, "", "", "", "",
-                        "", "", "", "", "", false
-                    )
-                )
-            }
-
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> = emptyFlow()
-
-            override suspend fun insertAllDogs(dogs: List<Dog>) {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
-            }
-        }
-
         val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
 
         assertEquals(2, dogListViewModel.uiState.value.dogs.size)
@@ -86,48 +48,9 @@ class DogEntityListViewModelTest {
 
     @Test
     fun downloadDogListError_StatusesCorrect() = runTest {
-        class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
-                return ResponseStatus.Error(messageId = 12)
-            }
-
-            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
-                return ResponseStatus.Success(Unit)
-            }
-
-            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
-                return ResponseStatus.Success(
-                    Dog(
-                        1, index = 1, "", "", "", "",
-                        "", "", "", "", "", false
-                    )
-                )
-            }
-
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> = emptyFlow()
-
-            override suspend fun insertAllDogs(dogs: List<Dog>) {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
-            }
-        }
-
-        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
+        val fakeRepo = FakeDogRepository()
+        fakeRepo.status = ResponseStatus.Error(messageId = 12)
+        val dogListViewModel = DogListViewModel(dogRepository = fakeRepo, strings = strings)
 
         assertEquals(0, dogListViewModel.uiState.value.dogs.size)
         assertEquals("str_12", dogListViewModel.uiState.value.error)
@@ -135,48 +58,9 @@ class DogEntityListViewModelTest {
 
     @Test
     fun downloadDogListResetStatus_StatusesCorrect() = runTest {
-        class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
-                return ResponseStatus.Error(messageId = 12)
-            }
-
-            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
-                return ResponseStatus.Success(Unit)
-            }
-
-            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
-                return ResponseStatus.Success(
-                    Dog(
-                        1, index = 1, "", "", "", "",
-                        "", "", "", "", "", false
-                    )
-                )
-            }
-
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> = emptyFlow()
-
-            override suspend fun insertAllDogs(dogs: List<Dog>) {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
-            }
-        }
-
-        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
+        val fakeRepo = FakeDogRepository()
+        fakeRepo.status = ResponseStatus.Error(messageId = 12)
+        val dogListViewModel = DogListViewModel(dogRepository = fakeRepo, strings = strings)
 
         dogListViewModel.handleAction(DogListUiAction.DismissError)
         assertEquals(null, dogListViewModel.uiState.value.error)
@@ -184,46 +68,13 @@ class DogEntityListViewModelTest {
 
     @Test
     fun onDogClicked_emitsNavigateToDogDetailEffect() = runTest {
-        val fakeDog = Dog(1, index = 1, "", "", "", "", "", "", "", "", "", false)
-        class FakeDogRepository : DogTasks {
-            override suspend fun getDogCollection(): ResponseStatus<List<Dog>> =
-                ResponseStatus.Success(listOf(fakeDog))
-
-            override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> =
-                ResponseStatus.Success(Unit)
-
-            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> =
-                ResponseStatus.Success(fakeDog)
-
-            override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> = emptyFlow()
-
-            override suspend fun insertAllDogs(dogs: List<Dog>) {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
-            }
-        }
-
-        val dogListViewModel = DogListViewModel(dogRepository = FakeDogRepository(), strings = strings)
+        val fakeRepo = FakeDogRepository()
+        val dogListViewModel = DogListViewModel(dogRepository = fakeRepo, strings = strings)
 
         dogListViewModel.uiEffect.test {
-            dogListViewModel.handleAction(DogListUiAction.OnDogClicked(fakeDog))
+            dogListViewModel.handleAction(DogListUiAction.OnDogClicked(fakeRepo.dogs[0]))
             val effect = awaitItem()
-            assertEquals(DogListUiEffect.NavigateToDogDetail(fakeDog), effect)
+            assertEquals(DogListUiEffect.NavigateToDogDetail(fakeRepo.dogs[0]), effect)
         }
     }
 }

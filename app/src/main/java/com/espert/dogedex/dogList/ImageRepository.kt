@@ -13,7 +13,7 @@ interface ImageRepository {
 
 class ImageRepositoryImpl @Inject constructor(
     private val assetCopyHelper: AssetCopyHelper,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ImageRepository {
 
     companion object {
