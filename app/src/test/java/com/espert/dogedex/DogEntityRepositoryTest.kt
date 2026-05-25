@@ -1,250 +1,97 @@
 package com.espert.dogedex
 
-import com.espert.dogedex.core.api.ApiService
-import com.espert.dogedex.core.api.dto.AddDogTOUserDTO
-import com.espert.dogedex.core.api.dto.DogDTO
-import com.espert.dogedex.core.api.dto.LoginDTO
-import com.espert.dogedex.core.api.dto.SignUpDTO
-import com.espert.dogedex.core.api.responses.ResponseStatus
-import com.espert.dogedex.core.api.responses.AuthApiResponse
-import com.espert.dogedex.core.api.responses.DefaultResponse
-import com.espert.dogedex.core.api.responses.DogApiResponse
-import com.espert.dogedex.core.api.responses.DogListApiResponse
-import com.espert.dogedex.core.api.responses.DogListResponse
-import com.espert.dogedex.core.api.responses.DogResponse
+import com.espert.dogedex.core.database.DogedexDatabase
+import com.espert.dogedex.core.database.dao.DogDao
+import com.espert.dogedex.core.database.dao.DogEntity
+import com.espert.dogedex.core.model.Dog
+import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.dogList.DogRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
-
 class DogEntityRepositoryTest {
 
+    private lateinit var dogRepository: DogRepository
+    private val database: DogedexDatabase = mock(DogedexDatabase::class.java)
+    private val dogDao: DogDao = mock(DogDao::class.java)
+    private val testDispatcher: CoroutineDispatcher = UnconfinedTestDispatcher()
+
+    @Before
+    fun setup() {
+        `when`(database.dogDao()).thenReturn(dogDao)
+        dogRepository = DogRepository(testDispatcher, database)
+    }
+
     @Test
-    fun testGetDogCollectionSuccess(): Unit = runTest {
-
-        class FakeApiService : ApiService {
-            override suspend fun getAllDogs(): DogListApiResponse {
-                return DogListApiResponse(
-                    message = "",
-                    isSuccess = true,
-                    data = DogListResponse(
-                        dogs = listOf(
-                            DogDTO(
-                                1, index = 1, "Warturtle", "", "", "",
-                                "", "", "", "", ""
-                            ),
-                            DogDTO(
-                                19, index = 2, "Charmeleon", "", "", "",
-                                "", "", "", "", ""
-                            )
-                        )
-                    )
-                )
-            }
-
-            override suspend fun signUp(signUpDTO: SignUpDTO): AuthApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun login(loginDTO: LoginDTO): AuthApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUser(addDogTOUserDTO: AddDogTOUserDTO): DefaultResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getUserDogs(): DogListApiResponse {
-                return DogListApiResponse(
-                    message = "",
-                    isSuccess = true,
-                    data = DogListResponse(
-                        dogs = listOf(
-                            DogDTO(
-                                19, index = 2, "Charmeleon", "", "", "",
-                                "", "", "", "", ""
-                            )
-                        )
-                    )
-                )
-            }
-
-            override suspend fun getDogByMlId(mlId: String): DogApiResponse {
-                TODO("Not yet implemented")
-            }
-
-        }
-
-        val dogRepository = DogRepository(
-            apiService = FakeApiService(),
-            dispatcher = UnconfinedTestDispatcher()
+    fun `getDogCollection returns success with dogs from database`() = runTest {
+        val dogEntities = listOf(
+            DogEntity(1, 1, "Dog 1", "Dog 1", "Type 1", "10", "P1", "10-12", "5", "10", "1", true)
         )
+        `when`(dogDao.getAllDogs()).thenReturn(dogEntities)
 
+        val result = dogRepository.getDogCollection()
 
-        val apiResponseStatus = dogRepository.getDogCollection()
-
-        assert(apiResponseStatus is ResponseStatus.Success)
-        val dogCollection = (apiResponseStatus as ResponseStatus.Success).data
-        assertEquals(2, dogCollection.size)
-        assertEquals("Charmeleon", dogCollection[1].name)
-        assertEquals("", dogCollection[0].name)
+        assertTrue(result is ResponseStatus.Success)
+        assertEquals(1, (result as ResponseStatus.Success).data.size)
+        assertEquals("Dog 1", result.data[0].name)
     }
 
     @Test
-    fun testGetAllDogError(): Unit = runTest {
+    fun `addDogToUser calls dogDao addDogToUser`() = runTest {
+        val dogId = 1L
+        val result = dogRepository.addDogToUser(dogId)
 
-        class FakeApiService : ApiService {
-            override suspend fun getAllDogs(): DogListApiResponse {
-                throw java.net.UnknownHostException()
-            }
+        verify(dogDao).addDogToUser(dogId)
+        assertTrue(result is ResponseStatus.Success)
+    }
 
-            override suspend fun signUp(signUpDTO: SignUpDTO): AuthApiResponse {
-                TODO("Not yet implemented")
-            }
+    @Test
+    fun `getDogByMlId returns success when dog exists in database`() = runTest {
+        val mlId = "ml_1"
+        val dogEntity = DogEntity(1, 1, "Dog 1", "Dog 1", "Type 1", "10", "P1", "10-12", "5", "10", "1", true)
+        `when`(dogDao.getDogByMLId(mlId)).thenReturn(dogEntity)
 
-            override suspend fun login(loginDTO: LoginDTO): AuthApiResponse {
-                TODO("Not yet implemented")
-            }
+        val result = dogRepository.getDogByMlId(mlId)
 
-            override suspend fun addDogToUser(addDogTOUserDTO: AddDogTOUserDTO): DefaultResponse {
-                TODO("Not yet implemented")
-            }
+        assertTrue(result is ResponseStatus.Success)
+        assertEquals("Dog 1", (result as ResponseStatus.Success).data.name)
+    }
 
-            override suspend fun getUserDogs(): DogListApiResponse {
-                return DogListApiResponse(
-                    message = "",
-                    isSuccess = true,
-                    data = DogListResponse(
-                        dogs = listOf(
-                            DogDTO(
-                                19, index = 2, "Charmeleon", "", "", "",
-                                "", "", "", "", ""
-                            )
-                        )
-                    )
-                )
-            }
+    @Test
+    fun `getProbableDogs returns flow of success responses`() = runTest {
+        val mlIds = listOf("ml_1", "ml_2")
+        val dogEntity1 = DogEntity(1, 1, "Dog 1", "Dog 1", "Type 1", "10", "P1", "10-12", "5", "10", "1", true)
+        val dogEntity2 = DogEntity(2, 2, "Dog 2", "Dog 2", "Type 2", "12", "P2", "12-14", "6", "12", "2", true)
+        `when`(dogDao.getDogByMLId("ml_1")).thenReturn(dogEntity1)
+        `when`(dogDao.getDogByMLId("ml_2")).thenReturn(dogEntity2)
 
-            override suspend fun getDogByMlId(mlId: String): DogApiResponse {
-                TODO("Not yet implemented")
-            }
+        val results = dogRepository.getProbableDogs(mlIds).toList()
 
-        }
+        assertEquals(2, results.size)
+        assertTrue(results[0] is ResponseStatus.Success)
+        assertTrue(results[1] is ResponseStatus.Success)
+        assertEquals("Dog 1", (results[0] as ResponseStatus.Success).data.name)
+        assertEquals("Dog 2", (results[1] as ResponseStatus.Success).data.name)
+    }
 
-        val dogRepository = DogRepository(
-            apiService = FakeApiService(),
-            dispatcher = UnconfinedTestDispatcher()
+    @Test
+    fun `insertAllDogs calls dogDao insertDogs`() = runTest {
+        val dogs = listOf(
+            Dog(1, 1, "Dog 1", "Dog 1", "Type 1", "10", "P1", "10-12", "5", "10", "1", true)
         )
+        dogRepository.insertAllDogs(dogs)
 
-
-        val apiResponseStatus = dogRepository.getDogCollection()
-
-        assert(apiResponseStatus is ResponseStatus.Error)
-
-    }
-
-    @Test
-    fun getDogByMLSuccess() = runTest {
-        val expectedDogId = 19L
-
-        class FakeApiService : ApiService {
-            override suspend fun getAllDogs(): DogListApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun signUp(signUpDTO: SignUpDTO): AuthApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun login(loginDTO: LoginDTO): AuthApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUser(addDogTOUserDTO: AddDogTOUserDTO): DefaultResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getUserDogs(): DogListApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogByMlId(mlId: String): DogApiResponse {
-                return DogApiResponse(
-                    message = "",
-                    isSuccess = true,
-                    data = DogResponse(
-                        DogDTO(
-                            expectedDogId, index = 2, "Charmeleon", "", "", "",
-                            "", "", "", "", ""
-                        )
-                    )
-                )
-            }
-        }
-
-        val dogRepository =
-            DogRepository(
-                apiService = FakeApiService(),
-                dispatcher = UnconfinedTestDispatcher()
-            )
-
-        val apiResponseStatus = dogRepository.getDogBYMlId("ja")
-        assert(apiResponseStatus is ResponseStatus.Success)
-        assertEquals(expectedDogId, (apiResponseStatus as ResponseStatus.Success).data.id)
-
-    }
-
-    @Test
-    fun getDogByMLError() = runTest {
-        val expectedDogId = 19L
-
-        class FakeApiService : ApiService {
-            override suspend fun getAllDogs(): DogListApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun signUp(signUpDTO: SignUpDTO): AuthApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun login(loginDTO: LoginDTO): AuthApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUser(addDogTOUserDTO: AddDogTOUserDTO): DefaultResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getUserDogs(): DogListApiResponse {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogByMlId(mlId: String): DogApiResponse {
-                return DogApiResponse(
-                    message = "Error getting dog by ml id",
-                    isSuccess = false,
-                    data = DogResponse(
-                        DogDTO(
-                            expectedDogId, index = 2, "Charmeleon", "", "", "",
-                            "", "", "", "", ""
-                        )
-                    )
-                )
-            }
-        }
-
-        val dogRepository =
-            DogRepository(
-                apiService = FakeApiService(),
-                dispatcher = UnconfinedTestDispatcher()
-            )
-
-        val apiResponseStatus = dogRepository.getDogBYMlId("ja")
-        assert(apiResponseStatus is ResponseStatus.Error)
-
+        verify(dogDao).insertDogs(org.mockito.kotlin.any())
     }
 }

@@ -1,4 +1,4 @@
-package com.espert.dogedex.core.api.responses
+package com.espert.dogedex.core.model
 
 sealed class ResponseStatus<T> {
     class Success<T>(val data: T) : ResponseStatus<T>()

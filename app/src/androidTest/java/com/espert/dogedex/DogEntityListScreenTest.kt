@@ -4,12 +4,13 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import com.espert.dogedex.core.api.responses.ResponseStatus
+import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.dogList.DogListScreen
 import com.espert.dogedex.dogList.DogListViewModel
 import com.espert.dogedex.dogList.DogTasks
 import com.espert.dogedex.core.model.Dog
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import org.junit.Rule
 import org.junit.Test
 
@@ -26,37 +27,25 @@ class DogEntityListScreenTest {
             }
 
             override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
+                return ResponseStatus.Success(Any())
             }
 
-            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
+            override suspend fun getDogByMlId(mlDogId: String): ResponseStatus<Dog> {
+                return ResponseStatus.Success(
+                    Dog(
+                        89, index = 70, "Chow chow", "", "", "",
+                        "", "", "", "", "", true
+                    )
+                )
             }
 
             override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
+                return emptyFlow()
             }
 
             override suspend fun insertAllDogs(dogs: List<Dog>) {
-                TODO("Not yet implemented")
+                // No-op
             }
-
-            override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
-            }
-
         }
 
         val viewModel = DogListViewModel(
@@ -83,37 +72,25 @@ class DogEntityListScreenTest {
             }
 
             override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
+                return ResponseStatus.Success(Any())
             }
 
-            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
+            override suspend fun getDogByMlId(mlDogId: String): ResponseStatus<Dog> {
+                return ResponseStatus.Success(
+                    Dog(
+                        89, index = 70, "Chow chow", "", "", "",
+                        "", "", "", "", "", true
+                    )
+                )
             }
 
             override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
+                return emptyFlow()
             }
 
             override suspend fun insertAllDogs(dogs: List<Dog>) {
-                TODO("Not yet implemented")
+                // No-op
             }
-
-            override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
-            }
-
         }
 
         val viewModel = DogListViewModel(
@@ -136,7 +113,6 @@ class DogEntityListScreenTest {
     fun dogListShowsIfSuccessGettingDogs() {
 
         val dog1Name = "Chihuahua"
-        val dog2Name = "Guillermo"
 
         class FakeDogRepository : DogTasks {
             override suspend fun getDogCollection(): ResponseStatus<List<Dog>> {
@@ -155,37 +131,25 @@ class DogEntityListScreenTest {
             }
 
             override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
+                return ResponseStatus.Success(Any())
             }
 
-            override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
+            override suspend fun getDogByMlId(mlDogId: String): ResponseStatus<Dog> {
+                return ResponseStatus.Success(
+                    Dog(
+                        89, index = 70, "Chow chow", "", "", "",
+                        "", "", "", "", "", true
+                    )
+                )
             }
 
             override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
+                return emptyFlow()
             }
 
             override suspend fun insertAllDogs(dogs: List<Dog>) {
-                TODO("Not yet implemented")
+                // No-op
             }
-
-            override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
-                TODO("Not yet implemented")
-            }
-
-            override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-                TODO("Not yet implemented")
-            }
-
         }
 
         val viewModel = DogListViewModel(

@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.espert.dogedex.core.api.responses.ResponseStatus
 import com.espert.dogedex.core.di.StringResolver
 import com.espert.dogedex.core.model.Dog
+import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.core.navigation.DogDetailKey
 import com.espert.dogedex.core.navigation.DogType
 import com.espert.dogedex.dogList.DogTasks
@@ -84,8 +84,7 @@ class DogDetailViewModel @Inject constructor(
     private fun addDogToUser() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-//            when (val result = dogRepository.addDogToUser(_uiState.value.dog?.id ?: 0)) {
-            when (val result = dogRepository.addDogToUserDB(_uiState.value.dog?.id ?: 0)) {
+            when (val result = dogRepository.addDogToUser(_uiState.value.dog?.id ?: 0)) {
                 is ResponseStatus.Success ->
                     _uiState.update { it.copy(isLoading = false, hasDogBeenAdded = true) }
 
@@ -103,8 +102,7 @@ class DogDetailViewModel @Inject constructor(
     private fun loadProbableDogs() {
         viewModelScope.launch {
             _uiState.update { it.copy(probableDogs = emptyList()) }
-//            dogRepository.getProbableDogs(probableDogIds).collect { status ->
-            dogRepository.getProbableDogsDB(probableDogIds).collect { status ->
+            dogRepository.getProbableDogs(probableDogIds).collect { status ->
                 if (status is ResponseStatus.Success) {
                     _uiState.update { it.copy(probableDogs = it.probableDogs + status.data) }
                 }

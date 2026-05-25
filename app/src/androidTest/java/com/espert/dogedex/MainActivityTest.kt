@@ -11,7 +11,7 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import com.espert.dogedex.core.api.responses.ResponseStatus
+import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.camera.di.ClassifierModule
 import com.espert.dogedex.dogList.DogTasks
 import com.espert.dogedex.camera.machinelearning.ClassifierTasks
@@ -28,6 +28,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -79,10 +80,10 @@ class MainActivityTest {
         }
 
         override suspend fun addDogToUser(dogId: Long): ResponseStatus<Any> {
-            TODO("Not yet implemented")
+            return ResponseStatus.Success(Any())
         }
 
-        override suspend fun getDogBYMlId(mlDogId: String): ResponseStatus<Dog> {
+        override suspend fun getDogByMlId(mlDogId: String): ResponseStatus<Dog> {
             return ResponseStatus.Success(
                 Dog(
                     89, index = 70, "Chow chow", "", "", "",
@@ -92,31 +93,12 @@ class MainActivityTest {
         }
 
         override suspend fun getProbableDogs(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-            TODO("Not yet implemented")
+            return emptyFlow()
         }
 
         override suspend fun insertAllDogs(dogs: List<Dog>) {
-            TODO("Not yet implemented")
+            // No-op
         }
-
-        override suspend fun getDogCollectionDB(): ResponseStatus<List<Dog>> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun addDogToUserDB(dogId: Long): ResponseStatus<Any> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun getDogBYMlIdDB(mlDogId: String): ResponseStatus<Dog> {
-            return ResponseStatus.Success(
-                Dog(89, index = 70, "Chow chow", "", "", "", "", "", "", "", "", true)
-            )
-        }
-
-        override suspend fun getProbableDogsDB(probableDogsIds: List<String>): Flow<ResponseStatus<Dog>> {
-            TODO("Not yet implemented")
-        }
-
     }
 
     class FakeClassifierRepository @Inject constructor() : ClassifierTasks {

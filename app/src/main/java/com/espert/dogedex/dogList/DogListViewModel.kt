@@ -2,9 +2,9 @@ package com.espert.dogedex.dogList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.espert.dogedex.core.api.responses.ResponseStatus
 import com.espert.dogedex.core.di.StringResolver
 import com.espert.dogedex.core.model.Dog
+import com.espert.dogedex.core.model.ResponseStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -62,8 +62,7 @@ class DogListViewModel @Inject constructor(
     private fun getDogCollection() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-//            when (val result = dogRepository.getDogCollection()) {
-            when (val result = dogRepository.getDogCollectionDB()) {
+            when (val result = dogRepository.getDogCollection()) {
                 is ResponseStatus.Success ->
                     _uiState.update { it.copy(isLoading = false, dogs = result.data) }
 

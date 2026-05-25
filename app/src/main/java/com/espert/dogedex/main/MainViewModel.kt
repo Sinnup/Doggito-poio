@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.espert.dogedex.camera.machinelearning.ClassifierTasks
 import com.espert.dogedex.camera.machinelearning.DogRecognition
-import com.espert.dogedex.core.api.responses.ResponseStatus
 import com.espert.dogedex.core.di.StringResolver
 import com.espert.dogedex.core.model.Dog
+import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.dogList.DogTasks
 import com.espert.dogedex.main.MainActivity.Companion.DOGS_JSON_FILE
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -101,8 +101,7 @@ class MainViewModel @Inject constructor(
     private fun getDogByMlId(mlDogId: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-//            when (val result = dogRepository.getDogBYMlId(mlDogId)) {
-            when (val result = dogRepository.getDogBYMlIdDB(mlDogId)) {
+            when (val result = dogRepository.getDogByMlId(mlDogId)) {
                 is ResponseStatus.Success -> {
                     _uiState.update { it.copy(isLoading = false) }
                     _uiEffect.send(

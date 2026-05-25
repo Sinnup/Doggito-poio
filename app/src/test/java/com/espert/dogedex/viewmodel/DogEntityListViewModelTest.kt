@@ -1,7 +1,7 @@
 package com.espert.dogedex.viewmodel
 
 import app.cash.turbine.test
-import com.espert.dogedex.core.api.responses.ResponseStatus
+import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.core.model.Dog
 import com.espert.dogedex.dogList.DogListUiAction
 import com.espert.dogedex.dogList.DogListUiEffect

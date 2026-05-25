@@ -2,7 +2,7 @@ package com.espert.dogedex.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
-import com.espert.dogedex.core.api.responses.ResponseStatus
+import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.core.di.StringResolver
 import com.espert.dogedex.core.model.Dog
 import com.espert.dogedex.dogDetail.DogDetailUiAction

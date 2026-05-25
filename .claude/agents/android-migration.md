@@ -35,7 +35,13 @@ to the next phase.
 **AGP:** 9.2.1 | **Kotlin:** 2.3.21 | **KSP:** 2.3.8 | **Gradle:** 9.5.1
 **compileSdk:** 35 | **targetSdk:** 35 | **Java:** 17
 **Compose BOM:** 2026.05.01 | **Hilt:** 2.59.2 | **Navigation:** 2.9.8
-**Splashscreen:** 1.2.0 | **Lifecycle:** 2.10.0 | **Retrofit:** 3.0.0
+**Splashscreen:** 1.2.0 | **Lifecycle:** 2.10.0
+
+### v1.2 Network Removal (2026-05-23)
+
+- **Network Cleanup**: Retrofit, OkHttp, and Moshi removed.
+- **API Removal**: `core/api` package deleted.
+- **Offline-Only**: `DogRepository` converted to use local DB only.
 
 ### v1.1 Auth Removal (2026-05-23)
 
@@ -143,7 +149,6 @@ hardcoded versions from all `build.gradle` files.
 - Navigation Compose: `2.4.1` (app) vs `2.7.0` (core) → unify to latest
 - Lifecycle: `2.3.1` / `2.5.1` / `2.6.1` across modules → unify to latest
 - Activity Compose: `1.6.1` → upgrade to latest
-- Retrofit: `2.9.0` → check for updates
 - Coroutines Test: `1.5.0` → upgrade to match kotlinx.coroutines version
 
 **Steps:**

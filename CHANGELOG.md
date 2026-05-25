@@ -9,15 +9,31 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       Post-v1.0 release polish
+Phase:       Post-v1.2 network removal
 Status:      Complete ✓
 Next action: Prepare release APK and upload to Play Console
 Branch:      main
 ```
 
-**Context:** App is now ready for release. AGP 9.2 compat issues resolved. Splash screen
-implemented. Material 3 migration for dialogs complete. targetSdk set to 35. Login functionality
-has been completely removed as requested.
+**Context:** App is now fully offline-first. All network-related code (Retrofit, OkHttp,
+ApiService) and dependencies have been removed. App uses bundled assets and Room DB.
+
+---
+
+## [v1.2] — 2026-05-23 — Network Removal
+
+### Status: Done
+
+### Branch
+`main`
+
+### Done
+
+- **Network Removal**: completely removed Retrofit, OkHttp, and Moshi dependencies.
+- **API Package Deleted**: deleted `core/api` package including `ApiService`, DTOs, and network interceptors.
+- **Offline-First**: refactored `DogRepository` and ViewModels to use only Room database.
+- **Model Migration**: moved `ResponseStatus` to `core.model` and updated project-wide imports.
+- **Clean up**: removed network-related ProGuard rules and constants.
 
 ---
 

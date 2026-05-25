@@ -40,9 +40,6 @@ constraintlayout            = "2.2.1"
 # Hilt
 hilt                        = "2.59.2"
 
-# Retrofit / Moshi
-retrofit                    = "3.0.0"
-
 # Coil
 coil                        = "2.7.0"
 
@@ -114,10 +111,6 @@ hilt-compiler                           = { group = "com.google.dagger",        
 hilt-android-testing                    = { group = "com.google.dagger",           name = "hilt-android-testing",          version.ref = "hilt" }
 hilt-android-compiler                   = { group = "com.google.dagger",           name = "hilt-android-compiler",         version.ref = "hilt" }
 
-# Retrofit
-retrofit                                = { group = "com.squareup.retrofit2",      name = "retrofit",                      version.ref = "retrofit" }
-retrofit-converter-moshi                = { group = "com.squareup.retrofit2",      name = "converter-moshi",               version.ref = "retrofit" }
-
 # Coil
 coil                                    = { group = "io.coil-kt",                  name = "coil",                          version.ref = "coil" }
 coil-compose                            = { group = "io.coil-kt",                  name = "coil-compose",                  version.ref = "coil" }
@@ -166,7 +159,6 @@ compose-material-icons                  = ["androidx-compose-material-icons-core
 compose-debug                           = ["androidx-compose-ui-tooling","androidx-compose-ui-test-manifest"]
 compose-android-test                    = ["androidx-compose-ui-test-junit4"]
 camerax                                 = ["camerax-camera2","camerax-lifecycle","camerax-view"]
-retrofit                                = ["retrofit","retrofit-converter-moshi"]
 coil                                    = ["coil","coil-compose"]
 hilt-runtime                            = ["hilt-android","androidx-hilt-navigation-compose"]
 hilt-android-test                       = ["hilt-android-testing"]
