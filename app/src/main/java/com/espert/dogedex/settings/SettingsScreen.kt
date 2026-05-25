@@ -13,11 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.espert.dogedex.R
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen() {
     val context = LocalContext.current
     val privacyPolicyUrl = stringResource(id = R.string.privacy_policy_url)
 
@@ -26,9 +25,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { viewModel.logout() }) {
-            Text(text = stringResource(id = R.string.logout))
-        }
         Button(onClick = {
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(privacyPolicyUrl)))
         }) {

@@ -14,22 +14,7 @@
     <string name="unknown_host_error">Sin conexión a internet</string>
     <string name="unknown_error">Ocurrió un error</string>
 
-    <string name="email">Correo electrónico</string>
-    <string name="password">Contraseña</string>
-    <string name="login">Iniciar sesión</string>
-    <string name="do_not_have_an_account">¿No tienes una cuenta?</string>
-    <string name="register">Registrarse</string>
-    <string name="confirm_password">Confirmar contraseña</string>
-    <string name="sign_up">Registrarse</string>
-    <string name="email_is_not_valid">El correo electrónico no es válido</string>
-    <string name="password_must_not_be_emtpy">La contraseña no puede estar vacía</string>
-    <string name="passwords_do_not_match">Las contraseñas no coinciden</string>
-    <string name="error_sign_up">Error al registrarse</string>
-    <string name="error_sign_in">Error al iniciar sesión</string>
-    <string name="user_already_exists">El usuario ya existe</string>
     <string name="there_was_an_error">Ocurrió un error</string>
-    <string name="wrong_user_or_password">Usuario o contraseña incorrectos.</string>
-    <string name="logout">Cerrar sesión</string>
     <string name="error_adding_dog">Error al agregar el perro a tu colección</string>
     <string name="title_activity_dog_detail_compose">DogDetailComposeActivity</string>
     <string name="oops_something_happened">¡Ups, algo salió mal!</string>

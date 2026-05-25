@@ -6,17 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.espert.dogedex.core.session.SessionManager
 import com.espert.dogedex.core.ui.theme.DogedexTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var sessionManager: SessionManager
     private val viewModel: MainViewModel by viewModels()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -27,7 +22,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DogedexTheme {
-                DogedexNavHost(sessionManager = sessionManager)
+                DogedexNavHost()
             }
         }
     }

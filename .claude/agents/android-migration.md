@@ -18,7 +18,7 @@ to the next phase.
 
 ## Project Snapshot (baseline at migration start)
 
-**Modules:** `app`, `core`, `auth`, `camera`
+**Modules:** `app`, `core`, `camera`
 **AGP:** 8.1.0 → target 9.x latest stable
 **Kotlin:** 1.9.0 → target 2.x
 **Java compatibility:** 1.8 → target 17
@@ -36,6 +36,12 @@ to the next phase.
 **compileSdk:** 35 | **targetSdk:** 35 | **Java:** 17
 **Compose BOM:** 2026.05.01 | **Hilt:** 2.59.2 | **Navigation:** 2.9.8
 **Splashscreen:** 1.2.0 | **Lifecycle:** 2.10.0 | **Retrofit:** 3.0.0
+
+### v1.1 Auth Removal (2026-05-23)
+
+- **Auth Cleanup**: `:auth` module removed. Login and SignUp flows deleted.
+- **NavHost**: simplified to start at `CameraKey`.
+- **Session**: `SessionManager` and `SessionRepository` removed.
 
 ### v1.0 Release Polish & AGP 9 Final (2026-05-23)
 

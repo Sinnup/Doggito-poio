@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(.claude/agents/*)",
+      "Write(.claude/agents/*)",
+      "Edit(*.kt)",
+      "Write(*.kt)",
+      "Edit(*.gradle)",
+      "Write(*.gradle)",
+      "Edit(*.toml)",
+      "Write(*.toml)",
+      "Edit(*.xml)",
+      "Write(*.xml)",
+      "Edit(*.properties)",
+      "Write(*.properties)",
+      "Edit(*.pro)",
+      "Write(*.pro)",
+      "Edit(*.json)",
+      "Write(*.json)",
+      "Edit(*.md)",
+      "Write(*.md)",
+      "Bash(gradle:*)",
+      "Bash(gradle *)",
+      "Bash(git:*)",
+      "Bash(git *)",
+      "Bash(./gradlew:*)",
+      "Bash(./gradlew *)"
+    ]
+  }
+}

@@ -16,7 +16,26 @@ Branch:      main
 ```
 
 **Context:** App is now ready for release. AGP 9.2 compat issues resolved. Splash screen
-implemented. Material 3 migration for dialogs complete. targetSdk set to 35.
+implemented. Material 3 migration for dialogs complete. targetSdk set to 35. Login functionality
+has been completely removed as requested.
+
+---
+
+## [v1.1] — 2026-05-23 — Authentication Removal
+
+### Status: Done
+
+### Branch
+`main`
+
+### Done
+
+- **Auth Removal**: completely removed the `:auth` module and all related code (Login, SignUp screens, ViewModels, and repository).
+- **Navigation**: simplified `DogedexNavHost` to start directly at `CameraScreen`. Removed all login-state reactive logic.
+- **Session Cleanup**: deleted `SessionManager` and `SessionRepository` from `core`.
+- **API Cleanup**: removed login/signup endpoints from `ApiService` and unused auth DTOs.
+- **Strings**: removed all authentication-related strings from both English and Spanish resources.
+- **Settings**: simplified `SettingsScreen` to only include the Privacy Policy.
 
 ---
 

@@ -2,9 +2,6 @@ package com.espert.dogedex.core.api
 
 
 import com.espert.dogedex.core.api.dto.AddDogTOUserDTO
-import com.espert.dogedex.core.api.dto.LoginDTO
-import com.espert.dogedex.core.api.dto.SignUpDTO
-import com.espert.dogedex.core.api.responses.AuthApiResponse
 import com.espert.dogedex.core.api.responses.DefaultResponse
 import com.espert.dogedex.core.api.responses.DogApiResponse
 import com.espert.dogedex.core.api.responses.DogListApiResponse
@@ -13,8 +10,6 @@ import com.espert.dogedex.core.BASE_URL
 import com.espert.dogedex.core.GET_ALL_DOGS_URL
 import com.espert.dogedex.core.GET_DOG_BY_ML_ID
 import com.espert.dogedex.core.GET_USER_DOGS_URL
-import com.espert.dogedex.core.SIGN_IN_URL
-import com.espert.dogedex.core.SIGN_UP_URL
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -38,12 +33,6 @@ private val retrofit = Retrofit.Builder()
 interface ApiService {
     @GET(GET_ALL_DOGS_URL)
     suspend fun getAllDogs(): DogListApiResponse
-
-    @POST(SIGN_UP_URL)
-    suspend fun signUp(@Body signUpDTO: SignUpDTO): AuthApiResponse
-
-    @POST(SIGN_IN_URL)
-    suspend fun login(@Body loginDTO: LoginDTO): AuthApiResponse
 
     @Headers("${ApiServiceInterceptor.NEEDS_AUTH_HEADER_KEY}: true")
     @POST(ADD_DOG_TO_USER_URL)

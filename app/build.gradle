@@ -93,7 +93,6 @@ dependencies {
 
     implementation project(path: ":core")
     implementation project(path: ":camera")
-    implementation project(path: ":auth")
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.core.splashscreen

@@ -5,8 +5,6 @@ import kotlinx.serialization.Serializable
 
 sealed interface NavKey
 
-@Serializable data object LoginKey : NavKey
-@Serializable data object SignUpKey : NavKey
 @Serializable data object CameraKey : NavKey
 @Serializable data object DogListKey : NavKey
 @Serializable data class DogDetailKey(

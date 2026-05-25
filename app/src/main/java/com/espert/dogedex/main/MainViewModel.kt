@@ -10,7 +10,6 @@ import com.espert.dogedex.camera.machinelearning.DogRecognition
 import com.espert.dogedex.core.api.responses.ResponseStatus
 import com.espert.dogedex.core.di.StringResolver
 import com.espert.dogedex.core.model.Dog
-import com.espert.dogedex.core.session.SessionManager
 import com.espert.dogedex.dogList.DogTasks
 import com.espert.dogedex.main.MainActivity.Companion.DOGS_JSON_FILE
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +50,6 @@ sealed class MainUiEffect {
 class MainViewModel @Inject constructor(
     private val dogRepository: DogTasks,
     private val classifierRepository: ClassifierTasks,
-    val sessionRepository: SessionManager,
     private val strings: StringResolver,
     private val dispatcher: CoroutineDispatcher,
     private val imageRepository: ImageRepository
