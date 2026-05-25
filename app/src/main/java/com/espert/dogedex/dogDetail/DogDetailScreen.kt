@@ -13,15 +13,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Divider
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -231,7 +232,7 @@ fun DogInformation(
                     }
                 }
 
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.padding(
                         top = 8.dp, start = 8.dp, end = 8.dp, bottom = 8.dp
                     ),
@@ -324,10 +325,9 @@ private fun LifeIcon() {
 
 @Composable
 private fun VerticalDivider() {
-    Divider(
-        modifier = Modifier
-            .height(42.dp)
-            .width(1.dp),
+    VerticalDivider(
+        modifier = Modifier.height(42.dp),
+        thickness = 1.dp,
         color = colorResource(id = R.color.divider)
     )
 }
