@@ -36,7 +36,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 [optional body — the WHY, not the WHAT]
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+<The AI Model and tool that did this commit>
 ```
 
 ### Types
