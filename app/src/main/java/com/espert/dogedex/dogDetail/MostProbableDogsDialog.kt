@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -43,7 +45,7 @@ fun MostProbableDogsDialog(
         title = {
             Text(
                 text = stringResource(id = R.string.other_probable_dogs),
-                color = colorResource(id = R.color.text_black),
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -58,7 +60,6 @@ fun MostProbableDogsDialog(
         },
         confirmButton = {
             Button(
-                modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     onShowMostProbableDogsDialogDismiss()
                 }
@@ -99,7 +100,7 @@ fun MostProbableDogItem(dog: Dog, onItemClicked: (Dog) -> Unit) {
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 8.dp),
-            color = colorResource(id = R.color.text_black)
+            color = MaterialTheme.colorScheme.onSurface
         )
         Image(
             painter = rememberAsyncImagePainter(
@@ -113,7 +114,7 @@ fun MostProbableDogItem(dog: Dog, onItemClicked: (Dog) -> Unit) {
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun Prevista(){
     DogedexTheme {

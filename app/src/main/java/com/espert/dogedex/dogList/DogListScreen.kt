@@ -26,10 +26,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -83,6 +85,7 @@ private fun DogListContent(
     onDismissError: () -> Unit
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = { DogListScreenTopBar { onNavigationIconClick() } },
     ) { paddingValues ->
         LazyVerticalGrid(
@@ -108,7 +111,8 @@ private fun DogListContent(
 @Composable
 fun DogListScreenTopBar(onClick: () -> Unit) {
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(R.string.my_dog_collection)) },
+        title = { Text(
+            fontFamily = FontFamily.Serif, text = stringResource(R.string.my_dog_collection)) },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -137,7 +141,8 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
                 contentDescription = null,
                 modifier = Modifier
                     .background(Color.White)
-                    .semantics { testTag = "dog-${dog.name}" }
+                    .semantics { testTag = "dog-${dog.name}" },
+                contentScale = ContentScale.Crop
             )
         }
     } else {
@@ -146,7 +151,7 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
                 .padding(8.dp)
                 .height(100.dp)
                 .width(100.dp),
-            color = Color.Red,
+            color = MaterialTheme.colorScheme.inversePrimary,
             shape = RoundedCornerShape(4.dp)
         ) {
             Box(
@@ -155,7 +160,7 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
             ) {
                 Text(
                     text = dog.index.toString(),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     textAlign = TextAlign.Center,
                     fontSize = 48.sp,
                     fontWeight = FontWeight.Black,
