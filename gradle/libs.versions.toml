@@ -64,6 +64,7 @@ turbine                     = "1.2.1"
 room                        = "2.8.4"
 
 
+
 [libraries]
 # AndroidX core
 androidx-core-ktx                       = { group = "androidx.core",              name = "core-ktx",                      version.ref = "coreKtx" }

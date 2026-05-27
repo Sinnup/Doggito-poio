@@ -19,6 +19,9 @@ local.properties
 *.keystore
 keyvalues.txt
 
+# Google Play service account key — never commit this
+play-service-account.json
+
 # Build artifacts
 app/release/
 

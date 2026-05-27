@@ -1,0 +1,1 @@
+Improved layout for tablets and foldable devices. Bug fixes and performance improvements.
