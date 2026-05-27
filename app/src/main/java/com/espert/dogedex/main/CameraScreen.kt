@@ -14,7 +14,9 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -22,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -38,6 +41,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.espert.dogedex.ui.isExpanded
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -50,6 +54,7 @@ import java.util.concurrent.Executors
 
 @Composable
 fun CameraScreen(
+    windowSizeClass: WindowSizeClass,
     onNavigateToDogDetail: (dog: Dog, probableDogIds: List<String>) -> Unit,
     onNavigateToDogList: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -70,6 +75,7 @@ fun CameraScreen(
     }
 
     CameraContent(
+        windowSizeClass = windowSizeClass,
         uiState = uiState,
         onRecognizeImage = { viewModel.handleAction(MainUiAction.RecognizeImage(it)) },
         onGetDogByMlId = { viewModel.handleAction(MainUiAction.GetDogByMlId(it)) },
@@ -81,6 +87,7 @@ fun CameraScreen(
 
 @Composable
 private fun CameraContent(
+    windowSizeClass: WindowSizeClass,
     uiState: MainUiState,
     onRecognizeImage: (androidx.camera.core.ImageProxy) -> Unit,
     onGetDogByMlId: (String) -> Unit,
@@ -170,39 +177,74 @@ private fun CameraContent(
         val dogRecognition = uiState.dogRecognition
         val isHighConfidence = (dogRecognition?.confidence ?: 0f) > 70f
 
-        if (isHighConfidence) {
-            FloatingActionButton(
+        if (windowSizeClass.isExpanded) {
+            Column(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.CenterEnd)
                     .navigationBarsPadding()
-                    .padding(bottom = 32.dp)
-                    .semantics { testTag = "take-photo-fab" },
-                onClick = {
-                    if (isCameraReady && (dogRecognition != null)) {
-                        onGetDogByMlId(dogRecognition.id)
+                    .padding(end = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (isHighConfidence) {
+                    FloatingActionButton(
+                        modifier = Modifier.semantics { testTag = "take-photo-fab" },
+                        onClick = {
+                            if (isCameraReady && (dogRecognition != null)) {
+                                onGetDogByMlId(dogRecognition.id)
+                            }
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = com.espert.dogedex.R.drawable.ic_baseline_photo_camera),
+                            contentDescription = null
+                        )
                     }
                 }
+                FloatingActionButton(
+                    modifier = Modifier.semantics { testTag = "dog-list-fab" },
+                    onClick = onNavigateToDogList
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.List,
+                        contentDescription = null
+                    )
+                }
+            }
+        } else {
+            if (isHighConfidence) {
+                FloatingActionButton(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .navigationBarsPadding()
+                        .padding(bottom = 32.dp)
+                        .semantics { testTag = "take-photo-fab" },
+                    onClick = {
+                        if (isCameraReady && (dogRecognition != null)) {
+                            onGetDogByMlId(dogRecognition.id)
+                        }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = com.espert.dogedex.R.drawable.ic_baseline_photo_camera),
+                        contentDescription = null
+                    )
+                }
+            }
+
+            FloatingActionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
+                    .padding(bottom = 32.dp, end = 16.dp)
+                    .semantics { testTag = "dog-list-fab" },
+                onClick = onNavigateToDogList
             ) {
                 Icon(
-                    painter = painterResource(id = com.espert.dogedex.R.drawable.ic_baseline_photo_camera),
+                    imageVector = Icons.AutoMirrored.Filled.List,
                     contentDescription = null
                 )
             }
-        }
-
-
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
-                .padding(bottom = 32.dp, end = 16.dp)
-                .semantics { testTag = "dog-list-fab" },
-            onClick = onNavigateToDogList
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.List,
-                contentDescription = null
-            )
         }
 
 //        FloatingActionButton(

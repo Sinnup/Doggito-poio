@@ -1,5 +1,6 @@
 package com.espert.dogedex.main
 
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
@@ -16,7 +17,7 @@ import com.espert.dogedex.dogList.DogListScreen
 import com.espert.dogedex.settings.SettingsScreen
 
 @Composable
-fun DogedexNavHost() {
+fun DogedexNavHost(windowSizeClass: WindowSizeClass) {
     val navController = rememberNavController()
 
     NavHost(
@@ -28,6 +29,7 @@ fun DogedexNavHost() {
                 navController.clearBackStack(CameraKey)
             }
             CameraScreen(
+                windowSizeClass = windowSizeClass,
                 onNavigateToDogDetail = { dog, probableDogIds ->
                     navController.navigate(DogDetailKey(dog, probableDogIds, true))
                 },
@@ -42,6 +44,7 @@ fun DogedexNavHost() {
 
         composable<DogListKey> {
             DogListScreen(
+                windowSizeClass = windowSizeClass,
                 onNavigateToDogDetail = { dog ->
                     navController.navigate(DogDetailKey(dog, emptyList(), false))
                 },
@@ -58,6 +61,7 @@ fun DogedexNavHost() {
         ) {
             val args = it.toRoute<DogDetailKey>()
             DogDetailScreen(
+                windowSizeClass = windowSizeClass,
                 dog = args.dog,
                 probableDogIds = args.probableDogIds,
                 isRecognition = args.isRecognition,

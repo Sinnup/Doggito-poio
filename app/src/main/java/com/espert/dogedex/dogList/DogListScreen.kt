@@ -4,10 +4,11 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -20,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,13 +49,19 @@ import com.espert.dogedex.core.composables.ErrorDialog
 import com.espert.dogedex.core.composables.LoadingWheel
 import com.espert.dogedex.core.model.Dog
 import com.espert.dogedex.core.ui.theme.DogedexTheme
+import com.espert.dogedex.ui.isExpanded
+import com.espert.dogedex.ui.isMedium
 
-
-private const val GRID_SPAN_COUNT = 3
+private fun columnCountFor(windowSizeClass: WindowSizeClass): Int = when {
+    windowSizeClass.isExpanded -> 5
+    windowSizeClass.isMedium   -> 4
+    else                       -> 3
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DogListScreen(
+    windowSizeClass: WindowSizeClass,
     onNavigateToDogDetail: (Dog) -> Unit,
     onNavigateBack: () -> Unit,
     viewModel: DogListViewModel = hiltViewModel()
@@ -69,6 +77,7 @@ fun DogListScreen(
     }
 
     DogListContent(
+        windowSizeClass = windowSizeClass,
         uiState = uiState,
         onNavigationIconClick = onNavigateBack,
         onDogClicked = { viewModel.handleAction(DogListUiAction.OnDogClicked(it)) },
@@ -79,6 +88,7 @@ fun DogListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DogListContent(
+    windowSizeClass: WindowSizeClass,
     uiState: DogListUiState,
     onNavigationIconClick: () -> Unit,
     onDogClicked: (Dog) -> Unit,
@@ -88,14 +98,17 @@ private fun DogListContent(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = { DogListScreenTopBar { onNavigationIconClick() } },
     ) { paddingValues ->
-        LazyVerticalGrid(
-            contentPadding = paddingValues,
-            columns = GridCells.Fixed(GRID_SPAN_COUNT),
-            content = {
-                items(uiState.dogs) { dog ->
-                    DogGridItem(dog = dog, onDogClicked = onDogClicked)
-                }
-            })
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            LazyVerticalGrid(
+                contentPadding = paddingValues,
+                columns = GridCells.Fixed(columnCountFor(windowSizeClass)),
+                modifier = Modifier.widthIn(max = 960.dp),
+                content = {
+                    items(uiState.dogs) { dog ->
+                        DogGridItem(dog = dog, onDogClicked = onDogClicked)
+                    }
+                })
+        }
     }
 
     if (uiState.isLoading) {
@@ -129,8 +142,8 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
         Surface(
             modifier = Modifier
                 .padding(8.dp)
-                .height(100.dp)
-                .width(100.dp),
+                .fillMaxWidth()
+                .aspectRatio(1f),
             onClick = { onDogClicked(dog) },
             shape = RoundedCornerShape(4.dp)
         ) {
@@ -149,8 +162,8 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
         Surface(
             modifier = Modifier
                 .padding(8.dp)
-                .height(100.dp)
-                .width(100.dp),
+                .fillMaxWidth()
+                .aspectRatio(1f),
             color = MaterialTheme.colorScheme.inversePrimary,
             shape = RoundedCornerShape(4.dp)
         ) {
@@ -170,6 +183,7 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
     }
 }
 
+@OptIn(androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     name = "DefaultPreviewDark"
@@ -180,8 +194,12 @@ fun DogGridItem(dog: Dog, onDogClicked: (Dog) -> Unit) {
 )
 @Composable
 fun DogListScreenPreview() {
+    val windowSizeClass = androidx.compose.material3.windowsizeclass.WindowSizeClass.calculateFromSize(
+        androidx.compose.ui.unit.DpSize(400.dp, 800.dp)
+    )
     DogedexTheme {
         DogListContent(
+            windowSizeClass = windowSizeClass,
             uiState = DogListUiState(),
             onNavigationIconClick = {},
             onDogClicked = {},

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
 import com.espert.dogedex.R
 import com.espert.dogedex.core.model.Dog
@@ -39,6 +41,8 @@ fun MostProbableDogsDialog(
     onItemClicked: (Dog) -> Unit,
 ) {
     AlertDialog(
+        modifier = Modifier.widthIn(min = 280.dp, max = 560.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
             onShowMostProbableDogsDialogDismiss()
         },

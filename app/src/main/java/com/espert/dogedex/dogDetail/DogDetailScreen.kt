@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
@@ -23,16 +26,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,8 +44,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -53,10 +57,14 @@ import com.espert.dogedex.core.composables.ErrorDialog
 import com.espert.dogedex.core.composables.LoadingWheel
 import com.espert.dogedex.core.model.Dog
 import com.espert.dogedex.core.ui.theme.DogedexTheme
+import com.espert.dogedex.ui.isCompact
+import com.espert.dogedex.ui.isExpanded
+import com.espert.dogedex.ui.isMedium
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun DogDetailScreen(
+    windowSizeClass: WindowSizeClass,
     dog: Dog,
     probableDogIds: List<String>,
     isRecognition: Boolean,
@@ -81,6 +89,7 @@ fun DogDetailScreen(
     }
 
     DogDetailContent(
+        windowSizeClass = windowSizeClass,
         uiState = uiState,
         dog = uiState.dog ?: dog,
         onAction = viewModel::handleAction
@@ -89,11 +98,19 @@ fun DogDetailScreen(
 
 @Composable
 private fun DogDetailContent(
+    windowSizeClass: WindowSizeClass,
     uiState: DogDetailUiState,
     dog: Dog,
     onAction: (DogDetailUiAction) -> Unit
 ) {
     val probableDogsDialogEnabled = remember { mutableStateOf(false) }
+
+    val contentMaxWidth = when {
+        windowSizeClass.isExpanded -> 600.dp
+        windowSizeClass.isMedium -> 480.dp
+        else -> Dp.Unspecified
+    }
+    val imageWidth = if (windowSizeClass.isCompact) 270.dp else 320.dp
 
     Box(
         modifier = Modifier
@@ -103,21 +120,33 @@ private fun DogDetailContent(
             .padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
         contentAlignment = Alignment.TopCenter
     ) {
-        DogInformation(dog, uiState.isRecognition) {
-            onAction(DogDetailUiAction.LoadProbableDogs)
-            probableDogsDialogEnabled.value = true
+        val contentModifier = if (contentMaxWidth != Dp.Unspecified) {
+            Modifier.widthIn(max = contentMaxWidth)
+        } else {
+            Modifier
         }
-        val filesDir = LocalContext.current.filesDir
-        Image(
-            modifier = Modifier
-                .width(270.dp)
-                .padding(top = 80.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            painter = rememberAsyncImagePainter(
-                model = java.io.File(filesDir, "images/${dog.imageUrl}.jpg")
-            ),
-            contentDescription = dog.name
-        )
+        Box(
+            modifier = contentModifier
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 88.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            DogInformation(dog, uiState.isRecognition) {
+                onAction(DogDetailUiAction.LoadProbableDogs)
+                probableDogsDialogEnabled.value = true
+            }
+            val filesDir = LocalContext.current.filesDir
+            Image(
+                modifier = Modifier
+                    .width(imageWidth)
+                    .padding(top = 80.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                painter = rememberAsyncImagePainter(
+                    model = java.io.File(filesDir, "images/${dog.imageUrl}.jpg")
+                ),
+                contentDescription = dog.name
+            )
+        }
 
         FloatingActionButton(
             modifier = Modifier
@@ -177,7 +206,7 @@ fun DogInformation(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
@@ -384,9 +413,14 @@ private fun DogDataColumn(
     }
 }
 
+@OptIn(androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi::class)
 @PreviewLightDark
 @Composable
 fun DogDetailScreenPreview() {
+    val windowSizeClass =
+        androidx.compose.material3.windowsizeclass.WindowSizeClass.calculateFromSize(
+            androidx.compose.ui.unit.DpSize(400.dp, 800.dp)
+        )
     DogedexTheme {
         val dog = Dog(
             1L, 78, "Pug",
@@ -395,6 +429,7 @@ fun DogDetailScreenPreview() {
             "5", "6"
         )
         DogDetailContent(
+            windowSizeClass = windowSizeClass,
             uiState = DogDetailUiState(dog = dog),
             dog = dog,
             onAction = {}
