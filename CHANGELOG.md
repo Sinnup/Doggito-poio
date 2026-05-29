@@ -9,14 +9,34 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       Post-v1.3 unit test cleanup
+Phase:       v1.4 - Patch Release
 Status:      Complete ✓
-Next action: Final Release verification
+Next action: Monitor Play Store rollout
 Branch:      main
 ```
 
-**Context:** The project is now fully offline-first with comprehensive unit test coverage.
-All core components are verified on the JVM.
+**Context:** Released version 1.0.1 (100003) with UI improvements for rotation handling and collection logic refinements.
+
+---
+
+## [v1.4] — 2026-05-29 — UI Polish & Version Bump
+
+### Status: Done
+
+### Branch
+`main`
+
+### Done
+
+- **Version Bump**: incremented to `1.0.1` (`versionCode 100003`) for Play Store patch release.
+- **DogDetailScreen**: implemented dynamic top padding (1/4 screen height) using `LocalConfiguration` to improve layout across all device sizes and rotations.
+- **Image Loading**: updated Coil integration to use `ImageRequest` with crossfade, placeholders, and error drawables for a smoother user experience.
+- **Collection Logic**: unified `Dog` model and repository logic to default `inCollection` to `false`, ensuring recognized dogs start as "not collected" until explicitly added.
+- **Layout Fixes**: resolved potential clipping issues and improved Material 3 component alignment in the detail view.
+
+### Gate results
+- `./gradlew assembleDebug` — PASS
+- `./gradlew assembleRelease` — PASS ✓ (Artifacts signed and ready)
 
 ---
 
