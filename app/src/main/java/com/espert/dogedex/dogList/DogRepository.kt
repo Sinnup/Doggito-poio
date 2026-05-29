@@ -52,7 +52,7 @@ class DogRepository @Inject constructor(
         return withContext(dispatcher) {
             val dogEntity = database.dogDao().getDogByMLId(mlDogId)
                 ?: return@withContext ResponseStatus.Error(R.string.unknown_error)
-            ResponseStatus.Success(DogEntityMapper().fromDogEntityToDogDomain(dogEntity))
+            ResponseStatus.Success(DogEntityMapper().fromDogEntityToDogDomain(dogEntity).copy(inCollection = false))
         }
     }
 

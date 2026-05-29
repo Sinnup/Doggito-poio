@@ -63,8 +63,6 @@ fun DogedexNavHost(windowSizeClass: WindowSizeClass) {
             DogDetailScreen(
                 windowSizeClass = windowSizeClass,
                 dog = args.dog,
-                probableDogIds = args.probableDogIds,
-                isRecognition = args.isRecognition,
                 onNavigateBack = {
                     navController.navigateUp()
                 }

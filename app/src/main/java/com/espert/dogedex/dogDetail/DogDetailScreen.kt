@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -36,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -45,6 +48,7 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,6 +56,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.espert.dogedex.R
 import com.espert.dogedex.core.composables.ErrorDialog
 import com.espert.dogedex.core.composables.LoadingWheel
@@ -60,14 +65,13 @@ import com.espert.dogedex.core.ui.theme.DogedexTheme
 import com.espert.dogedex.ui.isCompact
 import com.espert.dogedex.ui.isExpanded
 import com.espert.dogedex.ui.isMedium
+import java.io.File
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun DogDetailScreen(
     windowSizeClass: WindowSizeClass,
     dog: Dog,
-    probableDogIds: List<String>,
-    isRecognition: Boolean,
     onNavigateBack: () -> Unit,
     viewModel: DogDetailViewModel = hiltViewModel()
 ) {
@@ -131,7 +135,11 @@ private fun DogDetailContent(
                 .padding(bottom = 88.dp),
             contentAlignment = Alignment.TopCenter
         ) {
-            DogInformation(dog, uiState.isRecognition) {
+            val configuration = LocalConfiguration.current
+            val screenHeight = configuration.screenHeightDp.dp
+            val topPadding = screenHeight * 0.25f // 1/4 of the s
+
+            DogInformation(dog, uiState.isRecognition, topPadding) {
                 onAction(DogDetailUiAction.LoadProbableDogs)
                 probableDogsDialogEnabled.value = true
             }
@@ -139,10 +147,17 @@ private fun DogDetailContent(
             Image(
                 modifier = Modifier
                     .width(imageWidth)
-                    .padding(top = 80.dp)
+                    .safeContentPadding()
+                    .padding(top = topPadding - 100.dp)
                     .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Fit,
                 painter = rememberAsyncImagePainter(
-                    model = java.io.File(filesDir, "images/${dog.imageUrl}.jpg")
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(File(filesDir, "images/${dog.imageUrl}.jpg"))
+                        .placeholder(R.drawable.ic_launcher_foreground)
+                        .error(R.drawable.ic_baseline_photo_camera)
+                        .crossfade(true)
+                        .build()
                 ),
                 contentDescription = dog.name
             )
@@ -189,12 +204,13 @@ private fun DogDetailContent(
 fun DogInformation(
     dog: Dog,
     isRecognition: Boolean,
+    topPadding: Dp,
     onProbableDogsButtonClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 180.dp)
+            .padding(top = topPadding)
     ) {
         Surface(
             modifier = Modifier
@@ -345,22 +361,13 @@ private fun LifeIcon() {
         Surface(
             shape = RoundedCornerShape(bottomEnd = 2.dp, topEnd = 2.dp),
             modifier = Modifier
-                .width(200.dp)
+                .fillMaxWidth()
                 .height(6.dp),
             color = colorResource(id = R.color.color_primary)
         ) {
 
         }
     }
-}
-
-@Composable
-private fun VerticalDivider() {
-    VerticalDivider(
-        modifier = Modifier.height(42.dp),
-        thickness = 1.dp,
-        color = colorResource(id = R.color.divider)
-    )
 }
 
 @Composable
@@ -415,10 +422,11 @@ private fun DogDataColumn(
 
 @OptIn(androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi::class)
 @PreviewLightDark
+@PreviewScreenSizes
 @Composable
 fun DogDetailScreenPreview() {
     val windowSizeClass =
-        androidx.compose.material3.windowsizeclass.WindowSizeClass.calculateFromSize(
+        WindowSizeClass.calculateFromSize(
             androidx.compose.ui.unit.DpSize(400.dp, 800.dp)
         )
     DogedexTheme {
