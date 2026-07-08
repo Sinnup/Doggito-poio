@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -283,7 +282,7 @@ fun DogInformation(
                     modifier = Modifier.padding(
                         top = 8.dp, start = 8.dp, end = 8.dp, bottom = 8.dp
                     ),
-                    color = colorResource(id = R.color.divider),
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     thickness = 1.dp
                 )
 
@@ -345,7 +344,7 @@ private fun LifeIcon() {
     ) {
         Surface(
             shape = CircleShape,
-            color = colorResource(id = R.color.color_primary)
+            color = MaterialTheme.colorScheme.error
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_hearth_white),
@@ -363,7 +362,7 @@ private fun LifeIcon() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(6.dp),
-            color = colorResource(id = R.color.color_primary)
+            color = MaterialTheme.colorScheme.error
         ) {
 
         }
