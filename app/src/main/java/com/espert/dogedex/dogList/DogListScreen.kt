@@ -9,7 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,8 +32,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
@@ -99,11 +105,17 @@ private fun DogListContent(
         topBar = { DogListScreenTopBar { onNavigationIconClick() } },
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            val noneCollected = uiState.dogs.isNotEmpty() && uiState.dogs.none { it.inCollection }
             LazyVerticalGrid(
                 contentPadding = paddingValues,
                 columns = GridCells.Fixed(columnCountFor(windowSizeClass)),
                 modifier = Modifier.widthIn(max = 960.dp),
                 content = {
+                    if (noneCollected) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            EmptyCollectionMessage()
+                        }
+                    }
                     items(uiState.dogs) { dog ->
                         DogGridItem(dog = dog, onDogClicked = onDogClicked)
                     }
@@ -132,6 +144,37 @@ fun DogListScreenTopBar(onClick: () -> Unit) {
         ),
         navigationIcon = { BackNavigationIcon(onClick = onClick) }
     )
+}
+
+@Composable
+private fun EmptyCollectionMessage() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_baseline_list),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            modifier = Modifier.size(72.dp)
+        )
+        Text(
+            text = stringResource(R.string.dog_list_empty_title),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        Text(
+            text = stringResource(R.string.dog_list_empty_message),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)

@@ -31,4 +31,6 @@
     <string name="email_is_not_valid">Email is not valid</string>
     <string name="password_must_not_be_emtpy">Password must not be empty</string>
 
+    <string name="cd_navigate_back">Navigate back</string>
+
 </resources>
