@@ -7,9 +7,9 @@ kotlin                      = "2.3.21"
 ksp                         = "2.3.8"
 
 # AndroidX core
-compileSdk                  = "35"
+compileSdk                  = "37"
 minSdk                      = "24"
-targetSdk                   = "35"
+targetSdk                   = "37"
 coreKtx                     = "1.18.0"
 appcompat                   = "1.7.1"
 activityKtx                 = "1.13.0"
