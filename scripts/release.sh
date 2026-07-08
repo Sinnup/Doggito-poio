@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Dogedex — Release to Google Play (production track)
+# Dogedex — Release to Google Play
 #
 # Usage:
-#   ./scripts/release.sh 1.1.0          # sets versionName, bumps versionCode
-#   ./scripts/release.sh                # prompts for versionName
+#   ./scripts/release.sh 1.1.0               # production track (default)
+#   ./scripts/release.sh 1.1.0 --internal    # internal testing track
+#   ./scripts/release.sh                     # prompts for versionName
 #
 # Prerequisites:
 #   1. play-service-account.json in project root (or set PLAY_SERVICE_ACCOUNT_JSON
@@ -20,6 +21,17 @@ BUILD_GRADLE="$ROOT/app/build.gradle"
 RELEASE_NOTES="$ROOT/app/src/main/play/release-notes/en-US/default.txt"
 PACKAGE_NAME="com.espert.dogedex"
 AAB_PATH="$ROOT/app/build/outputs/bundle/release/doggito-poio_release.aab"
+
+# ── Parse flags ───────────────────────────────────────────────────────────────
+TRACK="production"
+POSITIONAL_ARGS=()
+for arg in "$@"; do
+  case "$arg" in
+    --internal|-i) TRACK="internal" ;;
+    *) POSITIONAL_ARGS+=("$arg") ;;
+  esac
+done
+set -- "${POSITIONAL_ARGS[@]+"${POSITIONAL_ARGS[@]}"}"
 
 # Resolve service account JSON path (local.properties override or project root default)
 LOCAL_PROPS="$ROOT/local.properties"
@@ -121,12 +133,12 @@ echo "✅  Bundle built: $AAB_PATH"
 
 # ── 9. Upload to Google Play ──────────────────────────────────────────────────
 echo ""
-echo "🚀  Uploading to Google Play (production)…"
+echo "🚀  Uploading to Google Play ($TRACK)…"
 if ! python3 "$SCRIPT_DIR/upload_to_play.py" \
     --package "$PACKAGE_NAME" \
     --aab     "$AAB_PATH" \
     --creds   "$CREDS_PATH" \
-    --track   production \
+    --track   "$TRACK" \
     --notes   "$RELEASE_NOTES"; then
   echo ""
   echo "❌  Upload failed. Reverting build.gradle…"
@@ -147,7 +159,7 @@ git commit -m "chore(release): bump version to $NEW_VERSION_NAME ($NEW_VERSION_C
 
 - versionCode: $CURRENT_VERSION_CODE → $NEW_VERSION_CODE
 - versionName: $NEW_VERSION_NAME
-- Published to Google Play production track
+- Published to Google Play $TRACK track
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 
@@ -155,5 +167,5 @@ git tag -a "$TAG" -m "Release $NEW_VERSION_NAME"
 git push origin main --tags
 
 echo ""
-echo "🎉  $NEW_VERSION_NAME ($NEW_VERSION_CODE) is live on Google Play!"
+echo "🎉  $NEW_VERSION_NAME ($NEW_VERSION_CODE) uploaded to Google Play ($TRACK track)!"
 echo "    Tag $TAG pushed to origin/main"
