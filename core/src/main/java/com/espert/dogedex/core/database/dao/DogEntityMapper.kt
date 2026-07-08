@@ -39,7 +39,8 @@ class DogEntityMapper {
             dog.lifeExpectancy,
             dog.temperament,
             dog.weightFemale,
-            dog.weightMale
+            dog.weightMale,
+            inCollection = dog.inCollection
         )
     }
 
