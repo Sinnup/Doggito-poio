@@ -10,6 +10,7 @@ import com.espert.dogedex.camera.machinelearning.DogRecognition
 import com.espert.dogedex.core.di.StringResolver
 import com.espert.dogedex.core.model.Dog
 import com.espert.dogedex.core.model.ResponseStatus
+import com.espert.dogedex.core.preferences.UserPreferencesRepository
 import com.espert.dogedex.dogList.DogTasks
 import com.espert.dogedex.main.MainActivity.Companion.DOGS_JSON_FILE
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,9 +18,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -52,7 +55,8 @@ class MainViewModel @Inject constructor(
     private val classifierRepository: ClassifierTasks,
     private val strings: StringResolver,
     private val dispatcher: CoroutineDispatcher,
-    private val imageRepository: ImageRepository
+    private val imageRepository: ImageRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -60,6 +64,17 @@ class MainViewModel @Inject constructor(
 
     private val _uiEffect = Channel<MainUiEffect>(Channel.BUFFERED)
     val uiEffect: Flow<MainUiEffect> = _uiEffect.receiveAsFlow()
+
+    /**
+     * `null` while the persisted value is still loading (splash is kept on screen until then),
+     * `false` to show the one-time walkthrough, `true` to go straight into the app.
+     */
+    val hasSeenOnboarding: StateFlow<Boolean?> = userPreferencesRepository.hasSeenOnboarding
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    fun onOnboardingCompleted() {
+        viewModelScope.launch { userPreferencesRepository.setOnboardingSeen() }
+    }
 
     fun handleAction(action: MainUiAction) {
         when (action) {
