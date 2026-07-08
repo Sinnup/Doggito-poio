@@ -22,7 +22,38 @@
     <string name="not_your_dog">Not your dog? Tap to see other dogs</string>
     <string name="other_probable_dogs">Other probable dogs</string>
     <string name="dismiss">Dismiss</string>
-    <string name="privacy_policy_url">https://YOUR_PRIVACY_POLICY_URL_HERE</string>
-    <string name="privacy_policy">Privacy Policy</string>
+    <!-- Onboarding walkthrough -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_page1_title">Spot any dog</string>
+    <string name="onboarding_page1_desc">Point your camera at a dog and Dogedex recognizes its breed in seconds.</string>
+    <string name="onboarding_page2_title">Works offline</string>
+    <string name="onboarding_page2_desc">Recognition runs entirely on your device — no internet connection needed.</string>
+    <string name="onboarding_page3_title">Build your collection</string>
+    <string name="onboarding_page3_desc">Save every dog you find and grow your very own Dogedex.</string>
+
+    <!-- Camera hints -->
+    <string name="camera_hint_scanning">Point the camera at a dog to identify it</string>
+    <string name="camera_hint_ready">Dog found! Tap the camera button to identify</string>
+    <string name="camera_confidence_format">%1$d%% match</string>
+
+    <!-- Dog list empty state -->
+    <string name="dog_list_empty_title">No dogs yet</string>
+    <string name="dog_list_empty_message">Identify dogs with your camera to start building your collection.</string>
+
+    <!-- Add to collection -->
+    <string name="dog_added_to_collection">Added to your collection</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+
+    <!-- Accessibility content descriptions -->
+    <string name="cd_identify_dog">Identify dog</string>
+    <string name="cd_open_collection">Open my collection</string>
+    <string name="cd_open_settings">Open settings</string>
+    <string name="cd_add_to_collection">Add to collection</string>
+    <string name="cd_close">Close</string>
+    <string name="cd_navigate_back">Navigate back</string>
 
 </resources>
