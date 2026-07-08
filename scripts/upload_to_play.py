@@ -70,9 +70,17 @@ def upload(package_name: str, aab_path: str, creds_path: str, track: str, notes_
         print(f"✅  Bundle uploaded  (versionCode {version_code})")
 
         # ── 3. Build release notes payload ────────────────────────────────────
+        # Auto-discover all locale folders under release-notes/ sibling dir.
         release_notes = []
         notes_file = Path(notes_path)
-        if notes_file.exists():
+        release_notes_dir = notes_file.parent.parent  # …/release-notes/
+        if release_notes_dir.is_dir():
+            for locale_dir in sorted(release_notes_dir.iterdir()):
+                locale_file = locale_dir / "default.txt"
+                if locale_dir.is_dir() and locale_file.exists():
+                    text = locale_file.read_text().strip()[:500]
+                    release_notes.append({"language": locale_dir.name, "text": text})
+        elif notes_file.exists():
             text = notes_file.read_text().strip()[:500]
             release_notes = [{"language": "en-US", "text": text}]
 

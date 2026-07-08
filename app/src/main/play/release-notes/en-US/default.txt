@@ -1,1 +1,1 @@
-Improved layout for tablets and foldable devices. Bug fixes and performance improvements.
+First-time onboarding walkthrough, camera scanning hints with confidence %, empty collection state, accessibility labels, and bug fixes.

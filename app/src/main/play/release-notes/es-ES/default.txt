@@ -1,0 +1,1 @@
+Tutorial de bienvenida para nuevos usuarios, indicadores de escaneo con porcentaje de confianza, estado vacío de colección, etiquetas de accesibilidad y corrección de errores.
