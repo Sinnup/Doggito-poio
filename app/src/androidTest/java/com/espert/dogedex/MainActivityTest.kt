@@ -19,6 +19,9 @@ import com.espert.dogedex.camera.machinelearning.DogRecognition
 import com.espert.dogedex.main.MainActivity
 import com.espert.dogedex.core.model.Dog
 import com.espert.dogedex.di.DogTasksModule
+import com.espert.dogedex.dogList.ImageRepository
+import com.espert.dogedex.core.di.PreferencesBindsModule
+import com.espert.dogedex.core.preferences.UserPreferencesRepository
 import com.espert.dogedex.core.testutils.EspressoIdlingResource
 import dagger.Binds
 import dagger.Module
@@ -29,6 +32,7 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -36,7 +40,7 @@ import org.junit.Test
 import javax.inject.Inject
 
 
-@UninstallModules(DogTasksModule::class, ClassifierModule::class)
+@UninstallModules(DogTasksModule::class, ClassifierModule::class, PreferencesBindsModule::class)
 @HiltAndroidTest
 class MainActivityTest {
 
@@ -124,6 +128,38 @@ class MainActivityTest {
         abstract fun bindDogTasks(
             fakedDogRepository: FakeDogRepository
         ): DogTasks
+    }
+
+    // DogTasksModule (uninstalled above) also provided ImageRepository; supply a fake here.
+    class FakeImageRepository @Inject constructor() : ImageRepository {
+        override suspend fun copyImagesToLocalStorage(): String = "path"
+        override fun getLocalImagePath(imageName: String): String = "path/$imageName"
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    abstract class ImageRepositoryTestModule {
+
+        @Binds
+        abstract fun bindImageRepository(
+            fake: FakeImageRepository
+        ): ImageRepository
+    }
+
+    // Onboarding already seen, so tests land directly on the camera screen.
+    class FakeUserPreferencesRepository @Inject constructor() : UserPreferencesRepository {
+        override val hasSeenOnboarding: Flow<Boolean> = flowOf(true)
+        override suspend fun setOnboardingSeen() = Unit
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    abstract class UserPreferencesTestModule {
+
+        @Binds
+        abstract fun bindUserPreferencesRepository(
+            fake: FakeUserPreferencesRepository
+        ): UserPreferencesRepository
     }
 
     @Test
