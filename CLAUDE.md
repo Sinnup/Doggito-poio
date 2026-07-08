@@ -48,6 +48,14 @@ The brand identity is warm amber/brown (`primary = #825500`). Prefer `MaterialTh
 tokens over `colorResource`/hardcoded `Color(...)` in composables. Edge-to-edge is enabled in
 `MainActivity`; the theme only controls status-bar icon appearance (do not set `statusBarColor`).
 
+## Preferences & onboarding
+
+User preferences persist via Jetpack DataStore behind `UserPreferencesRepository`
+(`:core/.../preferences/`), provided by Hilt (`PreferencesModule`). `MainActivity` gates the
+first-run `OnboardingScreen` (`app/.../onboarding/`) on the persisted `hasSeenOnboarding` flag,
+keeping the splash on screen until the flag loads, then swapping to the walkthrough or the
+`DogedexNavHost`. Skip and completion both persist the flag so onboarding never shows again.
+
 ## Build & test
 
 ```bash
