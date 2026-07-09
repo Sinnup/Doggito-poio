@@ -7,12 +7,15 @@ import com.espert.dogedex.camera.machinelearning.DogRecognition
 import com.espert.dogedex.core.di.StringResolver
 import com.espert.dogedex.core.model.Dog
 import com.espert.dogedex.core.model.ResponseStatus
+import com.espert.dogedex.core.preferences.UserPreferencesRepository
 import com.espert.dogedex.dogList.DogTasks
 import com.espert.dogedex.dogList.ImageRepository
 import com.espert.dogedex.main.MainUiAction
 import com.espert.dogedex.main.MainUiEffect
 import com.espert.dogedex.main.MainViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -52,17 +55,29 @@ class MainViewModelTest {
         override fun getLocalImagePath(imageName: String): String = "path/$imageName"
     }
 
+    class FakeUserPreferencesRepository(
+        initialHasSeenOnboarding: Boolean = true
+    ) : UserPreferencesRepository {
+        private val _hasSeenOnboarding = MutableStateFlow(initialHasSeenOnboarding)
+        override val hasSeenOnboarding = _hasSeenOnboarding.asStateFlow()
+        override suspend fun setOnboardingSeen() {
+            _hasSeenOnboarding.value = true
+        }
+    }
+
     private fun createViewModel(
         dogRepo: DogTasks = FakeDogRepository(),
         classifierRepo: ClassifierTasks = FakeClassifierRepository(),
-        imageRepo: ImageRepository = FakeImageRepository()
+        imageRepo: ImageRepository = FakeImageRepository(),
+        userPrefsRepo: UserPreferencesRepository = FakeUserPreferencesRepository()
     ): MainViewModel {
         return MainViewModel(
             dogRepository = dogRepo,
             classifierRepository = classifierRepo,
             strings = strings,
             dispatcher = testDispatcher,
-            imageRepository = imageRepo
+            imageRepository = imageRepo,
+            userPreferencesRepository = userPrefsRepo
         )
     }
 
@@ -142,6 +157,30 @@ class MainViewModelTest {
             assertTrue(effect is MainUiEffect.NavigateToDogDetail)
             val detailEffect = effect as MainUiEffect.NavigateToDogDetail
             assertEquals("Name", detailEffect.dog.name)
+        }
+    }
+
+    @Test
+    fun `hasSeenOnboarding reflects the persisted preference`() = runTest {
+        val prefsRepo = FakeUserPreferencesRepository(initialHasSeenOnboarding = false)
+        val viewModel = createViewModel(userPrefsRepo = prefsRepo)
+
+        viewModel.hasSeenOnboarding.test {
+            assertEquals(false, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onOnboardingCompleted persists that onboarding was seen`() = runTest {
+        val prefsRepo = FakeUserPreferencesRepository(initialHasSeenOnboarding = false)
+        val viewModel = createViewModel(userPrefsRepo = prefsRepo)
+
+        viewModel.hasSeenOnboarding.test {
+            assertEquals(false, awaitItem())
+            viewModel.onOnboardingCompleted()
+            assertEquals(true, awaitItem())
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }

@@ -10,10 +10,10 @@ plugins {
 
 android {
     namespace 'com.espert.dogedex.core'
-    compileSdk 37
+    compileSdk libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdk 24
+        minSdk libs.versions.minSdk.get().toInteger()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -82,4 +82,6 @@ dependencies {
     api libs.room.runtime
     ksp libs.room.compiler
     api libs.room.ktx
+
+    api libs.androidx.datastore.preferences
 }

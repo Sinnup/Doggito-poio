@@ -1,9 +1,13 @@
 package com.espert.dogedex
 
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import com.espert.dogedex.core.model.ResponseStatus
 import com.espert.dogedex.dogList.DogListScreen
 import com.espert.dogedex.dogList.DogListViewModel
@@ -14,6 +18,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class DogEntityListScreenTest {
 
     @get:Rule
@@ -55,6 +60,7 @@ class DogEntityListScreenTest {
 
         composeTestRule.setContent {
             DogListScreen(
+                windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(400.dp, 800.dp)),
                 onNavigateBack = { },
                 onNavigateToDogDetail = {},
                 viewModel = viewModel
@@ -100,6 +106,7 @@ class DogEntityListScreenTest {
 
         composeTestRule.setContent {
             DogListScreen(
+                windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(400.dp, 800.dp)),
                 onNavigateBack = { },
                 onNavigateToDogDetail = {},
                 viewModel = viewModel
@@ -159,6 +166,7 @@ class DogEntityListScreenTest {
 
         composeTestRule.setContent {
             DogListScreen(
+                windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(400.dp, 800.dp)),
                 onNavigateBack = { },
                 onNavigateToDogDetail = {},
                 viewModel = viewModel

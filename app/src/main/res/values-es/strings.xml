@@ -23,6 +23,37 @@
     <string name="not_your_dog">¿No es tu perro? Toca para ver otros perros</string>
     <string name="other_probable_dogs">Otros perros probables</string>
     <string name="dismiss">Cerrar</string>
-    <string name="privacy_policy_url">https://YOUR_PRIVACY_POLICY_URL_HERE</string>
-    <string name="privacy_policy">Política de privacidad</string>
+    <!-- Onboarding walkthrough -->
+    <string name="onboarding_skip">Omitir</string>
+    <string name="onboarding_next">Siguiente</string>
+    <string name="onboarding_get_started">Comenzar</string>
+    <string name="onboarding_page1_title">Identifica cualquier perro</string>
+    <string name="onboarding_page1_desc">Apunta la cámara a un perro y Dogedex reconocerá su raza en segundos.</string>
+    <string name="onboarding_page2_title">Funciona sin conexión</string>
+    <string name="onboarding_page2_desc">El reconocimiento ocurre en tu dispositivo, sin necesidad de internet.</string>
+    <string name="onboarding_page3_title">Arma tu colección</string>
+    <string name="onboarding_page3_desc">Guarda cada perro que encuentres y haz crecer tu propio Dogedex.</string>
+
+    <!-- Camera hints -->
+    <string name="camera_hint_scanning">Apunta la cámara a un perro para identificarlo</string>
+    <string name="camera_hint_ready">¡Perro encontrado! Toca el botón de la cámara para identificar</string>
+    <string name="camera_confidence_format">%1$d%% de coincidencia</string>
+
+    <!-- Dog list empty state -->
+    <string name="dog_list_empty_title">Aún no hay perros</string>
+    <string name="dog_list_empty_message">Identifica perros con tu cámara para empezar tu colección.</string>
+
+    <!-- Add to collection -->
+    <string name="dog_added_to_collection">Agregado a tu colección</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Ajustes</string>
+
+    <!-- Accessibility content descriptions -->
+    <string name="cd_identify_dog">Identificar perro</string>
+    <string name="cd_open_collection">Abrir mi colección</string>
+    <string name="cd_open_settings">Abrir ajustes</string>
+    <string name="cd_add_to_collection">Agregar a la colección</string>
+    <string name="cd_close">Cerrar</string>
+    <string name="cd_navigate_back">Regresar</string>
 </resources>

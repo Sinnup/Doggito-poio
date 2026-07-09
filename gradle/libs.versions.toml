@@ -7,9 +7,9 @@ kotlin                      = "2.3.21"
 ksp                         = "2.3.8"
 
 # AndroidX core
-compileSdk                  = "35"
+compileSdk                  = "37"
 minSdk                      = "24"
-targetSdk                   = "35"
+targetSdk                   = "37"
 coreKtx                     = "1.18.0"
 appcompat                   = "1.7.1"
 activityKtx                 = "1.13.0"
@@ -62,6 +62,9 @@ turbine                     = "1.2.1"
 
 # Room
 room                        = "2.8.4"
+
+# DataStore
+datastore                   = "1.2.1"
 
 
 
@@ -134,6 +137,9 @@ tensorflow-lite-support                 = { group = "org.tensorflow",           
 room-runtime                            = { group = "androidx.room",             name = "room-runtime",                    version.ref = "room" }
 room-compiler                           = { group = "androidx.room",             name = "room-compiler",                   version.ref = "room" }
 room-ktx                                = { group = "androidx.room",             name = "room-ktx",                        version.ref = "room" }
+
+# DataStore
+androidx-datastore-preferences          = { group = "androidx.datastore",         name = "datastore-preferences",         version.ref = "datastore" }
 
 # Test rules
 androidx-test-rules                     = { group = "androidx.test",               name = "rules",                         version = "1.7.0" }

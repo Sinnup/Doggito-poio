@@ -37,10 +37,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -76,6 +77,8 @@ fun DogDetailScreen(
     viewModel: DogDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
 
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collect { effect ->
@@ -88,6 +91,12 @@ fun DogDetailScreen(
 
     LaunchedEffect(uiState.hasDogBeenAdded) {
         if (uiState.hasDogBeenAdded) {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            android.widget.Toast.makeText(
+                context,
+                context.getString(R.string.dog_added_to_collection),
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
             onNavigateBack()
         }
     }
@@ -175,7 +184,13 @@ private fun DogDetailContent(
                 }
             }
         ) {
-            Icon(imageVector = Icons.Filled.Check, contentDescription = "Fab")
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = stringResource(
+                    if (uiState.isRecognition) R.string.cd_add_to_collection
+                    else R.string.cd_close
+                )
+            )
         }
 
         if (uiState.isLoading) {
@@ -283,7 +298,7 @@ fun DogInformation(
                     modifier = Modifier.padding(
                         top = 8.dp, start = 8.dp, end = 8.dp, bottom = 8.dp
                     ),
-                    color = colorResource(id = R.color.divider),
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     thickness = 1.dp
                 )
 
@@ -345,7 +360,7 @@ private fun LifeIcon() {
     ) {
         Surface(
             shape = CircleShape,
-            color = colorResource(id = R.color.color_primary)
+            color = MaterialTheme.colorScheme.error
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_hearth_white),
@@ -363,7 +378,7 @@ private fun LifeIcon() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(6.dp),
-            color = colorResource(id = R.color.color_primary)
+            color = MaterialTheme.colorScheme.error
         ) {
 
         }

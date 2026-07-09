@@ -20,10 +20,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -37,10 +42,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.espert.dogedex.R
 import com.espert.dogedex.ui.isExpanded
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -177,6 +185,15 @@ private fun CameraContent(
         val dogRecognition = uiState.dogRecognition
         val isHighConfidence = (dogRecognition?.confidence ?: 0f) > 70f
 
+        CameraHint(
+            isHighConfidence = isHighConfidence,
+            confidence = dogRecognition?.confidence,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .statusBarsPadding()
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+        )
+
         if (windowSizeClass.isExpanded) {
             Column(
                 modifier = Modifier
@@ -196,8 +213,8 @@ private fun CameraContent(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(id = com.espert.dogedex.R.drawable.ic_baseline_photo_camera),
-                            contentDescription = null
+                            painter = painterResource(id = R.drawable.ic_baseline_photo_camera),
+                            contentDescription = stringResource(R.string.cd_identify_dog)
                         )
                     }
                 }
@@ -207,7 +224,16 @@ private fun CameraContent(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.List,
-                        contentDescription = null
+                        contentDescription = stringResource(R.string.cd_open_collection)
+                    )
+                }
+                FloatingActionButton(
+                    modifier = Modifier.semantics { testTag = "settings-fab" },
+                    onClick = onNavigateToSettings
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = stringResource(R.string.cd_open_settings)
                     )
                 }
             }
@@ -226,8 +252,8 @@ private fun CameraContent(
                     }
                 ) {
                     Icon(
-                        painter = painterResource(id = com.espert.dogedex.R.drawable.ic_baseline_photo_camera),
-                        contentDescription = null
+                        painter = painterResource(id = R.drawable.ic_baseline_photo_camera),
+                        contentDescription = stringResource(R.string.cd_identify_dog)
                     )
                 }
             }
@@ -242,30 +268,83 @@ private fun CameraContent(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.List,
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.cd_open_collection)
+                )
+            }
+
+            FloatingActionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .navigationBarsPadding()
+                    .padding(bottom = 32.dp, start = 16.dp)
+                    .semantics { testTag = "settings-fab" },
+                onClick = onNavigateToSettings
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = stringResource(R.string.cd_open_settings)
                 )
             }
         }
-
-//        FloatingActionButton(
-//            modifier = Modifier
-//                .align(Alignment.BottomStart)
-//                .navigationBarsPadding()
-//                .padding(bottom = 32.dp, start = 16.dp)
-//                .semantics { testTag = "settings-fab" },
-//            onClick = onNavigateToSettings
-//        ) {
-//            Icon(
-//                imageVector = Icons.Filled.Settings,
-//                contentDescription = null
-//            )
-//        }
 
         if (uiState.isLoading) {
             LoadingWheel()
         } else uiState.error?.let {
             ErrorDialog(message = it) {
                 onDismissError()
+            }
+        }
+    }
+}
+
+@Composable
+private fun CameraHint(
+    isHighConfidence: Boolean,
+    confidence: Float?,
+    modifier: Modifier = Modifier
+) {
+    val message = if (isHighConfidence) {
+        stringResource(R.string.camera_hint_ready)
+    } else {
+        stringResource(R.string.camera_hint_scanning)
+    }
+    val containerColor = if (isHighConfidence) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+    }
+    val contentColor = if (isHighConfidence) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+        color = containerColor,
+        contentColor = contentColor,
+        tonalElevation = 3.dp,
+        shadowElevation = 3.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.Center
+            )
+            if (confidence != null && confidence > 0f) {
+                Text(
+                    text = stringResource(
+                        R.string.camera_confidence_format,
+                        confidence.toInt()
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

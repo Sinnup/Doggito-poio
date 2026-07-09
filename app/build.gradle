@@ -15,7 +15,7 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace 'com.espert.dogedex'
-    compileSdk 37
+    compileSdk libs.versions.compileSdk.get().toInteger()
 
     signingConfigs {
         release {
@@ -28,8 +28,8 @@ android {
 
     defaultConfig {
         applicationId "com.espert.dogedex"
-        minSdk 24
-        targetSdk 37
+        minSdk libs.versions.minSdk.get().toInteger()
+        targetSdk libs.versions.targetSdk.get().toInteger()
         versionCode 100003
         versionName "1.0.1"
 
@@ -142,7 +142,7 @@ dependencies {
     implementation libs.androidx.compose.ui
     implementation libs.androidx.compose.runtime
 
-    implementation libs.androidx.compose.ui.tooling
+    debugImplementation libs.androidx.compose.ui.tooling
     implementation libs.androidx.compose.ui.tooling.preview
 
     androidTestImplementation libs.androidx.compose.ui.test.junit4

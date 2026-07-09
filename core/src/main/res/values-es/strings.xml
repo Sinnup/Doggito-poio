@@ -30,4 +30,6 @@
     <string name="sign_up">Registrarse</string>
     <string name="email_is_not_valid">El correo electrónico no es válido</string>
     <string name="password_must_not_be_emtpy">La contraseña no puede estar vacía</string>
+
+    <string name="cd_navigate_back">Regresar</string>
 </resources>
