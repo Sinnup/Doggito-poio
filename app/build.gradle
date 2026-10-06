@@ -19,10 +19,14 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(localProperties['RELEASE_STORE_FILE'] ?: '')
-            storePassword localProperties['RELEASE_STORE_PASSWORD'] ?: ''
-            keyAlias localProperties['RELEASE_KEY_ALIAS'] ?: ''
-            keyPassword localProperties['RELEASE_KEY_PASSWORD'] ?: ''
+            // Credentials only exist locally (local.properties is gitignored); CI builds debug only.
+            def storePath = localProperties['RELEASE_STORE_FILE']
+            if (storePath) {
+                storeFile file(storePath)
+                storePassword localProperties['RELEASE_STORE_PASSWORD']
+                keyAlias localProperties['RELEASE_KEY_ALIAS']
+                keyPassword localProperties['RELEASE_KEY_PASSWORD']
+            }
         }
     }
 
