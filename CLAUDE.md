@@ -71,6 +71,13 @@ keeping the splash on screen until the flag loads, then swapping to the walkthro
   catalog and `[bundles]`.
 - Instrumented tests use `CustomTestRunner` (Hilt). Prefer **fakes over mocks**; use `runTest` +
   Turbine for Flow/StateFlow assertions and the Compose test APIs for UI.
+- **CI** (`.github/workflows/android.yml`) builds the **debug variant only**
+  (`assembleDebug` + `testDebugUnitTest`). Never use `./gradlew build` there — it also builds
+  release, which needs signing credentials.
+- Release signing reads `RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`,
+  `RELEASE_KEY_PASSWORD` from the gitignored `local.properties`. `app/build.gradle` only
+  configures the `release` signing config when they exist, so debug builds and CI work without
+  them. Release builds (`:app:bundleRelease`, `scripts/release.sh`) are local-only.
 
 ## Versioning
 
