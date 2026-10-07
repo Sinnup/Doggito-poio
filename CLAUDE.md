@@ -94,7 +94,9 @@ for the full protocol.
 - **Portfolio**: `https://sinnup.github.io` (repo `Sinnup/Sinnup.github.io`, local clone at
   `/Users/sinue/Documents/portfolio`). Doggito has a project card in `index.html` and its own page
   at `doggito/index.html` (live at `https://sinnup.github.io/doggito/`), with media in
-  `doggito/media/`. Keep version, minSdk, features and tech stack there in sync with the app.
+  `doggito/media/` (9 numbered phone-frame captures in `doggito/media/funcionalidades/NN.jpg`, 1000px
+  JPGs made from the originals in `portfolio/screenshots/` of this repo, which stay untracked; when
+  adding captures, renumber sequentially and add a card in the page). Keep version, minSdk, features and tech stack there in sync with the app.
 - **Code repo**: `https://github.com/Sinnup/Doggito-poio`
 
 ## Feature-complete workflow

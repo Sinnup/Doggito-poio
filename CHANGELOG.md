@@ -32,6 +32,7 @@ Branch:      main
 - **Build**: `app/build.gradle` only configures the `release` signing config when `RELEASE_STORE_FILE` exists in `local.properties`, fixing `Cannot convert '' to File` on the CI runner.
 - **Docs**: `CLAUDE.md` documents debug-only CI, optional release signing, public assets and the feature-complete workflow.
 - **Portfolio**: new Doggito project page at `https://sinnup.github.io/doggito/` and corrected project card (Play Store link, Android 7+, live camera).
+- **Portfolio**: Doggito page now has a 9-card phone-frame screenshot gallery (walkthrough, empty collection, live scanning, breed card, other probable breeds, collection, detail), same approach as the Papalote page.
 - **Changelog**: refreshed the `CURRENT STATE` block (it still showed v1.4 / 1.0.1) to the released `1.1.0` (versionCode 100004).
 
 ### Gate results
