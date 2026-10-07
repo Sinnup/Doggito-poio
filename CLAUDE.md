@@ -88,6 +88,33 @@ names must include a change-type word (e.g. `migration`, `update`, `refactor`) a
 topic area. Update `CHANGELOG.md` for user-visible changes. See `.claude/agents/versioning.md`
 for the full protocol.
 
+## Public assets
+
+- **Play Store listing**: `https://play.google.com/store/apps/details?id=com.espert.dogedex`
+- **Portfolio**: `https://sinnup.github.io` (repo `Sinnup/Sinnup.github.io`, local clone at
+  `/Users/sinue/Documents/portfolio`). Doggito has a project card in `index.html` and its own page
+  at `doggito/index.html` (live at `https://sinnup.github.io/doggito/`), with media in
+  `doggito/media/`. Keep version, minSdk, features and tech stack there in sync with the app.
+- **Code repo**: `https://github.com/Sinnup/Doggito-poio`
+
+## Feature-complete workflow
+
+When the user says a feature is done ("feature complete", "feature completado", "listo",
+"terminado", or similar), run this whole flow without asking again, delegating to the sub-agents
+where useful:
+
+1. **`CHANGELOG.md`** — add an entry for the change.
+2. **Update context** — refresh every file that describes the change if it is now stale: this
+   `CLAUDE.md`, `.claude/agents/*.md`, `.claude/commands/*.md`, and the memory files in
+   `~/.claude/projects/-Users-sinue-Documents-Doggito-poio/memory/` (+ `MEMORY.md` index).
+3. **Atomic commits** — one logical change per commit, Conventional Commits format, explicit
+   paths staged, no secrets or untracked working notes (`NEXT_STEPS.md`, `.kotlin/`).
+4. **Commit to `main` and push** — `git push origin main`; if the work is on a feature branch,
+   merge it into `main` first. Verify the working tree is clean afterwards.
+5. **Publish publicly when user-visible** — update the portfolio card and the Doggito page in
+   `/Users/sinue/Documents/portfolio`, commit there to `main` and push to
+   `Sinnup/Sinnup.github.io` so the change is live on GitHub Pages.
+
 ## Tooling in this repo
 
 - Sub-agents (`.claude/agents/`): `architect` (design specs, no code), `developer`
