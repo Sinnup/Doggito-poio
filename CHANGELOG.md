@@ -19,6 +19,26 @@ Branch:      main
 
 ---
 
+## [Unreleased] — 2026-10-06 — CI fix & public project page
+
+### Status: Done
+
+### Branch
+`main`
+
+### Done
+
+- **CI**: GitHub Actions now builds the debug variant only (`assembleDebug` + `testDebugUnitTest`) instead of `./gradlew build`.
+- **Build**: `app/build.gradle` only configures the `release` signing config when `RELEASE_STORE_FILE` exists in `local.properties`, fixing `Cannot convert '' to File` on the CI runner.
+- **Docs**: `CLAUDE.md` documents debug-only CI, optional release signing, public assets and the feature-complete workflow.
+- **Portfolio**: new Doggito project page at `https://sinnup.github.io/doggito/` and corrected project card (Play Store link, Android 7+, live camera).
+
+### Gate results
+- GitHub Actions debug build — PASS
+- `https://sinnup.github.io/doggito/` — HTTP 200
+
+---
+
 ## [v1.4] — 2026-05-29 — UI Polish & Version Bump
 
 ### Status: Done
