@@ -9,13 +9,13 @@ Format: newest entry on top. One entry per commit or logical unit of work.
 ## CURRENT STATE
 
 ```
-Phase:       v1.4 - Patch Release
+Phase:       v1.1.0 (versionCode 100004) - Released
 Status:      Complete ✓
 Next action: Monitor Play Store rollout
 Branch:      main
 ```
 
-**Context:** Released version 1.0.1 (100003) with UI improvements for rotation handling and collection logic refinements.
+**Context:** App version `1.1.0` (versionCode 100004) is published on Google Play. CI builds the debug variant only; release builds are local (`scripts/release.sh`). Public project page: `https://sinnup.github.io/doggito/`.
 
 ---
 
@@ -32,6 +32,7 @@ Branch:      main
 - **Build**: `app/build.gradle` only configures the `release` signing config when `RELEASE_STORE_FILE` exists in `local.properties`, fixing `Cannot convert '' to File` on the CI runner.
 - **Docs**: `CLAUDE.md` documents debug-only CI, optional release signing, public assets and the feature-complete workflow.
 - **Portfolio**: new Doggito project page at `https://sinnup.github.io/doggito/` and corrected project card (Play Store link, Android 7+, live camera).
+- **Changelog**: refreshed the `CURRENT STATE` block (it still showed v1.4 / 1.0.1) to the released `1.1.0` (versionCode 100004).
 
 ### Gate results
 - GitHub Actions debug build — PASS
